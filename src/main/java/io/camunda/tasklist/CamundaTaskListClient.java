@@ -11,10 +11,10 @@ import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.core5.http.io.entity.StringEntity;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.camunda.tasklist.auth.AuthInterface;
 import io.camunda.tasklist.exception.TaskListException;
+import io.camunda.tasklist.util.JsonUtils;
 import io.camunda.tasklist.util.TaskListQueryUtils;
 
 public class CamundaTaskListClient {
@@ -22,15 +22,6 @@ public class CamundaTaskListClient {
 	private AuthInterface authentication;
 	
 	private String taskListUrl;
-	
-	private ObjectMapper mapper;
-	
-	private JsonNode toJsonNode(InputStream is) throws IOException {
-		if (mapper==null) {
-			mapper = new ObjectMapper();
-		}
-		return mapper.readTree(is);
-	}
 	
 	public JsonNode unclaim(String taskId) throws TaskListException {
 		return executeQuery(TaskListQueryUtils.getUnclaimQuery(taskId));
@@ -60,7 +51,7 @@ public class CamundaTaskListClient {
 	        try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
 	        	if (response.getCode()==200) {
 		        	InputStream is = response.getEntity().getContent();
-		        	return toJsonNode(is);
+		        	return JsonUtils.toJsonNode(is);
 	        	}
 	        	if (response.getCode()==401) {
 	        		//force reauthentication
@@ -98,7 +89,6 @@ public class CamundaTaskListClient {
 			CamundaTaskListClient client =  new CamundaTaskListClient();
 			client.authentication = authentication;
 			client.taskListUrl = taskListUrl;
-			client.mapper = new ObjectMapper();
 			return client;
 		}
 	}

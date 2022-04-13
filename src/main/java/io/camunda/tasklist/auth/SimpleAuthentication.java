@@ -36,9 +36,11 @@ public class SimpleAuthentication implements AuthInterface {
 		this.taskListPassword = taskListPassword;
 		this.taskListUrl = taskListUrl;
 	}
+	@Override
 	public void manageAuth(HttpUriRequestBase request) throws TaskListException {
 		this.manageAuth(request, false);
 	}
+	@Override
 	public void manageAuth(HttpUriRequestBase request, boolean forceRefresh) throws TaskListException {
 		if (cookie==null || forceRefresh) {
 		    HttpPost httpPost = new HttpPost(taskListUrl+"/api/login");

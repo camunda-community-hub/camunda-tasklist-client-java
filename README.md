@@ -19,8 +19,16 @@ client.getTasks(true, "demo", true, 50);
 client.unclaim("506493039354");
 ```
 
-For the moment, the only auth available is the Simple one. 
+To connect to the **SaaS** TaskList, you need to use the **SaasAuthentication** rather than the SimpleAuthentication. The SaaSAuthentication requires the ClientId and SecretId
 
+```
+		SaasAuthentication sa = new SaasAuthentication("2~nB1MwkUU45FuXXX", "aBRKtreXQF3uD2MYYY");
+		CamundaTaskListClient client = new CamundaTaskListClient.Builder().authentication(sa)
+		    .taskListUrl("https://bru-2.tasklist.camunda.io/757dbc30-5127-4bed-XXXX-XXXXXXXXXXXX").build();
+
+
+		client.getTasks(null, null, true, 50);
+```
 
 # TODO
 
