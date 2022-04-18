@@ -1,9 +1,10 @@
 plugins {
+	id "com.graphql_java_generator.graphql-gradle-plugin" version "1.18.2"
 	id 'java'
 }
 
 group = 'io.camunda'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.2-SNAPSHOT'
 sourceCompatibility = '11'
 
 repositories {
@@ -16,9 +17,32 @@ dependencies {
 	
 	implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.1'
 	
+	implementation "com.graphql-java-generator:graphql-java-client-dependencies:1.18.2"
+	
 	testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+// The line below makes the GraphQL plugin be executed before Java compiles, so that all sources are generated on time
+compileJava.dependsOn generateClientCode
+processResources.dependsOn generateClientCode
+
+// The line below adds the generated sources as a java source folder in the IDE
+sourceSets.main.java.srcDirs += './build/generated/sources/graphqlGradlePlugin'
+sourceSets.main.java.srcDirs += './build/generated/resources/graphqlGradlePlugin'
+
+generateClientCodeConf {
+	packageName = 'io.camunda.tasklist.client'
+	customScalars = [ [
+			graphQLTypeName: "Date",
+			javaType: "java.util.Date",
+			graphQLScalarTypeStaticField: "com.graphql_java_generator.customscalars.GraphQLScalarTypeDate.Date"
+	] ]
+
+	// The parameters below change the 1.x default behavior. They are set to respect the default behavior of the future 2.x versions
+	generateDeprecatedRequestResponse = false
+	separateUtilityClasses = true
 }
