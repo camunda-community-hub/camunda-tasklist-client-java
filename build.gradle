@@ -1,6 +1,6 @@
 plugins {
-	id "com.graphql_java_generator.graphql-gradle-plugin" version "1.18.2"
-	id 'java'
+    id("com.apollographql.apollo3").version("3.2.1")
+    id 'java'
 }
 
 group = 'io.camunda'
@@ -17,8 +17,11 @@ dependencies {
 	
 	implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.1'
 	
-	implementation "com.graphql-java-generator:graphql-java-client-dependencies:1.18.2"
-	
+	implementation("com.apollographql.apollo3:apollo-runtime:3.2.1")
+    implementation("com.apollographql.apollo3:apollo-api:3.2.1")
+    implementation("com.apollographql.apollo3:apollo-ast:3.2.1")
+    implementation 'com.apollographql.apollo3:apollo-rx3-support:3.2.1'
+    
 	testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 }
 
@@ -27,13 +30,18 @@ tasks.named('test') {
 }
 
 // The line below makes the GraphQL plugin be executed before Java compiles, so that all sources are generated on time
-compileJava.dependsOn generateClientCode
-processResources.dependsOn generateClientCode
+//compileJava.dependsOn generateServiceApolloSources
+//processResources.dependsOn generateServiceApolloSources
 
 // The line below adds the generated sources as a java source folder in the IDE
-sourceSets.main.java.srcDirs += './build/generated/sources/graphqlGradlePlugin'
-sourceSets.main.java.srcDirs += './build/generated/resources/graphqlGradlePlugin'
+//sourceSets.main.java.srcDirs += '/build/generated/sources/graphqlGradlePlugin'
+//sourceSets.main.java.srcDirs += '/build/generated/resources/graphqlGradlePlugin'
 
+apollo {
+	generateKotlinModels.set(false)
+    packageName.set("io.camunda.tasklist.client")
+}
+/*
 generateClientCodeConf {
 	packageName = 'io.camunda.tasklist.client'
 	customScalars = [ [
@@ -46,3 +54,4 @@ generateClientCodeConf {
 	generateDeprecatedRequestResponse = false
 	separateUtilityClasses = true
 }
+*/

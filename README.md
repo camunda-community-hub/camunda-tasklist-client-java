@@ -10,13 +10,18 @@ This project is designed to simplify communication between a java backend and th
 Simply build a CamundaTaskListClient that takes an authentication and the tasklist url as parameters.
 
 ```
-SimpleAuthentication sa = new SimpleAuthentication("demo", "demo", "http://localhost:8081");
-CamundaTaskListClient client = new CamundaTaskListClient.Builder().authentication(sa)
-	taskListUrl("http://localhost:8081").build();
-
-
-client.getTasks(true, "demo", true, 50);
-client.unclaim("506493039354");
+  CamundaTaskListClient client = new CamundaTaskListClient.Builder().taskListUrl("http://localhost:8081").authentication(new SimpleAuthentication("demo", "demo", "http://localhost:8081")).build();
+  List<Task> tasks = client.getTasks(true, "demo", null, null);
+  for(Task task : tasks) {
+    client.unclaim(task.id);
+  }
+  tasks = client.getTasks(false, null, null, null);
+  for(Task task : tasks) {
+    client.claim(task.id);
+  }
+  for(Task task : tasks) {
+    client.completeTask(task.id, Map.of("toto", "toto"));
+  }
 ```
 
 To connect to the **SaaS** TaskList, you need to use the **SaasAuthentication** rather than the SimpleAuthentication. The SaaSAuthentication requires the ClientId and SecretId
