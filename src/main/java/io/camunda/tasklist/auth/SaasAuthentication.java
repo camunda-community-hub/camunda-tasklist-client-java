@@ -8,6 +8,7 @@ import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.core5.http.io.entity.StringEntity;
 
+import com.apollographql.apollo3.ApolloClient;
 import com.apollographql.apollo3.api.http.HttpHeader;
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -24,7 +25,7 @@ public class SaasAuthentication implements AuthInterface {
 		this.clientSecret = clientSecret;
 	}
 	@Override
-	public HttpHeader getHeader() throws TaskListException {
+	public void authenticate(ApolloClient client) throws TaskListException {
 
 		HttpPost httpPost = new HttpPost("https://login.cloud.camunda.io/oauth/token");
 		httpPost.addHeader("Content-Type", "application/json");
@@ -36,7 +37,8 @@ public class SaasAuthentication implements AuthInterface {
 			try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
 				JsonNode responseBody = JsonUtils.toJsonNode(response.getEntity().getContent());
 				String token = responseBody.get("access_token").asText();
-				return new HttpHeader("Authorization", "Bearer "+token);
+				client.getHttpHeaders().clear();
+				client.getHttpHeaders().add(new HttpHeader("Authorization", "Bearer "+token));
 			}
 		} catch(IOException e) {
 			throw new TaskListException(e);

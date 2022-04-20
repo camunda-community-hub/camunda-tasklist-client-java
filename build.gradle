@@ -8,50 +8,28 @@ version = '0.0.2-SNAPSHOT'
 sourceCompatibility = '11'
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	implementation 'org.apache.httpcomponents.client5:httpclient5'
-	implementation 'org.apache.httpcomponents.client5:httpclient5-fluent:5.1.3'
+    implementation 'org.apache.httpcomponents.client5:httpclient5'
+    implementation 'org.apache.httpcomponents.client5:httpclient5-fluent:5.1.3'
 	
-	implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.1'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.1'
 	
-	implementation("com.apollographql.apollo3:apollo-runtime:3.2.1")
+    implementation("com.apollographql.apollo3:apollo-runtime:3.2.1")
     implementation("com.apollographql.apollo3:apollo-api:3.2.1")
     implementation("com.apollographql.apollo3:apollo-ast:3.2.1")
     implementation 'com.apollographql.apollo3:apollo-rx3-support:3.2.1'
     
-	testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
-
-// The line below makes the GraphQL plugin be executed before Java compiles, so that all sources are generated on time
-//compileJava.dependsOn generateServiceApolloSources
-//processResources.dependsOn generateServiceApolloSources
-
-// The line below adds the generated sources as a java source folder in the IDE
-//sourceSets.main.java.srcDirs += '/build/generated/sources/graphqlGradlePlugin'
-//sourceSets.main.java.srcDirs += '/build/generated/resources/graphqlGradlePlugin'
 
 apollo {
-	generateKotlinModels.set(false)
+    generateKotlinModels.set(false)
     packageName.set("io.camunda.tasklist.client")
 }
-/*
-generateClientCodeConf {
-	packageName = 'io.camunda.tasklist.client'
-	customScalars = [ [
-			graphQLTypeName: "Date",
-			javaType: "java.util.Date",
-			graphQLScalarTypeStaticField: "com.graphql_java_generator.customscalars.GraphQLScalarTypeDate.Date"
-	] ]
-
-	// The parameters below change the 1.x default behavior. They are set to respect the default behavior of the future 2.x versions
-	generateDeprecatedRequestResponse = false
-	separateUtilityClasses = true
-}
-*/

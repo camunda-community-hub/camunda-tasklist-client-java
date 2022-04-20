@@ -13,6 +13,7 @@ import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.http.ProtocolException;
 import org.apache.hc.core5.http.message.BasicNameValuePair;
 
+import com.apollographql.apollo3.ApolloClient;
 import com.apollographql.apollo3.api.http.HttpHeader;
 
 import io.camunda.tasklist.exception.TaskListException;
@@ -37,7 +38,7 @@ public class SimpleAuthentication implements AuthInterface {
 	}
 
 	@Override
-	public HttpHeader getHeader() throws TaskListException {
+	public void authenticate(ApolloClient client) throws TaskListException {
 
 		HttpPost httpPost = new HttpPost(taskListUrl+"/api/login");
 
@@ -49,7 +50,8 @@ public class SimpleAuthentication implements AuthInterface {
 		try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
 			try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
 				String cookie = response.getHeader("Set-Cookie").getValue();
-				return new HttpHeader("Cookie", cookie);
+				client.getHttpHeaders().clear();
+				client.getHttpHeaders().add(new HttpHeader("Cookie", cookie));
 			}
 		} catch(IOException | ProtocolException e) {
 			throw new TaskListException(e);
