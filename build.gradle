@@ -1,10 +1,11 @@
 plugins {
     id("com.apollographql.apollo3").version("3.2.1")
+    id("com.github.johnrengelman.shadow") version "7.0.0"
     id 'java'
 }
 
 group = 'io.camunda'
-version = '0.0.2-SNAPSHOT'
+version = '0.0.3-SNAPSHOT'
 sourceCompatibility = '11'
 
 repositories {
@@ -25,6 +26,7 @@ dependencies {
     implementation "com.apollographql.apollo3:apollo-rx3-support:${apolloVersion}"
     
     testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+
 }
 
 tasks.named('test') {

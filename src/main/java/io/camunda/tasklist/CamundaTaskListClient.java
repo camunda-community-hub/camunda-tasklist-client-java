@@ -21,6 +21,7 @@ import io.camunda.tasklist.client.GetTasksWithVariableQuery;
 import io.camunda.tasklist.client.UnclaimTaskMutation;
 import io.camunda.tasklist.client.type.VariableInput;
 import io.camunda.tasklist.dto.Task;
+import io.camunda.tasklist.dto.TaskState;
 import io.camunda.tasklist.exception.TaskListException;
 import io.camunda.tasklist.util.ApolloUtils;
 
@@ -51,26 +52,28 @@ public class CamundaTaskListClient {
 		return ApolloUtils.toTask(response.data.completeTask);
 	}
 
-	public List<Task> getTasks(Boolean assigned, String assigneeId, Integer pageSize)
+	public List<Task> getTasks(Boolean assigned, String assigneeId, TaskState state, Integer pageSize)
 			throws TaskListException {
 
 		Optional<String> optAssignee = ApolloUtils.optional(assigneeId);
 		Optional<Boolean> optAssigned = ApolloUtils.optional(assigned);
 		Optional<Integer> optPageSize = ApolloUtils.optional(pageSize);
+		Optional<io.camunda.tasklist.client.type.TaskState> optState = ApolloUtils.optional(state);
 
 		ApolloCall<GetTasksQuery.Data> queryCall = apolloClient
-				.query(new GetTasksQuery(optAssignee, optAssigned, null, optPageSize, null, null, null));
+				.query(new GetTasksQuery(optAssignee, optAssigned, optState, optPageSize, null, null, null));
 		ApolloResponse<GetTasksQuery.Data> response = execute(queryCall);
 
 		return ApolloUtils.toTasks(response.data.tasks);
 	}
 
-	public List<Task> getTasksWithVariables(Boolean assigned, String assigneeId, Integer pageSize)
+	public List<Task> getTasksWithVariables(Boolean assigned, String assigneeId, TaskState state, Integer pageSize)
 			throws TaskListException {
 
 		Optional<String> optAssignee = ApolloUtils.optional(assigneeId);
 		Optional<Boolean> optAssigned = ApolloUtils.optional(assigned);
 		Optional<Integer> optPageSize = ApolloUtils.optional(pageSize);
+		Optional<io.camunda.tasklist.client.type.TaskState> optState = ApolloUtils.optional(state);
 
 		ApolloCall<GetTasksWithVariableQuery.Data> queryCall = apolloClient
 				.query(new GetTasksWithVariableQuery(optAssignee, optAssigned, null, optPageSize, null, null, null));
