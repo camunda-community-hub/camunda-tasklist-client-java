@@ -10,13 +10,18 @@ This project is designed to simplify communication between a java backend and th
 Simply build a CamundaTaskListClient that takes an authentication and the tasklist url as parameters.
 
 ```
-SimpleAuthentication sa = new SimpleAuthentication("demo", "demo", "http://localhost:8081");
-CamundaTaskListClient client = new CamundaTaskListClient.Builder().authentication(sa)
-	taskListUrl("http://localhost:8081").build();
-
-
-client.getTasks(true, "demo", true, 50);
-client.unclaim("506493039354");
+  CamundaTaskListClient client = new CamundaTaskListClient.Builder().taskListUrl("http://localhost:8081").authentication(new SimpleAuthentication("demo", "demo", "http://localhost:8081")).build();
+  List<Task> tasks = client.getTasks(true, "demo", null);
+  for(Task task : tasks) {
+    client.unclaim(task.getId());
+  }
+  tasks = client.getTasks(false, null, null);
+  for(Task task : tasks) {
+    client.claim(task.getId());
+  }
+  for(Task task : tasks) {
+    client.completeTask(task.getId(), Map.of("toto", "toto"));
+  }
 ```
 
 To connect to the **SaaS** TaskList, you need to use the **SaasAuthentication** rather than the SimpleAuthentication. The SaaSAuthentication requires the ClientId and SecretId
@@ -27,10 +32,9 @@ To connect to the **SaaS** TaskList, you need to use the **SaasAuthentication** 
 		    .taskListUrl("https://bru-2.tasklist.camunda.io/757dbc30-5127-4bed-XXXX-XXXXXXXXXXXX").build();
 
 
-		client.getTasks(null, null, true, 50);
+		client.getTasks(null, null, 50);
 ```
 
 # TODO
 
 - Add a jwt keycloak auth
-- Manage graphql queries with a dedicated lib
