@@ -39,6 +39,20 @@ query GetTasks($assignee: String, $assigned: Boolean, $state: TaskState, $pageSi
 		sortValues
 		isFirst
 		__typename
+	}
+}
+
+query GetTasksWithVariable($assignee: String, $assigned: Boolean, $state: TaskState, $pageSize: Int, $searchAfter: [String!], $searchBefore: [String!], $searchAfterOrEqual: [String!]) {
+	tasks(query: {assignee: $assignee, assigned: $assigned, state: $state, pageSize: $pageSize, searchAfter: $searchAfter, searchBefore: $searchBefore, searchAfterOrEqual: $searchAfterOrEqual}) {
+		id
+		name
+		processName
+		assignee
+		creationTime
+		taskState
+		sortValues
+		isFirst
+		__typename
 		variables {
 			id
 			name

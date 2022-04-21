@@ -15,14 +15,12 @@ import com.apollographql.apollo3.rx3.Rx3Apollo;
 
 import io.camunda.tasklist.auth.AuthInterface;
 import io.camunda.tasklist.client.ClaimTaskMutation;
-import io.camunda.tasklist.client.ClaimTaskMutation.ClaimTask;
 import io.camunda.tasklist.client.CompleteTaskMutation;
-import io.camunda.tasklist.client.CompleteTaskMutation.CompleteTask;
 import io.camunda.tasklist.client.GetTasksQuery;
-import io.camunda.tasklist.client.GetTasksQuery.Task;
+import io.camunda.tasklist.client.GetTasksWithVariableQuery;
 import io.camunda.tasklist.client.UnclaimTaskMutation;
-import io.camunda.tasklist.client.UnclaimTaskMutation.UnclaimTask;
 import io.camunda.tasklist.client.type.VariableInput;
+import io.camunda.tasklist.dto.Task;
 import io.camunda.tasklist.exception.TaskListException;
 import io.camunda.tasklist.util.ApolloUtils;
 
@@ -32,38 +30,54 @@ public class CamundaTaskListClient {
 
 	private ApolloClient apolloClient;
 
-	public UnclaimTask unclaim(String taskId) throws TaskListException {
+	public Task unclaim(String taskId) throws TaskListException {
 		ApolloCall<UnclaimTaskMutation.Data> unclaimCall = apolloClient.mutation(new UnclaimTaskMutation(taskId));
 		ApolloResponse<UnclaimTaskMutation.Data> response = execute(unclaimCall);
-		return response.data.unclaimTask;
+		return ApolloUtils.toTask(response.data.unclaimTask);
 	}
 
-	public ClaimTask claim(String taskId) throws TaskListException {
+	public Task claim(String taskId) throws TaskListException {
 		ApolloCall<ClaimTaskMutation.Data> claimCall = apolloClient.mutation(new ClaimTaskMutation(taskId));
 		ApolloResponse<ClaimTaskMutation.Data> response = execute(claimCall);
-		return response.data.claimTask;
+		return ApolloUtils.toTask(response.data.claimTask);
 
 	}
 
-	public CompleteTask completeTask(String taskId, Map<String, Object> variablesMap) throws TaskListException {
+	public Task completeTask(String taskId, Map<String, Object> variablesMap) throws TaskListException {
 
-		ApolloCall<CompleteTaskMutation.Data> completeTaskCall = apolloClient.mutation(new CompleteTaskMutation(taskId, toVariableInput(variablesMap)));
+		ApolloCall<CompleteTaskMutation.Data> completeTaskCall = apolloClient
+				.mutation(new CompleteTaskMutation(taskId, toVariableInput(variablesMap)));
 		ApolloResponse<CompleteTaskMutation.Data> response = execute(completeTaskCall);
-		return response.data.completeTask;
+		return ApolloUtils.toTask(response.data.completeTask);
 	}
 
-	public List<Task> getTasks(Boolean assigned, String assigneeId, Boolean variables, Integer pageSize) throws TaskListException {
+	public List<Task> getTasks(Boolean assigned, String assigneeId, Integer pageSize)
+			throws TaskListException {
 
 		Optional<String> optAssignee = ApolloUtils.optional(assigneeId);
 		Optional<Boolean> optAssigned = ApolloUtils.optional(assigned);
 		Optional<Integer> optPageSize = ApolloUtils.optional(pageSize);
 
-		ApolloCall<GetTasksQuery.Data> queryCall = apolloClient.query(new GetTasksQuery(optAssignee, optAssigned, null, optPageSize, null, null, null));
+		ApolloCall<GetTasksQuery.Data> queryCall = apolloClient
+				.query(new GetTasksQuery(optAssignee, optAssigned, null, optPageSize, null, null, null));
 		ApolloResponse<GetTasksQuery.Data> response = execute(queryCall);
 
-		return response.data.tasks;
+		return ApolloUtils.toTasks(response.data.tasks);
 	}
 
+	public List<Task> getTasksWithVariables(Boolean assigned, String assigneeId, Integer pageSize)
+			throws TaskListException {
+
+		Optional<String> optAssignee = ApolloUtils.optional(assigneeId);
+		Optional<Boolean> optAssigned = ApolloUtils.optional(assigned);
+		Optional<Integer> optPageSize = ApolloUtils.optional(pageSize);
+
+		ApolloCall<GetTasksWithVariableQuery.Data> queryCall = apolloClient
+				.query(new GetTasksWithVariableQuery(optAssignee, optAssigned, null, optPageSize, null, null, null));
+		ApolloResponse<GetTasksWithVariableQuery.Data> response = execute(queryCall);
+
+		return ApolloUtils.toTasks(response.data.tasks);
+	}
 
 	private <T extends Operation.Data> ApolloResponse<T> execute(ApolloCall<T> call) throws TaskListException {
 		ApolloResponse<T> result = null;
@@ -79,13 +93,11 @@ public class CamundaTaskListClient {
 				}
 			}
 		}
-		if (result==null) {
+		if (result == null) {
 			return null;
 		}
 		if (result.hasErrors()) {
-			String errorString = result.errors.stream()
-					.map( e -> e.toString() )
-					.collect( Collectors.joining( "," ) );
+			String errorString = result.errors.stream().map(e -> e.toString()).collect(Collectors.joining(","));
 			throw new TaskListException(errorString);
 		}
 		return result;
@@ -93,9 +105,9 @@ public class CamundaTaskListClient {
 
 	private List<VariableInput> toVariableInput(Map<String, Object> variablesMap) {
 		List<VariableInput> variables = new ArrayList<>();
-		for(Map.Entry<String, Object> entry : variablesMap.entrySet()) {
+		for (Map.Entry<String, Object> entry : variablesMap.entrySet()) {
 			if (entry.getValue() instanceof String) {
-				variables.add(new VariableInput(entry.getKey(), '"'+String.valueOf(entry.getValue())+'"'));
+				variables.add(new VariableInput(entry.getKey(), '"' + String.valueOf(entry.getValue()) + '"'));
 			} else {
 				variables.add(new VariableInput(entry.getKey(), String.valueOf(entry.getValue())));
 			}
@@ -124,9 +136,10 @@ public class CamundaTaskListClient {
 		}
 
 		public CamundaTaskListClient build() throws TaskListException {
-			CamundaTaskListClient client =  new CamundaTaskListClient();
+			CamundaTaskListClient client = new CamundaTaskListClient();
 			client.authentication = authentication;
-			client.apolloClient = new ApolloClient.Builder().httpServerUrl(taskListUrl+"/graphql").addHttpHeader("", "").build();      
+			client.apolloClient = new ApolloClient.Builder().httpServerUrl(taskListUrl + "/graphql")
+					.addHttpHeader("", "").build();
 			authentication.authenticate(client.apolloClient);
 			return client;
 		}
