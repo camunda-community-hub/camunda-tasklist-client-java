@@ -76,7 +76,7 @@ public class CamundaTaskListClient {
 		Optional<io.camunda.tasklist.client.type.TaskState> optState = ApolloUtils.optional(state);
 
 		ApolloCall<GetTasksWithVariableQuery.Data> queryCall = apolloClient
-				.query(new GetTasksWithVariableQuery(optAssignee, optAssigned, null, optPageSize, null, null, null));
+				.query(new GetTasksWithVariableQuery(optAssignee, optAssigned, optState, optPageSize, null, null, null));
 		ApolloResponse<GetTasksWithVariableQuery.Data> response = execute(queryCall);
 
 		return ApolloUtils.toTasks(response.data.tasks);
