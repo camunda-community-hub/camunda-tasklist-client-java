@@ -11,11 +11,11 @@ Simply build a CamundaTaskListClient that takes an authentication and the taskli
 
 ```
   CamundaTaskListClient client = new CamundaTaskListClient.Builder().taskListUrl("http://localhost:8081").authentication(new SimpleAuthentication("demo", "demo", "http://localhost:8081")).build();
-  List<Task> tasks = client.getTasks(true, "demo", null);
+  List<Task> tasks = client.getTasks(true, "demo", TaskState.CREATED, null);
   for(Task task : tasks) {
     client.unclaim(task.getId());
   }
-  tasks = client.getTasks(false, null, null);
+  tasks = client.getTasks(false, null, null, null);
   for(Task task : tasks) {
     client.claim(task.getId());
   }
@@ -32,9 +32,15 @@ To connect to the **SaaS** TaskList, you need to use the **SaasAuthentication** 
 		    .taskListUrl("https://bru-2.tasklist.camunda.io/757dbc30-5127-4bed-XXXX-XXXXXXXXXXXX").build();
 
 
-		client.getTasks(null, null, 50);
+		client.getTasks(null, null, TaskState.CREATED, 50);
 ```
 
+# BUILD
+To build a jar with all dependencies, please use the shadowJar goal 
+
+```
+gradlew shadowJar
+```
 # TODO
 
 - Add a jwt keycloak auth

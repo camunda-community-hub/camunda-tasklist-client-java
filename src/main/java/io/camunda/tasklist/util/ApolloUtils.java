@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.camunda.tasklist.dto.Task;
+import io.camunda.tasklist.dto.TaskState;
 import io.camunda.tasklist.exception.TaskListException;
 
 public class ApolloUtils {
@@ -25,6 +26,9 @@ public class ApolloUtils {
 	}
 	public static Optional<Integer> optional(Integer value) {
 		return value==null ? null : new Optional.Present<Integer>(value);
+	}
+	public static Optional<io.camunda.tasklist.client.type.TaskState> optional(TaskState value) {
+		return value==null ? null : new Optional.Present<io.camunda.tasklist.client.type.TaskState>(io.camunda.tasklist.client.type.TaskState.safeValueOf(value.getRawValue()));
 	}
 	
 	public static Task toTask(Object apolloTask) throws TaskListException {
