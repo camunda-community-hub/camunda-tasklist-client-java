@@ -4,8 +4,8 @@ plugins {
     id 'java'
 }
 
-group = 'io.camunda'
-version = '0.0.3-SNAPSHOT'
+group = 'org.camunda.community'
+version = '0.0.4-SNAPSHOT'
 sourceCompatibility = '11'
 
 repositories {
