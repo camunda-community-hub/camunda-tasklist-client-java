@@ -17,31 +17,33 @@ import io.camunda.tasklist.util.JsonUtils;
 
 public class SaasAuthentication implements AuthInterface {
 
-	private String clientId;
-	private String clientSecret;
+    private String clientId;
+    private String clientSecret;
 
-	public SaasAuthentication(String clientId, String clientSecret) {
-		this.clientId = clientId;
-		this.clientSecret = clientSecret;
-	}
-	@Override
-	public void authenticate(ApolloClient client) throws TaskListException {
+    public SaasAuthentication(String clientId, String clientSecret) {
+        this.clientId = clientId;
+        this.clientSecret = clientSecret;
+    }
 
-		HttpPost httpPost = new HttpPost("https://login.cloud.camunda.io/oauth/token");
-		httpPost.addHeader("Content-Type", "application/json");
+    @Override
+    public void authenticate(ApolloClient client) throws TaskListException {
 
-		String data = "{\"grant_type\":\"client_credentials\", \"audience\":\"tasklist.camunda.io\", \"client_id\": \""+clientId+"\", \"client_secret\":\""+ clientSecret+"\"}";
-		httpPost.setEntity(new StringEntity(data));
+        HttpPost httpPost = new HttpPost("https://login.cloud.camunda.io/oauth/token");
+        httpPost.addHeader("Content-Type", "application/json");
 
-		try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-			try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
-				JsonNode responseBody = JsonUtils.toJsonNode(response.getEntity().getContent());
-				String token = responseBody.get("access_token").asText();
-				client.getHttpHeaders().clear();
-				client.getHttpHeaders().add(new HttpHeader("Authorization", "Bearer "+token));
-			}
-		} catch(IOException e) {
-			throw new TaskListException(e);
-		}
-	}
+        String data = "{\"grant_type\":\"client_credentials\", \"audience\":\"tasklist.camunda.io\", \"client_id\": \""
+                + clientId + "\", \"client_secret\":\"" + clientSecret + "\"}";
+        httpPost.setEntity(new StringEntity(data));
+
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
+                JsonNode responseBody = JsonUtils.toJsonNode(response.getEntity().getContent());
+                String token = responseBody.get("access_token").asText();
+                client.getHttpHeaders().clear();
+                client.getHttpHeaders().add(new HttpHeader("Authorization", "Bearer " + token));
+            }
+        } catch (IOException e) {
+            throw new TaskListException(e);
+        }
+    }
 }
