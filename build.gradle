@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'org.camunda.community'
-version = '0.0.6-SNAPSHOT'
+version = '0.0.7-SNAPSHOT'
 sourceCompatibility = '11'
 
 repositories {
@@ -39,10 +39,39 @@ apollo {
     packageName.set("io.camunda.tasklist.client")
 }
 
+shadowJar {
+    archiveClassifier.set("")
+}
+
 publishing {
   publications {
     shadow(MavenPublication) { publication ->
       project.shadow.component(publication)
+      
+      artifactId = "camunda-tasklist-client-java"
+
+      pom {
+        name = "Camunda TaskList Client Java"
+        description = "Java client for the Tasklist API of Camunda Platform 8"
+        url = "https://github.com/camunda-community-hub/camunda-tasklist-client-java"
+        licenses {
+          license {
+            name = "The Apache License, Version 2.0"
+            url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+          }
+        }
+        developers {
+          developer {
+            name = "christophe.dame"
+            email = "christophe.dame@camunda.com"
+          }
+        }
+        scm {
+          connection = "scm:git:git@github.com:camunda-community-hub/camunda-tasklist-client-java.git"
+          developerConnection = "scm:git:git@github.com:camunda-community-hub/camunda-tasklist-client-java.git"
+          url = "https://github.com/camunda-community-hub/camunda-tasklist-client-java"
+        }
+      }
     }
   }
 }
