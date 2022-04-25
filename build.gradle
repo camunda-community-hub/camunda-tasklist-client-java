@@ -1,12 +1,11 @@
 plugins {
     id("com.apollographql.apollo3").version("3.2.1")
     id("com.github.johnrengelman.shadow") version "7.0.0"
-    id("maven-publish")
     id 'java'
 }
 
 group = 'org.camunda.community'
-version = '0.0.4-SNAPSHOT'
+version = '0.0.5-SNAPSHOT'
 sourceCompatibility = '11'
 
 repositories {
@@ -37,21 +36,4 @@ tasks.named('test') {
 apollo {
     generateKotlinModels.set(false)
     packageName.set("io.camunda.tasklist.client")
-}
-
-publishing {
-    publications {
-       shadow(MavenPublication) { publication ->
-           project.shadow.component(publication)
-       }
-    }
-    repositories {
-        maven {
-            url = version.endsWith('SNAPSHOT') ? 'https://oss.sonatype.org/content/repositories/snapshots/' : 'https://oss.sonatype.org/service/local/staging/deploy/maven2'
-            credentials {
-                username 'christophe.dame'
-                password 'SApU9a6@$g$SElPFR5}L'
-            }
-        }
-    }
 }
