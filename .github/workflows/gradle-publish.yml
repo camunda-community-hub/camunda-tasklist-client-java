@@ -33,8 +33,14 @@ jobs:
       uses: gradle/gradle-build-action@0d13054264b0bb894ded474f08ebb30921341cee
       with:
         arguments: shadowJar
+        
+    - name: debug
+      run: |
+        echo "${GITHUB_ACTOR} is publishing."
+        pwd
+        ls ./build/libs/
 
-    - name: Attach artifacts to GitHub Release (Release only)
+    - name: Attach artifacts to GitHub Release
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -42,7 +48,7 @@ jobs:
        upload_url: ${{ github.event.release.upload_url }}
        asset_path: ./build/libs/camunda-tasklist-client-java-${{ github.event.release.tag_name }}.jar
        asset_name: camunda-tasklist-client-java-${{ github.event.release.tag_name }}.jar
-       asset_content_type: application/zip
+       asset_content_type: application/octet-stream
        
     # The USERNAME and TOKEN need to correspond to the credentials environment variables used in
     # the publishing section of your build.gradle
