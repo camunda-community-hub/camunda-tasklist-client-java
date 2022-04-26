@@ -39,27 +39,16 @@ jobs:
         echo "${GITHUB_ACTOR} is publishing."
         pwd
         ls ./build/libs/
-        
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.PA_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        draft: false
-        prerelease: false
       
     - name: Attach artifacts to GitHub Release
       uses: actions/upload-release-asset@v1
       env:
-        GITHUB_TOKEN: ${{ secrets.PA_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
        upload_url: ${{ github.event.release.upload_url }}
        asset_path: ./build/libs/camunda-tasklist-client-java-${{ github.event.release.tag_name }}.jar
        asset_name: camunda-tasklist-client-java-${{ github.event.release.tag_name }}.jar
-       asset_content_type: application/octet-stream
+       asset_content_type: application/zip
        
     # The USERNAME and TOKEN need to correspond to the credentials environment variables used in
     # the publishing section of your build.gradle
