@@ -47,7 +47,7 @@ apollo {
 publishing {
   publications.withType(MavenPublication).all {
     pom {
-	  name = provider { "${groupId}:${artifactId}" }
+	  name = 'org.camunda.community:camunda-tasklist-client-java'
 	  description = "Java client for the Tasklist API of Camunda Platform 8"
 	  url = "https://github.com/camunda-community-hub/camunda-tasklist-client-java"
 	  licenses {
