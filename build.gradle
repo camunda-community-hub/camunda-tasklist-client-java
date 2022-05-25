@@ -91,5 +91,5 @@ signing {
     def signingKey = System.getenv("maven-gpg-key")
     def signingPassword = System.getenv("maven-gpg-passphrase")
     useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
-    sign(publishing.publications)
+    sign(publishing.publications.shadow)
 }
