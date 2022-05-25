@@ -57,6 +57,14 @@ jobs:
       with:
         arguments: publish
       env:
-        USERNAME: ${{ secrets.USERNAME }}
-        TOKEN: ${{ secrets.PASSWORD }}
+        release-version: ${{ github.event.release.tag_name }}
+        release-profile: community-action-maven-release
+        maven-url: s01.oss.sonatype.org
+        nexus-usr: ${{ secrets.NEXUS_USR }}
+        nexus-psw: ${{ secrets.NEXUS_PSW }}
+        maven-usr: ${{ secrets.MAVEN_CENTRAL_DEPLOYMENT_USR }}
+        maven-psw: ${{ secrets.MAVEN_CENTRAL_DEPLOYMENT_PSW }}
+        maven-gpg-passphrase: ${{ secrets.MAVEN_CENTRAL_GPG_SIGNING_KEY_PASSPHRASE }}
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+
 
