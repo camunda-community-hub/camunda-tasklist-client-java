@@ -47,7 +47,8 @@ jobs:
         release-version: ${{ github.event.release.tag_name }}
         release-profile: community-action-maven-release
         maven-url: s01.oss.sonatype.org
-        MAVEN_USERNAME: ${{ secrets.NEXUS_USR }}
+        MAVEN_USERNAME: ${{ secrets.MAVEN_CENTRAL_DEPLOYMENT_USR }}
+        MAVEN_PASSWORD: ${{ secrets.MAVEN_CENTRAL_DEPLOYMENT_PSW }}
         nexus-usr: ${{ secrets.NEXUS_USR }}
         nexus-psw: ${{ secrets.NEXUS_PSW }}
         maven-usr: ${{ secrets.MAVEN_CENTRAL_DEPLOYMENT_USR }}
