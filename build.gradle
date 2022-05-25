@@ -49,7 +49,7 @@ publishing {
     release(MavenPublication) {
       groupId = 'org.camunda.community'
       artifactId = 'camunda-tasklist-client-java'
-      from components.release
+      from components.java
       signing {
         useInMemoryPgpKeys(
           System.getenv("maven-gpg-keyid"),
