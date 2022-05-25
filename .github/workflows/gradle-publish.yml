@@ -39,25 +39,13 @@ jobs:
         echo "${GITHUB_ACTOR} is publishing."
         pwd
         ls ./build/libs/
-    - name: Deploy SNAPSHOT / Release
-      uses: camunda-community-hub/community-action-maven-release@v1
-      with:
-        release-version: ${{ github.event.release.tag_name }}
-        release-profile: community-action-maven-release
-        nexus-usr: ${{ secrets.NEXUS_USR }}
-        nexus-psw: ${{ secrets.NEXUS_PSW }}
-        maven-usr: ${{ secrets.MAVEN_CENTRAL_DEPLOYMENT_USR }}
-        maven-psw: ${{ secrets.MAVEN_CENTRAL_DEPLOYMENT_PSW }}
-        maven-url: oss.sonatype.org
-        maven-gpg-passphrase: ${{ secrets.MAVEN_CENTRAL_GPG_SIGNING_KEY_PASSPHRASE }}
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-    #- name: Publish with Gradle
-    #  run: ./gradlew publishToSonatype --no-daemon
-    #  env:
-    #    ORG_GRADLE_PROJECT_sonatypeUsername: ${{ secrets.MAVEN_CENTRAL_DEPLOYMENT_USR }}
-    #    ORG_GRADLE_PROJECT_sonatypePassword: ${{ secrets.MAVEN_CENTRAL_DEPLOYMENT_PSW }}
-    #    ORG_GRADLE_PROJECT_signingKey: ${{ secrets.MAVEN_CENTRAL_GPG_SIGNING_KEY_SEC }}
-    #    ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.MAVEN_CENTRAL_GPG_SIGNING_KEY_PASSPHRASE }}
+    - name: Publish with Gradle
+      run: ./gradlew publishToSonatype --no-daemon
+      env:
+        ORG_GRADLE_PROJECT_sonatypeUsername: ${{ secrets.MAVEN_CENTRAL_DEPLOYMENT_USR }}
+        ORG_GRADLE_PROJECT_sonatypePassword: ${{ secrets.MAVEN_CENTRAL_DEPLOYMENT_PSW }}
+        ORG_GRADLE_PROJECT_signingKey: ${{ secrets.MAVEN_CENTRAL_GPG_SIGNING_KEY_SEC }}
+        ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.MAVEN_CENTRAL_GPG_SIGNING_KEY_PASSPHRASE }}
 
     #- name: Publish
     #  uses: gradle/gradle-build-action@0d13054264b0bb894ded474f08ebb30921341cee
