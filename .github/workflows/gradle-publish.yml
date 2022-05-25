@@ -40,7 +40,9 @@ jobs:
         pwd
         ls ./build/libs/
     - name: Publish
-      run: ./gradlew publish -Psigning.keyId=${{secrets.MAVEN_CENTRAL_GPG_SIGNING_KEY_ID}} -Psigning.password=${{secrets.MAVEN_CENTRAL_GPG_SIGNING_KEY_PASSPHRASE}}
+      uses: gradle/wrapper-validation-action@e6e38bacfdf1a337459f332974bb2327a31aaf4b
+      with:
+        arguments: publish
       env:
         release-version: ${{ github.event.release.tag_name }}
         release-profile: community-action-maven-release
