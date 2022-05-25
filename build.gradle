@@ -3,6 +3,7 @@ plugins {
     id 'maven-publish'
     id 'java'
     id 'signing'
+    id('io.github.gradle-nexus.publish-plugin') version '1.1.0'
 }
 
 group = 'org.camunda.community'
@@ -39,49 +40,47 @@ apollo {
     packageName.set("io.camunda.tasklist.client")
 }
 java {
-	withJavadocJar()
-	withSourcesJar()
+    withJavadocJar()
+    withSourcesJar()
 }
+
+nexusPublishing {
+    repositories {
+        sonatype {  //only for users registered in Sonatype after 24 Feb 2021
+            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+        }
+    }
+}
+
 publishing {
-  publications.withType(MavenPublication).all {
-    pom {
-	  name = "org.camunda.community:camunda-tasklist-client-java"
-	  description = "Java client for the Tasklist API of Camunda Platform 8"
-	  url = "https://github.com/camunda-community-hub/camunda-tasklist-client-java"
-	  licenses {
-	    license {
-		  name = "The Apache License, Version 2.0"
-		  url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
-		}
-      }
-	  developers {
-	    developer {
-          name = "christophe.dame"
-		  email = "christophe.dame@camunda.com"
-		}
-      }
-	  scm {
-	    connection = "scm:git:git@github.com:camunda-community-hub/camunda-tasklist-client-java.git"
-		developerConnection = "scm:git:git@github.com:camunda-community-hub/camunda-tasklist-client-java.git"
-		url = "https://github.com/camunda-community-hub/camunda-tasklist-client-java"
-      }
-	}
-  }
-  repositories {
-    maven {
-      url = System.getenv("MAVEN_URL")
-      credentials {
-        username = System.getenv("MAVEN_USERNAME")
-        password = System.getenv("MAVEN_PASSWORD")
+  publications {
+    mavenJava(MavenPublication) {
+      from(components.java)
+        pom {
+          name = "org.camunda.community:camunda-tasklist-client-java"
+		  description = "Java client for the Tasklist API of Camunda Platform 8"
+		  url = "https://github.com/camunda-community-hub/camunda-tasklist-client-java"
+		  licenses {
+		    license {
+			  name = "The Apache License, Version 2.0"
+			  url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+			}
+	      }
+		  developers {
+		    developer {
+	          name = "christophe.dame"
+			  email = "christophe.dame@camunda.com"
+			}
+	      }
+		  scm {
+		    connection = "scm:git:git@github.com:camunda-community-hub/camunda-tasklist-client-java.git"
+			developerConnection = "scm:git:git@github.com:camunda-community-hub/camunda-tasklist-client-java.git"
+			url = "https://github.com/camunda-community-hub/camunda-tasklist-client-java"
+	      }
       }
     }
   }
-}
-
-pluginManager.withPlugin('java-library') {
-	publishing.publications.create('library', MavenPublication) {
-		from components.java
-	}
 }
 
 signing {
