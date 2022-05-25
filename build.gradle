@@ -57,7 +57,7 @@ java {
 nexusPublishing {
     repositories {
         sonatype {
-        	stagingProfileId.set("camundaTasklistClientProfileId")
+        	stagingProfileId.set("org.camunda.community")
             nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
             snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
         }
