@@ -50,15 +50,6 @@ publishing {
       groupId = 'org.camunda.community'
       artifactId = 'camunda-tasklist-client-java'
       from components.java
-      signing {
-        useInMemoryPgpKeys(
-          System.getenv("maven-gpg-keyid"),
-          System.getenv("maven-gpg-key"),
-          System.getenv("maven-gpg-passphrase")
-        )
-        sign publishing.publications.release
-		sign configurations.archives
-      }
       pom {
         name = "Camunda TaskList Client Java"
         description = "Java client for the Tasklist API of Camunda Platform 8"
