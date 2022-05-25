@@ -40,12 +40,13 @@ jobs:
         pwd
         ls ./build/libs/
     - name: Publish with Gradle
-        env:
-          ORG_GRADLE_PROJECT_sonatypePassword: ${{ secrets.MAVEN_CENTRAL_DEPLOYMENT_USR }}
-          ORG_GRADLE_PROJECT_sonatypeUsername: ${{ secrets.MAVEN_CENTRAL_DEPLOYMENT_PSW }}
-          ORG_GRADLE_PROJECT_signingKey: ${{ secrets.MAVEN_CENTRAL_GPG_SIGNING_KEY_SEC }}
-          ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.MAVEN_CENTRAL_GPG_SIGNING_KEY_PASSPHRASE }}
-        run: ./gradlew publishToSonatype --no-daemon
+      run: ./gradlew publishToSonatype --no-daemon
+      env:
+        ORG_GRADLE_PROJECT_sonatypePassword: ${{ secrets.MAVEN_CENTRAL_DEPLOYMENT_USR }}
+        ORG_GRADLE_PROJECT_sonatypeUsername: ${{ secrets.MAVEN_CENTRAL_DEPLOYMENT_PSW }}
+        ORG_GRADLE_PROJECT_signingKey: ${{ secrets.MAVEN_CENTRAL_GPG_SIGNING_KEY_SEC }}
+        ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.MAVEN_CENTRAL_GPG_SIGNING_KEY_PASSPHRASE }}
+
     #- name: Publish
     #  uses: gradle/gradle-build-action@0d13054264b0bb894ded474f08ebb30921341cee
     #  with:
