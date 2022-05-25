@@ -51,7 +51,7 @@ publishing {
       artifactId = 'camunda-tasklist-client-java'
       from components.java
       artifact sourceJar
-      
+	  
       pom {
         name = "Camunda TaskList Client Java"
         description = "Java client for the Tasklist API of Camunda Platform 8"
