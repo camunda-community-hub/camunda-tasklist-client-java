@@ -57,7 +57,7 @@ java {
 nexusPublishing {
     repositories {
         sonatype {
-        	stagingProfileId.set("org.camunda.community")
+        	stagingProfileId.set("oss-maven-central")
             nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
             snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
         }
