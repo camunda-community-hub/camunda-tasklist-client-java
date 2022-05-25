@@ -43,14 +43,6 @@ shadowJar {
     archiveClassifier.set("")
 }
 
-signing {
-    def signingKeyId = System.getenv("maven-gpg-keyid")
-    def signingKey = System.getenv("maven-gpg-key")
-    def signingPassword = System.getenv("maven-gpg-passphrase")
-    useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
-    sign(publishing.publications)
-}
-
 publishing {
   publications {
     shadow(MavenPublication) { publication ->
@@ -91,4 +83,12 @@ publishing {
       }
     }
   }
+}
+
+signing {
+    def signingKeyId = System.getenv("maven-gpg-keyid")
+    def signingKey = System.getenv("maven-gpg-key")
+    def signingPassword = System.getenv("maven-gpg-passphrase")
+    useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+    sign(publishing.publications)
 }
