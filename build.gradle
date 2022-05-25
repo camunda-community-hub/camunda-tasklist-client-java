@@ -39,6 +39,17 @@ apollo {
     generateKotlinModels.set(false)
     packageName.set("io.camunda.tasklist.client")
 }
+task sourceJar(type: Jar) {
+    outputs.cacheIf { true }
+    from sourceSets.main.allJava
+    archiveClassifier = 'sources'
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    outputs.cacheIf { true }
+    from javadoc.destinationDir
+    archiveClassifier = 'javadoc'
+}
 java {
     withJavadocJar()
     withSourcesJar()
