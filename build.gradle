@@ -46,12 +46,19 @@ apollo {
 
 publishing {
   publications {
-    maven(MavenPublication) {
+    release(MavenPublication) {
       groupId = 'org.camunda.community'
       artifactId = 'camunda-tasklist-client-java'
-      from components.java
-      artifact sourceJar
-	  
+      from components.release
+      signing {
+        useInMemoryPgpKeys(
+          System.getenv("maven-gpg-keyid"),
+          System.getenv("maven-gpg-key"),
+          System.getenv("maven-gpg-passphrase")
+        )
+        sign publishing.publications.release
+		sign configurations.archives
+      }
       pom {
         name = "Camunda TaskList Client Java"
         description = "Java client for the Tasklist API of Camunda Platform 8"
@@ -85,12 +92,4 @@ publishing {
       }
     }
   }
-}
-
-signing {
-    def signingKeyId = System.getenv("maven-gpg-keyid")
-    def signingKey = System.getenv("maven-gpg-key")
-    def signingPassword = System.getenv("maven-gpg-passphrase")
-    useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
-    sign(publishing.publications.maven)
 }
