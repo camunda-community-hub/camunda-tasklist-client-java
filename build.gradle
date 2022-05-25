@@ -76,10 +76,10 @@ publishing {
   }
   repositories {
     maven {
-      url = System.getenv("maven-url")
+      url = System.getenv("MAVEN_URL")
       credentials {
         username = System.getenv("MAVEN_USERNAME")
-        password = System.getenv(" maven-psw")
+        password = System.getenv("MAVEN_PASSWORD")
       }
     }
   }
