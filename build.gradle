@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'org.camunda.community'
-version = '0.0.10'
+version = '0.0.11'
 sourceCompatibility = '11'
 
 repositories {
@@ -47,7 +47,7 @@ apollo {
 publishing {
   publications.withType(MavenPublication).all {
     pom {
-	  name = 'org.camunda.community:camunda-tasklist-client-java'
+	  name = "org.camunda.community:camunda-tasklist-client-java"
 	  description = "Java client for the Tasklist API of Camunda Platform 8"
 	  url = "https://github.com/camunda-community-hub/camunda-tasklist-client-java"
 	  licenses {
@@ -78,4 +78,19 @@ publishing {
       }
     }
   }
+}
+
+pluginManager.withPlugin('java-library') {
+	publishing.publications.create('library', MavenPublication) {
+		from components.java
+	}
+}
+
+signing {
+	sign publishing.publications
+	
+	def signingKeyId = System.getenv("maven-gpg-keyid")
+	def signingKey = System.getenv("maven-gpg-key")
+	def signingPassword = System.getenv("maven-gpg-passphrase")
+	useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
 }
