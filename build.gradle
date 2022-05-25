@@ -45,42 +45,29 @@ apollo {
 }
 
 publishing {
-  publications {
-    release(MavenPublication) {
-      groupId = 'org.camunda.community'
-      artifactId = 'camunda-tasklist-client-java'
-      from components.java
-      pom {
-        name = "Camunda TaskList Client Java"
-        description = "Java client for the Tasklist API of Camunda Platform 8"
-        url = "https://github.com/camunda-community-hub/camunda-tasklist-client-java"
-        licenses {
-          license {
-            name = "The Apache License, Version 2.0"
-            url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
-          }
-        }
-        developers {
-          developer {
-            name = "christophe.dame"
-            email = "christophe.dame@camunda.com"
-          }
-        }
-        scm {
-          connection = "scm:git:git@github.com:camunda-community-hub/camunda-tasklist-client-java.git"
-          developerConnection = "scm:git:git@github.com:camunda-community-hub/camunda-tasklist-client-java.git"
-          url = "https://github.com/camunda-community-hub/camunda-tasklist-client-java"
-        }
+  publications.withType(MavenPublication).all {
+    pom {
+	  name = provider { "${groupId}:${artifactId}" }
+	  description = "Java client for the Tasklist API of Camunda Platform 8"
+	  url = "https://github.com/camunda-community-hub/camunda-tasklist-client-java"
+	  licenses {
+	    license {
+		  name = "The Apache License, Version 2.0"
+		  url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+		}
       }
-    }
-    signing {
-	  useInMemoryPgpKeys(
-	    System.getenv("maven-gpg-keyid"),
-		System.getenv("maven-gpg-key"),
-		System.getenv("maven-gpg-passphrase")
-      )
-	  sign publishing.publications.release
-    }
+	  developers {
+	    developer {
+          name = "christophe.dame"
+		  email = "christophe.dame@camunda.com"
+		}
+      }
+	  scm {
+	    connection = "scm:git:git@github.com:camunda-community-hub/camunda-tasklist-client-java.git"
+		developerConnection = "scm:git:git@github.com:camunda-community-hub/camunda-tasklist-client-java.git"
+		url = "https://github.com/camunda-community-hub/camunda-tasklist-client-java"
+      }
+	}
   }
   repositories {
     maven {
