@@ -1,6 +1,5 @@
 plugins {
     id("com.apollographql.apollo3").version("3.2.1")
-    id("com.github.johnrengelman.shadow") version "7.0.0"
     id 'maven-publish'
     id 'java'
     id 'signing'
@@ -12,6 +11,11 @@ sourceCompatibility = '11'
 
 repositories {
     mavenCentral()
+}
+
+task sourceJar(type: Jar) {
+  from sourceSets.main.allJava
+  archiveClassifier = "sources"
 }
 
 dependencies {
@@ -40,17 +44,14 @@ apollo {
     packageName.set("io.camunda.tasklist.client")
 }
 
-shadowJar {
-    archiveClassifier.set("")
-}
-
 publishing {
   publications {
-    shadow(MavenPublication) { publication ->
-      project.shadow.component(publication)
+    maven(MavenPublication) {
+      groupId = 'org.camunda.community'
+      artifactId = 'camunda-tasklist-client-java'
+      from components.java
+      artifact sourceJar
       
-      artifactId = "camunda-tasklist-client-java"
-
       pom {
         name = "Camunda TaskList Client Java"
         description = "Java client for the Tasklist API of Camunda Platform 8"
@@ -91,5 +92,5 @@ signing {
     def signingKey = System.getenv("maven-gpg-key")
     def signingPassword = System.getenv("maven-gpg-passphrase")
     useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
-    sign(publishing.publications.shadow)
+    sign(publishing.publications.maven)
 }
