@@ -66,10 +66,10 @@ nexusPublishing {
     }
 }
 
-//signing {
-//    useInMemoryPgpKeys(System.getenv("ORG_GRADLE_PROJECT_signingKey"), System.getenv("ORG_GRADLE_PROJECT_signingPassword"))
-//    sign(publishing.publications)
-//}
+signing {
+    useInMemoryPgpKeys(System.getenv("ORG_GRADLE_PROJECT_signingKey"), System.getenv("ORG_GRADLE_PROJECT_signingPassword"))
+    sign(publishing.publications)
+}
 
 publishing {
 //  repositories {
