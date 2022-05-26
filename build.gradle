@@ -81,6 +81,7 @@ publishing {
       pom {
         groupId = 'org.camunda.community'
         artifactId = 'camunda-tasklist-client-java'
+        packaging = 'jar'
         name = 'Camunda 8 Tasklist Java Client'
         description = "Java client for the Tasklist API of Camunda Platform 8"
         url = "https://github.com/camunda-community-hub/camunda-tasklist-client-java"
