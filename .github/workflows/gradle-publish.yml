@@ -39,6 +39,8 @@ jobs:
         echo "${GITHUB_ACTOR} is publishing."
         pwd
         ls ./build/libs/
+    - name: Import GPG keys
+      run: echo -e "${MAVEN_CENTRAL_GPG_SIGNING_KEY_SEC}\n\n${MAVEN_CENTRAL_GPG_SIGNING_KEY_PUB}" | base64 -d | gpg -q --import --no-tty --batch --yes --allow-secret-key-import
     - name: Publish with Gradle
       run: ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository -Prelease
       env:

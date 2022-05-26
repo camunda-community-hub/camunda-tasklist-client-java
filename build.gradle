@@ -98,10 +98,10 @@ publishing {
 
 signing {
     // switch to this and comment out the following line to test signing locally
-    // useGpgCmd()
-    def signingKeyId = findProperty("signingKeyId")
-    def signingKey = findProperty("signingKey")
-    def signingPassword = findProperty("signingPassword")
-    useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+    useGpgCmd()
+    //def signingKeyId = findProperty("signingKeyId")
+    //def signingKey = findProperty("signingKey")
+    //def signingPassword = findProperty("signingPassword")
+    //useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
     sign publishing.publications.mavenJava
 }
