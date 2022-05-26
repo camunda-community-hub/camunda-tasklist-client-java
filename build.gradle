@@ -69,6 +69,8 @@ publishing {
     mavenJava(MavenPublication) {
       from(components.java)
         pom {
+		  groupId project['group']
+            artifactId project['name']
           name = "org.camunda.community:camunda-tasklist-client-java"
 		  description = "Java client for the Tasklist API of Camunda Platform 8"
 		  url = "https://github.com/camunda-community-hub/camunda-tasklist-client-java"
@@ -92,13 +94,4 @@ publishing {
       }
     }
   }
-}
-
-signing {
-	sign publishing.publications
-	
-	def signingKeyId = System.getenv("maven-gpg-keyid")
-	def signingKey = System.getenv("maven-gpg-key")
-	def signingPassword = System.getenv("maven-gpg-passphrase")
-	useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
 }
