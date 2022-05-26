@@ -3,7 +3,7 @@ plugins {
     id 'maven-publish'
     id 'java'
     id 'signing'
-    id('io.github.gradle-nexus.publish-plugin') version '1.1.0'
+    //id('io.github.gradle-nexus.publish-plugin') version '1.1.0'
 }
 
 group = 'org.camunda.community'
@@ -48,31 +48,38 @@ task sourceJar(type: Jar) {
 task javadocJar(type: Jar, dependsOn: javadoc) {
     outputs.cacheIf { true }
     from javadoc.destinationDir
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     archiveClassifier = 'javadoc'
 }
 java {
     withSourcesJar()
 }
 
-nexusPublishing {
-    repositories {
-        sonatype {
-            stagingProfileId = "13992b29744076"
-            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
-            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
-        }
-    }
-}
+//nexusPublishing {
+//    repositories {
+//        sonatype {
+//            stagingProfileId = "13992b29744076"
+//            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+//            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+//        }
+//    }
+//}
 
 publishing {
+  repositories {
+
+    maven {
+      name = "OSSRH"
+      url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+      credentials {
+        username = System.getenv("OSSRH_USERNAME")
+        password = System.getenv("OSSRH_PASSWORD")
+      }
+    }
+  }
   publications {
     mavenJava(MavenPublication) {
       from(components.java)
-	  signatory {
-        keyId System.getenv("maven-gpg-keyid")
-		key System.getenv("maven-gpg-key")
-        password System.getenv("maven-gpg-passphrase")
-      }
       pom {
         groupId = 'org.camunda.community'
         artifactId = 'camunda-tasklist-client-java'
@@ -101,12 +108,19 @@ publishing {
   }
 }
 
-signing {
+//signing {
     // switch to this and comment out the following line to test signing locally
-    useGpgCmd()
+//    useGpgCmd()
     //def signingKeyId = findProperty("signingKeyId")
     //def signingKey = findProperty("signingKey")
     //def signingPassword = findProperty("signingPassword")
     //useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
-    sign publishing.publications.mavenJava
+//    sign publishing.publications.mavenJava
+//}
+
+signing {
+    val signingKey: String? by project
+    val signingPassword: String? by project
+    useInMemoryPgpKeys(signingKey, signingPassword)
+    sign(publishing.publications)
 }
