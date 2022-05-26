@@ -57,8 +57,8 @@ java {
 
 nexusPublishing {
   transitionCheckOptions {
-    maxRetries = 100
-    delayBetween = Duration.ofSeconds(5)
+    maxRetries.set(100)
+    delayBetween.set(Duration.ofSeconds(10))
   }
   repositories {
     sonatype {
