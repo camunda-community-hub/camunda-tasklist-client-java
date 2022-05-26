@@ -34,6 +34,15 @@ jobs:
       uses: gradle/gradle-build-action@0d13054264b0bb894ded474f08ebb30921341cee
       with:
         arguments: build
+    - name: Attach artifacts to GitHub Release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+       upload_url: ${{ github.event.release.upload_url }}
+       asset_path: ./build/libs/camunda-tasklist-client-java-${{ github.event.release.tag_name }}.jar
+       asset_name: camunda-tasklist-client-java-${{ github.event.release.tag_name }}.jar
+       asset_content_type: application/zip
     #- name: Publish
     #  uses: gradle/gradle-build-action@v1
     #  with:
@@ -48,7 +57,7 @@ jobs:
     #    GITHUB_ACTOR: ${{ github.actor }}
     #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Publish with Gradle
-      run: ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository -Prelease
+      run: ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository -Prelease --info
       env:
         ORG_GRADLE_PROJECT_sonatypeUsername: ${{ secrets.MAVEN_CENTRAL_DEPLOYMENT_USR }}
         ORG_GRADLE_PROJECT_sonatypePassword: ${{ secrets.MAVEN_CENTRAL_DEPLOYMENT_PSW }}
@@ -75,15 +84,6 @@ jobs:
     #    maven-gpg-passphrase: ${{ secrets.MAVEN_CENTRAL_GPG_SIGNING_KEY_PASSPHRASE }}
     #    maven-gpg-key: ${{ secrets.MAVEN_CENTRAL_GPG_SIGNING_KEY_SEC }}
     #    github-token: ${{ secrets.GITHUB_TOKEN }}
-    - name: Attach artifacts to GitHub Release
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-       upload_url: ${{ github.event.release.upload_url }}
-       asset_path: ./build/libs/camunda-tasklist-client-java-${{ github.event.release.tag_name }}.jar
-       asset_name: camunda-tasklist-client-java-${{ github.event.release.tag_name }}.jar
-       asset_content_type: application/zip
        
 
 
