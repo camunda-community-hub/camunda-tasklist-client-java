@@ -19,9 +19,9 @@ dependencies {
     def httpClientVersion = "5.1.3"
     implementation "org.apache.httpcomponents.client5:httpclient5:${httpClientVersion}"
     implementation "org.apache.httpcomponents.client5:httpclient5-fluent:${httpClientVersion}"
-	
+    
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.1'
-	
+    
     implementation "com.apollographql.apollo3:apollo-runtime:${apolloVersion}"
     implementation "com.apollographql.apollo3:apollo-api:${apolloVersion}"
     implementation "com.apollographql.apollo3:apollo-ast:${apolloVersion}"
@@ -57,7 +57,7 @@ java {
 nexusPublishing {
     repositories {
         sonatype {
-        	stagingProfileId = "13992b29744076"
+            stagingProfileId = "13992b29744076"
             nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
             snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
         }
@@ -68,29 +68,34 @@ publishing {
   publications {
     mavenJava(MavenPublication) {
       from(components.java)
-        pom {
-		  groupId project['group']
-            artifactId project['name']
-          name = "org.camunda.community:camunda-tasklist-client-java"
-		  description = "Java client for the Tasklist API of Camunda Platform 8"
-		  url = "https://github.com/camunda-community-hub/camunda-tasklist-client-java"
-		  licenses {
-		    license {
-			  name = "The Apache License, Version 2.0"
-			  url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
-			}
-	      }
-		  developers {
-		    developer {
-	          name = "christophe.dame"
-			  email = "christophe.dame@camunda.com"
-			}
-	      }
-		  scm {
-		    connection = "scm:git:git@github.com:camunda-community-hub/camunda-tasklist-client-java.git"
-			developerConnection = "scm:git:git@github.com:camunda-community-hub/camunda-tasklist-client-java.git"
-			url = "https://github.com/camunda-community-hub/camunda-tasklist-client-java"
-	      }
+	  signatory {
+        keyId System.getenv("maven-gpg-keyid")
+		key System.getenv("maven-gpg-key")
+        password System.getenv("maven-gpg-passphrase")
+      }
+      pom {
+        groupId = 'org.camunda.community'
+        artifactId = 'camunda-tasklist-client-java'
+        name = 'Camunda 8 Tasklist Java Client'
+        description = "Java client for the Tasklist API of Camunda Platform 8"
+        url = "https://github.com/camunda-community-hub/camunda-tasklist-client-java"
+        licenses {
+          license {
+           name = "The Apache License, Version 2.0"
+           url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+          }
+        }
+        developers {
+          developer {
+            name = "christophe.dame"
+            email = "christophe.dame@camunda.com"
+          }
+        }
+        scm {
+          connection = "scm:git:git@github.com:camunda-community-hub/camunda-tasklist-client-java.git"
+          developerConnection = "scm:git:git@github.com:camunda-community-hub/camunda-tasklist-client-java.git"
+          url = "https://github.com/camunda-community-hub/camunda-tasklist-client-java"
+        }
       }
     }
   }

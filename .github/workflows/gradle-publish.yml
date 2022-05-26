@@ -34,19 +34,6 @@ jobs:
       uses: gradle/gradle-build-action@0d13054264b0bb894ded474f08ebb30921341cee
       with:
         arguments: build
-    - name: debug
-      run: |
-        echo "${GITHUB_ACTOR} is publishing."
-        pwd
-        ls ./build/libs/
-        echo -e "${MAVEN_CENTRAL_GPG_SIGNING_KEY_SEC}\n\n${MAVEN_CENTRAL_GPG_SIGNING_KEY_PUB}"
-    - name: debug2
-      run: |
-        echo "${{ secrets.MAVEN_CENTRAL_GPG_SIGNING_KEY_SEC}}\n\n${{secrets.MAVEN_CENTRAL_GPG_SIGNING_KEY_PUB}}"
-        echo "${{ secrets.MAVEN_CENTRAL_GPG_SIGNING_KEY_ID }}"
-        echo "${{ secrets.MAVEN_CENTRAL_GPG_SIGNING_KEY_PASSPHRASE }}"
-        echo "${{ secrets.MAVEN_CENTRAL_DEPLOYMENT_USR }}"
-        echo "${{ secrets.MAVEN_CENTRAL_DEPLOYMENT_PSW }}"
     - name: Publish with Gradle
       run: ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository -Prelease
       env:
