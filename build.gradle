@@ -56,14 +56,17 @@ java {
 }
 
 nexusPublishing {
-    repositories {
-        sonatype {
-            stagingProfileId = "13992b29744076"
-            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
-			//nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"))
-            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
-        }
-    }
+  transitionCheckOptions {
+    maxRetries = 100
+    delayBetween = Duration.ofSeconds(5)
+  }
+  repositories {
+    sonatype {
+	  stagingProfileId = "13992b29744076"
+	  nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+	  snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+	}
+  }
 }
 
 signing {
@@ -72,17 +75,6 @@ signing {
 }
 
 publishing {
-//  repositories {
-//
-//    maven {
-//      name = "OSSRH"
-//      url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-//      credentials {
-//        username = System.getenv("OSSRH_USERNAME")
-//        password = System.getenv("OSSRH_PASSWORD")
-//      }
-//    }
-//  }
   publications {
     mavenJava(MavenPublication) {
       from(components.java)
@@ -113,16 +105,4 @@ publishing {
     }
   }
 }
-
-
-
-//signing {
-    // switch to this and comment out the following line to test signing locally
-//    useGpgCmd()
-    //def signingKeyId = findProperty("signingKeyId")
-    //def signingKey = findProperty("signingKey")
-    //def signingPassword = findProperty("signingPassword")
-    //useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
-//    sign publishing.publications.mavenJava
-//}
 

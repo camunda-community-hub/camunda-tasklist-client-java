@@ -48,7 +48,7 @@ jobs:
     #    GITHUB_ACTOR: ${{ github.actor }}
     #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Publish with Gradle
-      run: ./gradlew publishToSonatype -Prelease
+      run: ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository -Prelease
       env:
         ORG_GRADLE_PROJECT_sonatypeUsername: ${{ secrets.MAVEN_CENTRAL_DEPLOYMENT_USR }}
         ORG_GRADLE_PROJECT_sonatypePassword: ${{ secrets.MAVEN_CENTRAL_DEPLOYMENT_PSW }}
@@ -80,7 +80,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-       upload_url: ${{ steps.create_release.outputs.upload_url }}
+       upload_url: ${{ github.event.release.upload_url }}
        asset_path: ./build/libs/camunda-tasklist-client-java-${{ github.event.release.tag_name }}.jar
        asset_name: camunda-tasklist-client-java-${{ github.event.release.tag_name }}.jar
        asset_content_type: application/zip
