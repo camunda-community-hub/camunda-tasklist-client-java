@@ -40,7 +40,7 @@ jobs:
         pwd
         ls ./build/libs/
     - name: Publish with Gradle
-      run: ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository
+      run: ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository -Prelease
       env:
         ORG_GRADLE_PROJECT_sonatypeUsername: ${{ secrets.MAVEN_CENTRAL_DEPLOYMENT_USR }}
         ORG_GRADLE_PROJECT_sonatypePassword: ${{ secrets.MAVEN_CENTRAL_DEPLOYMENT_PSW }}
