@@ -51,9 +51,9 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     archiveClassifier = 'javadoc'
 }
-java {
-    withSourcesJar()
-}
+//java {
+//  withSourcesJar()
+//}
 
 nexusPublishing {
   transitionCheckOptions {
