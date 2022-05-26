@@ -75,15 +75,15 @@ jobs:
     #    maven-gpg-passphrase: ${{ secrets.MAVEN_CENTRAL_GPG_SIGNING_KEY_PASSPHRASE }}
     #    maven-gpg-key: ${{ secrets.MAVEN_CENTRAL_GPG_SIGNING_KEY_SEC }}
     #    github-token: ${{ secrets.GITHUB_TOKEN }}
-    #- name: Attach artifacts to GitHub Release
-    #  uses: actions/upload-release-asset@v1
-    #  env:
-    #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #  with:
-    #   upload_url: ${{ github.event.release.upload_url }}
-    #   asset_path: ./build/libs/camunda-tasklist-client-java-${{ github.event.release.tag_name }}.jar
-    #   asset_name: camunda-tasklist-client-java-${{ github.event.release.tag_name }}.jar
-    #   asset_content_type: application/zip
+    - name: Attach artifacts to GitHub Release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+       upload_url: ${{ steps.create_release.outputs.upload_url }}
+       asset_path: ./build/libs/camunda-tasklist-client-java-${{ github.event.release.tag_name }}.jar
+       asset_name: camunda-tasklist-client-java-${{ github.event.release.tag_name }}.jar
+       asset_content_type: application/zip
        
 
 
