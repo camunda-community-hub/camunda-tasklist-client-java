@@ -62,7 +62,7 @@ nexusPublishing {
   }
   repositories {
     sonatype {
-	  stagingProfileId = "13992b29744076"
+	  stagingProfileId = "18f16ed82f83eb"
 	  nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
 	  snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
 	}
