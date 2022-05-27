@@ -1,0 +1,47 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.camunda.community</groupId>
+    <artifactId>camunda-tasklist-client-java</artifactId>
+    <version>0.0.16</version>
+  </parent>
+  <artifactId>camunda-tasklist-apollo-generator</artifactId>
+  <packaging>jar</packaging>
+  
+  	<dependencies>
+		<dependency>
+			<groupId>com.apollographql.apollo3</groupId>
+			<artifactId>apollo-gradle-plugin</artifactId>
+		</dependency>
+	</dependencies>
+	
+	<build>
+	    <plugins>
+
+	        <plugin>
+	            <groupId>org.codehaus.mojo</groupId>
+	            <artifactId>exec-maven-plugin</artifactId>
+	            <version>3.0.0</version>
+	            <executions>
+		          <execution>
+		            <id>generate lib</id>
+                    <phase>compile</phase>
+		            <goals>
+		              <goal>java</goal>
+		            </goals>
+		          </execution>
+		        </executions>
+	            <configuration>
+	            	
+	            	<mainClass>io.camunda.tasklist.GraphQLGenerator</mainClass>
+					<arguments>
+						<argument>${basedir}${file.separator}src${file.separator}main${file.separator}graphql${file.separator}schema.graphqls</argument>
+						<argument>${basedir}${file.separator}..${file.separator}camunda-tasklist-generated${file.separator}src${file.separator}main${file.separator}java</argument>
+						<argument>${basedir}${file.separator}src${file.separator}main${file.separator}graphql${file.separator}operations.graphql</argument>
+					</arguments>
+	            </configuration>
+	             
+	        </plugin>
+		</plugins>
+	</build>
+</project>

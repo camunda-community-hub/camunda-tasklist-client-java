@@ -1,0 +1,32 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.camunda.community</groupId>
+		<artifactId>camunda-tasklist-client-java</artifactId>
+		<version>0.0.16</version>
+	</parent>
+	<artifactId>camunda-tasklist-generated</artifactId>
+	<name>camunda-tasklist-generated</name>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.apollographql.apollo3</groupId>
+			<artifactId>apollo-runtime</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.apollographql.apollo3</groupId>
+			<artifactId>apollo-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.apollographql.apollo3</groupId>
+			<artifactId>apollo-ast</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.apollographql.apollo3</groupId>
+			<artifactId>apollo-rx3-support</artifactId>
+		</dependency>
+	</dependencies>
+
+</project>

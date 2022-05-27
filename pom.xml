@@ -1,0 +1,83 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  
+  <scm>
+    <url>https://github.com/camunda-community-hub/maven-template</url>
+    <connection>scm:git:git@github.com:camunda-community-hub/maven-template.git</connection>
+    <developerConnection>scm:git:git@github.com:camunda-community-hub/maven-tenmplate.git
+    </developerConnection>
+    <tag>HEAD</tag>
+  </scm>
+  
+  <parent>
+    <groupId>org.camunda.community</groupId>
+    <artifactId>community-hub-release-parent</artifactId>
+    <version>1.2.2</version>
+    <relativePath />
+  </parent>
+  
+  <artifactId>camunda-tasklist-client-java</artifactId>
+  <version>0.0.16</version>
+  <name>camunda-tasklist-client-java</name>
+  <description>Parent project for the TaskList API Java client</description>
+  <packaging>pom</packaging>
+	
+	<properties>
+		<version.java>1.8</version.java>
+		<apollo.version>3.2.1</apollo.version>
+		<http.client.version>5.1.3</http.client.version>
+        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+	</properties>
+	
+	<dependencyManagement>
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.httpcomponents.client5</groupId>
+			<artifactId>httpclient5</artifactId>
+			<version>${http.client.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents.client5</groupId>
+			<artifactId>httpclient5-fluent</artifactId>
+			<version>${http.client.version}</version>
+		</dependency>
+	
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.13.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.apollographql.apollo3</groupId>
+			<artifactId>apollo-gradle-plugin</artifactId>
+			<version>${apollo.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.apollographql.apollo3</groupId>
+			<artifactId>apollo-runtime</artifactId>
+			<version>${apollo.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.apollographql.apollo3</groupId>
+			<artifactId>apollo-api</artifactId>
+			<version>${apollo.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.apollographql.apollo3</groupId>
+			<artifactId>apollo-ast</artifactId>
+			<version>${apollo.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.apollographql.apollo3</groupId>
+			<artifactId>apollo-rx3-support</artifactId>
+			<version>${apollo.version}</version>
+		</dependency>
+	
+	</dependencies>
+  </dependencyManagement>
+  <modules>
+  	<module>camunda-tasklist-apollo-generator</module>
+  	<module>camunda-tasklist-generated</module>
+  	<module>camunda-tasklist-client</module>
+  </modules>
+</project>

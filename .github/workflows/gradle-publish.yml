@@ -13,77 +13,48 @@ on:
 
 jobs:
   publish:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-
+    runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up JDK 11
-      uses: actions/setup-java@v3
-      with:
-        java-version: '11'
-        distribution: 'temurin'
-        server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
-        settings-path: ${{ github.workspace }} # location for the settings.xml file
+    - name: Checks out code
+      uses: actions/checkout@v2
 
-    - name: Validate Gradle wrapper
-      uses: gradle/wrapper-validation-action@e6e38bacfdf1a337459f332974bb2327a31aaf4b
-    - name: Build with Gradle
-      uses: gradle/gradle-build-action@0d13054264b0bb894ded474f08ebb30921341cee
+    - name: Cache
+      uses: actions/cache@v2
       with:
-        arguments: build
-    #- name: Attach artifacts to GitHub Release
-    #  uses: actions/upload-release-asset@v1
-    #  env:
-    #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #  with:
-    #   upload_url: ${{ github.event.release.upload_url }}
-    #   asset_path: ./build/libs/camunda-tasklist-client-java-${{ github.event.release.tag_name }}.jar
-    #   asset_name: camunda-tasklist-client-java-${{ github.event.release.tag_name }}.jar
-    #   asset_content_type: application/zip
-    #- name: Publish
-    #  uses: gradle/gradle-build-action@v1
-    #  with:
-    #    distributions-cache-enabled: true
-    #    dependencies-cache-enabled: true
-    #    arguments: -Prelease.useLastTag=true publish
-    #  env:
-    #    ORG_GRADLE_PROJECT_signingKey: ${{ secrets.MAVEN_CENTRAL_GPG_SIGNING_KEY_SEC }}
-    #    ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.MAVEN_CENTRAL_GPG_SIGNING_KEY_PASSPHRASE }}
-    #    OSSRH_USERNAME: ${{ secrets.MAVEN_CENTRAL_DEPLOYMENT_USR }}
-    #    OSSRH_PASSWORD: ${{ secrets.MAVEN_CENTRAL_DEPLOYMENT_PSW }}
-    #    GITHUB_ACTOR: ${{ github.actor }}
-    #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - name: Publish with Gradle
-      run: ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository -Prelease --info
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-
+    - name: Set up Java environment
+      uses: actions/setup-java@v1
+      with:
+        java-version: 11
+        gpg-private-key: ${{ secrets.MAVEN_CENTRAL_GPG_SIGNING_KEY_SEC }}
+        gpg-passphrase: MAVEN_CENTRAL_GPG_PASSPHRASE
+
+    - name: Run Maven
+      run: mvn -B clean install
+
+    - name: Deploy SNAPSHOT / Release
+      uses: camunda-community-hub/community-action-maven-release@v1.0.9
+      with:
+        release-version: ${{ github.event.release.tag_name }}
+        release-profile: release,community-action-maven-release
+        nexus-usr: ${{ secrets.NEXUS_USR }}
+        nexus-psw: ${{ secrets.NEXUS_PSW }}
+        maven-usr: ${{ secrets.MAVEN_CENTRAL_DEPLOYMENT_USR }}
+        maven-psw: ${{ secrets.MAVEN_CENTRAL_DEPLOYMENT_PSW }}
+        maven-gpg-passphrase: ${{ secrets.MAVEN_CENTRAL_GPG_SIGNING_KEY_PASSPHRASE }}
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+      id: release
+
+    - name: Attach artifacts to GitHub Release (Release only)
+      if: github.event.release
+      uses: actions/upload-release-asset@v1
       env:
-        ORG_GRADLE_PROJECT_sonatypeUsername: ${{ secrets.MAVEN_CENTRAL_DEPLOYMENT_USR }}
-        ORG_GRADLE_PROJECT_sonatypePassword: ${{ secrets.MAVEN_CENTRAL_DEPLOYMENT_PSW }}
-        ORG_GRADLE_PROJECT_signingKeyId: ${{ secrets.MAVEN_CENTRAL_GPG_SIGNING_KEY_ID }}
-        ORG_GRADLE_PROJECT_signingKey: ${{ secrets.MAVEN_CENTRAL_GPG_SIGNING_KEY_SEC }}
-        ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.MAVEN_CENTRAL_GPG_SIGNING_KEY_PASSPHRASE }}
-
-    #- name: Publish
-    #  uses: gradle/gradle-build-action@0d13054264b0bb894ded474f08ebb30921341cee
-    #  with:
-    #    arguments: publish
-    #  env:
-    #    release-version: ${{ github.event.release.tag_name }}
-    #    release-profile: community-action-maven-release
-    #    MAVEN_URL: https://s01.oss.sonatype.org/service/local/staging/deploy/maven2
-    #    MAVEN_USERNAME: ${{ secrets.MAVEN_CENTRAL_DEPLOYMENT_USR }}
-    #    MAVEN_PASSWORD: ${{ secrets.MAVEN_CENTRAL_DEPLOYMENT_PSW }}
-    #    maven-url: s01.oss.sonatype.org
-    #    nexus-usr: ${{ secrets.NEXUS_USR }}
-    #    nexus-psw: ${{ secrets.NEXUS_PSW }}
-    #    maven-usr: ${{ secrets.MAVEN_CENTRAL_DEPLOYMENT_USR }}
-    #    maven-psw: ${{ secrets.MAVEN_CENTRAL_DEPLOYMENT_PSW }}
-    #    maven-gpg-keyid: ${{ secrets.MAVEN_CENTRAL_GPG_SIGNING_KEY_ID }}
-    #    maven-gpg-passphrase: ${{ secrets.MAVEN_CENTRAL_GPG_SIGNING_KEY_PASSPHRASE }}
-    #    maven-gpg-key: ${{ secrets.MAVEN_CENTRAL_GPG_SIGNING_KEY_SEC }}
-    #    github-token: ${{ secrets.GITHUB_TOKEN }}
-       
-
-
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: ${{ steps.release.outputs.artifacts_archive_path }}
+        asset_name: ${{ steps.release.outputs.artifacts_archive_path }}
+        asset_content_type: application/zip

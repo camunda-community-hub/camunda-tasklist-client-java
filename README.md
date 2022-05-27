@@ -36,13 +36,3 @@ CamundaTaskListClient client = new CamundaTaskListClient.Builder().authenticatio
 
 client.getTasks(null, null, TaskState.CREATED, 50);
 ```
-
-# BUILD
-To build a jar with all dependencies, please use the shadowJar goal 
-
-```
-gradlew shadowJar
-```
-# TODO
-
-- Add a jwt keycloak auth
