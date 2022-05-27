@@ -1,0 +1,64 @@
+
+mutation UnclaimTask($id: String!) {
+	unclaimTask(taskId: $id) {
+		assignee
+		__typename
+	}
+}
+
+mutation ClaimTask($id: String!) {
+	claimTask(taskId: $id) {
+		id
+		assignee
+		__typename
+	}
+}
+
+mutation CompleteTask($id: String!, $variables: [VariableInput!]!) {
+	completeTask(taskId: $id, variables: $variables) {
+		id
+		taskState
+		variables {
+			name
+			value
+			__typename
+		}
+		completionTime
+		__typename
+	}
+}
+
+query GetTasks($assignee: String, $assigned: Boolean, $state: TaskState, $pageSize: Int, $searchAfter: [String!], $searchBefore: [String!], $searchAfterOrEqual: [String!]) {
+	tasks(query: {assignee: $assignee, assigned: $assigned, state: $state, pageSize: $pageSize, searchAfter: $searchAfter, searchBefore: $searchBefore, searchAfterOrEqual: $searchAfterOrEqual}) {
+		id
+		name
+		processName
+		assignee
+		creationTime
+		taskState
+		sortValues
+		isFirst
+		__typename
+	}
+}
+
+query GetTasksWithVariable($assignee: String, $assigned: Boolean, $state: TaskState, $pageSize: Int, $searchAfter: [String!], $searchBefore: [String!], $searchAfterOrEqual: [String!]) {
+	tasks(query: {assignee: $assignee, assigned: $assigned, state: $state, pageSize: $pageSize, searchAfter: $searchAfter, searchBefore: $searchBefore, searchAfterOrEqual: $searchAfterOrEqual}) {
+		id
+		name
+		processName
+		assignee
+		creationTime
+		taskState
+		sortValues
+		isFirst
+		__typename
+		variables {
+			id
+			name
+			previewValue
+			isValueTruncated
+			__typename
+		}
+	}
+}
