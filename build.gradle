@@ -6,7 +6,7 @@ plugins {
   id('io.github.gradle-nexus.publish-plugin') version '1.1.0'
 }
 
-group = 'org.camunda.community'
+group = 'io.camunda'
 version = '1.0.1'
 sourceCompatibility = '11'
 
@@ -85,7 +85,7 @@ publishing {
          }
       }
       pom {
-        groupId = 'org.camunda.community'
+        groupId = 'io.camunda'
         artifactId = 'camunda-tasklist-client-java'
         packaging = 'jar'
         name = 'Camunda 8 Tasklist Java Client'
