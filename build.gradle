@@ -47,7 +47,7 @@ task sourceJar(type: Jar) {
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
     outputs.cacheIf { true }
-    exclude '**/generated/**'
+    exclude("io.generated.tasklist.client/**")
     from javadoc.destinationDir
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     archiveClassifier = 'javadoc'
