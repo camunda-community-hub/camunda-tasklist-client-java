@@ -31,10 +31,10 @@ public class ApolloUtils {
         return value == null ? null : new Optional.Present<Integer>(value);
     }
 
-    public static Optional<io.camunda.tasklist.client.type.TaskState> optional(TaskState value) {
+    public static Optional<io.generated.tasklist.client.type.TaskState> optional(TaskState value) {
         return value == null ? null
-                : new Optional.Present<io.camunda.tasklist.client.type.TaskState>(
-                        io.camunda.tasklist.client.type.TaskState.safeValueOf(value.getRawValue()));
+                : new Optional.Present<io.generated.tasklist.client.type.TaskState>(
+                        io.generated.tasklist.client.type.TaskState.safeValueOf(value.getRawValue()));
     }
 
     public static Task toTask(Object apolloTask) throws TaskListException {

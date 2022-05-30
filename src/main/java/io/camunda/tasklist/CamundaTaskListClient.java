@@ -14,12 +14,12 @@ import com.apollographql.apollo3.exception.ApolloHttpException;
 import com.apollographql.apollo3.rx3.Rx3Apollo;
 
 import io.camunda.tasklist.auth.AuthInterface;
-import io.camunda.tasklist.client.ClaimTaskMutation;
-import io.camunda.tasklist.client.CompleteTaskMutation;
-import io.camunda.tasklist.client.GetTasksQuery;
-import io.camunda.tasklist.client.GetTasksWithVariableQuery;
-import io.camunda.tasklist.client.UnclaimTaskMutation;
-import io.camunda.tasklist.client.type.VariableInput;
+import io.generated.tasklist.client.ClaimTaskMutation;
+import io.generated.tasklist.client.CompleteTaskMutation;
+import io.generated.tasklist.client.GetTasksQuery;
+import io.generated.tasklist.client.GetTasksWithVariableQuery;
+import io.generated.tasklist.client.UnclaimTaskMutation;
+import io.generated.tasklist.client.type.VariableInput;
 import io.camunda.tasklist.dto.Task;
 import io.camunda.tasklist.dto.TaskState;
 import io.camunda.tasklist.exception.TaskListException;
@@ -58,7 +58,7 @@ public class CamundaTaskListClient {
         Optional<String> optAssignee = ApolloUtils.optional(assigneeId);
         Optional<Boolean> optAssigned = ApolloUtils.optional(assigned);
         Optional<Integer> optPageSize = ApolloUtils.optional(pageSize);
-        Optional<io.camunda.tasklist.client.type.TaskState> optState = ApolloUtils.optional(state);
+        Optional<io.generated.tasklist.client.type.TaskState> optState = ApolloUtils.optional(state);
 
         ApolloCall<GetTasksQuery.Data> queryCall = apolloClient
                 .query(new GetTasksQuery(optAssignee, optAssigned, optState, optPageSize, null, null, null));
@@ -73,7 +73,7 @@ public class CamundaTaskListClient {
         Optional<String> optAssignee = ApolloUtils.optional(assigneeId);
         Optional<Boolean> optAssigned = ApolloUtils.optional(assigned);
         Optional<Integer> optPageSize = ApolloUtils.optional(pageSize);
-        Optional<io.camunda.tasklist.client.type.TaskState> optState = ApolloUtils.optional(state);
+        Optional<io.generated.tasklist.client.type.TaskState> optState = ApolloUtils.optional(state);
 
         ApolloCall<GetTasksWithVariableQuery.Data> queryCall = apolloClient.query(
                 new GetTasksWithVariableQuery(optAssignee, optAssigned, optState, optPageSize, null, null, null));

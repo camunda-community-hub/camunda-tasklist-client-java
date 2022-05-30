@@ -37,7 +37,7 @@ tasks.named('test') {
 
 apollo {
     generateKotlinModels.set(false)
-    packageName.set("io.camunda.tasklist.client")
+    packageName.set("io.generated.tasklist.client")
 }
 task sourceJar(type: Jar) {
     outputs.cacheIf { true }
