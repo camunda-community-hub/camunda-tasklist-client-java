@@ -43,7 +43,7 @@ task sourceJar(type: Jar) {
   from sourceSets.main.allJava
   archiveClassifier = 'sources'
 }
-task javadoc(type: Javadoc) {
+javadoc {
   exclude("io.generated.tasklist.client/**")
 }
 task javadocJar(type: Jar, dependsOn: javadoc) {
