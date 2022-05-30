@@ -44,7 +44,7 @@ task sourceJar(type: Jar) {
   archiveClassifier = 'sources'
 }
 javadoc {
-  exclude("io.generated.tasklist.client/**")
+  exclude '**/generated/**'
 }
 task javadocJar(type: Jar, dependsOn: javadoc) {
   from javadoc.destinationDir
