@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'org.camunda.community'
-version = '1.0.0'
+version = '1.0.1'
 sourceCompatibility = '11'
 
 repositories {
@@ -47,13 +47,15 @@ task sourceJar(type: Jar) {
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
     outputs.cacheIf { true }
+    exclude '**/generated/**'
     from javadoc.destinationDir
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     archiveClassifier = 'javadoc'
 }
-//java {
-//  withSourcesJar()
-//}
+java {
+  withSourcesJar()
+  withJavadocJar()
+}
 
 nexusPublishing {
   transitionCheckOptions {
