@@ -57,7 +57,7 @@ jobs:
     #    GITHUB_ACTOR: ${{ github.actor }}
     #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Publish with Gradle
-      run: ./gradlew publishToSonatype -Prelease --info
+      run: ./gradlew -Prelease publishToSonatype closeAndReleaseSonatypeStagingRepository
       env:
         ORG_GRADLE_PROJECT_sonatypeUsername: ${{ secrets.MAVEN_CENTRAL_DEPLOYMENT_USR }}
         ORG_GRADLE_PROJECT_sonatypePassword: ${{ secrets.MAVEN_CENTRAL_DEPLOYMENT_PSW }}
