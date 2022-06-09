@@ -14,16 +14,18 @@ import com.apollographql.apollo3.exception.ApolloHttpException;
 import com.apollographql.apollo3.rx3.Rx3Apollo;
 
 import io.camunda.tasklist.auth.AuthInterface;
-import io.generated.tasklist.client.ClaimTaskMutation;
-import io.generated.tasklist.client.CompleteTaskMutation;
-import io.generated.tasklist.client.GetTasksQuery;
-import io.generated.tasklist.client.GetTasksWithVariableQuery;
-import io.generated.tasklist.client.UnclaimTaskMutation;
-import io.generated.tasklist.client.type.VariableInput;
 import io.camunda.tasklist.dto.Task;
 import io.camunda.tasklist.dto.TaskState;
 import io.camunda.tasklist.exception.TaskListException;
 import io.camunda.tasklist.util.ApolloUtils;
+import io.generated.tasklist.client.ClaimTaskMutation;
+import io.generated.tasklist.client.CompleteTaskMutation;
+import io.generated.tasklist.client.GetGroupTasksQuery;
+import io.generated.tasklist.client.GetGroupTasksWithVariableQuery;
+import io.generated.tasklist.client.GetTasksQuery;
+import io.generated.tasklist.client.GetTasksWithVariableQuery;
+import io.generated.tasklist.client.UnclaimTaskMutation;
+import io.generated.tasklist.client.type.VariableInput;
 
 public class CamundaTaskListClient {
 
@@ -78,6 +80,34 @@ public class CamundaTaskListClient {
         ApolloCall<GetTasksWithVariableQuery.Data> queryCall = apolloClient.query(
                 new GetTasksWithVariableQuery(optAssignee, optAssigned, optState, optPageSize, null, null, null));
         ApolloResponse<GetTasksWithVariableQuery.Data> response = execute(queryCall);
+
+        return ApolloUtils.toTasks(response.data.tasks);
+    }
+    
+    public List<Task> getGroupTasks(String group, TaskState state, Integer pageSize)
+            throws TaskListException {
+
+        Optional<String> optGroup = ApolloUtils.optional(group);
+        Optional<Integer> optPageSize = ApolloUtils.optional(pageSize);
+        Optional<io.generated.tasklist.client.type.TaskState> optState = ApolloUtils.optional(state);
+
+        ApolloCall<GetGroupTasksQuery.Data> queryCall = apolloClient
+                .query(new GetGroupTasksQuery(optGroup, optState, optPageSize));
+        ApolloResponse<GetGroupTasksQuery.Data> response = execute(queryCall);
+
+        return ApolloUtils.toTasks(response.data.tasks);
+    }
+
+    public List<Task> getGroupTasksWithVariables(String group, TaskState state, Integer pageSize)
+            throws TaskListException {
+
+        Optional<String> optGroup = ApolloUtils.optional(group);
+        Optional<Integer> optPageSize = ApolloUtils.optional(pageSize);
+        Optional<io.generated.tasklist.client.type.TaskState> optState = ApolloUtils.optional(state);
+
+        ApolloCall<GetGroupTasksWithVariableQuery.Data> queryCall = apolloClient.query(
+                new GetGroupTasksWithVariableQuery(optGroup, optState, optPageSize));
+        ApolloResponse<GetGroupTasksWithVariableQuery.Data> response = execute(queryCall);
 
         return ApolloUtils.toTasks(response.data.tasks);
     }

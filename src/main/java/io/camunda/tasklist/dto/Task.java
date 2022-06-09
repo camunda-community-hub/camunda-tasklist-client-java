@@ -14,6 +14,8 @@ public class Task {
     private String creationTime;
 
     private TaskState taskState;
+    
+    private List<String> candidateGroups;
 
     private List<String> sortValues;
 
@@ -91,5 +93,13 @@ public class Task {
 
     public void setVariables(List<Variable> variables) {
         this.variables = variables;
+    }
+
+    public List<String> getCandidateGroups() {
+        return candidateGroups;
+    }
+
+    public void setCandidateGroups(List<String> candidateGroups) {
+        this.candidateGroups = candidateGroups;
     }
 }

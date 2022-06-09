@@ -36,6 +36,7 @@ query GetTasks($assignee: String, $assigned: Boolean, $state: TaskState, $pageSi
 		assignee
 		creationTime
 		taskState
+		candidateGroups
 		sortValues
 		isFirst
 		__typename
@@ -50,6 +51,44 @@ query GetTasksWithVariable($assignee: String, $assigned: Boolean, $state: TaskSt
 		assignee
 		creationTime
 		taskState
+		candidateGroups
+		sortValues
+		isFirst
+		__typename
+		variables {
+			id
+			name
+			previewValue
+			isValueTruncated
+			__typename
+		}
+	}
+}
+
+query GetGroupTasks($candidateGroup: String, $state: TaskState, $pageSize: Int) {
+	tasks(query: {candidateGroup: $candidateGroup, state: $state, pageSize: $pageSize}) {
+		id
+		name
+		processName
+		assignee
+		creationTime
+		taskState
+		candidateGroups
+		sortValues
+		isFirst
+		__typename
+	}
+}
+
+query GetGroupTasksWithVariable($candidateGroup: String, $state: TaskState, $pageSize: Int) {
+	tasks(query: {candidateGroup: $candidateGroup, state: $state, pageSize: $pageSize}) {
+		id
+		name
+		processName
+		assignee
+		creationTime
+		taskState
+		candidateGroups
 		sortValues
 		isFirst
 		__typename
