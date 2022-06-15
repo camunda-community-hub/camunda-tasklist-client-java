@@ -10,7 +10,7 @@ This project is designed to simplify communication between a java backend and th
 
 Simply build a CamundaTaskListClient that takes an authentication and the tasklist url as parameters.
 
-```
+```java
 SimpleAuthentication sa = new SimpleAuthentication("demo", "demo", "http://localhost:8081");
 CamundaTaskListClient client = new CamundaTaskListClient.Builder().taskListUrl("http://localhost:8081").authentication(sa).build();
 List<Task> tasks = client.getTasks(true, "demo", TaskState.CREATED, null);
@@ -28,7 +28,7 @@ for(Task task : tasks) {
 
 To connect to the **SaaS** TaskList, you need to use the **SaasAuthentication** rather than the SimpleAuthentication. The SaaSAuthentication requires the ClientId and SecretId
 
-```
+```java
 SaasAuthentication sa = new SaasAuthentication("2~nB1MwkUU45FuXXX", "aBRKtreXQF3uD2MYYY");
 CamundaTaskListClient client = new CamundaTaskListClient.Builder().authentication(sa)
     .taskListUrl("https://bru-2.tasklist.camunda.io/757dbc30-5127-4bed-XXXX-XXXXXXXXXXXX").build();
@@ -40,10 +40,13 @@ client.getTasks(null, null, TaskState.CREATED, 50);
 # use it in your project
 You can import it to your maven or gradle project as a dependency
 
-```
+```xml
 		<dependency>
 			<groupId>io.camunda</groupId>
 			<artifactId>camunda-tasklist-client-java</artifactId>
 			<version>1.0.2</version>
 		</dependency>
 ```
+# Note
+A similar library is available for operate there:
+[camunda-operate-client-java](https://github.com/camunda-community-hub/camunda-operate-client-java)
