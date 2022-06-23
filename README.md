@@ -44,7 +44,7 @@ You can import it to your maven or gradle project as a dependency
 <dependency>
 	<groupId>io.camunda</groupId>
 	<artifactId>camunda-tasklist-client-java</artifactId>
-	<version>1.0.2</version>
+	<version>1.0.4</version>
 </dependency>
 ```
 # Troubleshooting
