@@ -124,6 +124,8 @@ public class CamundaTaskListClient {
                 } catch (Exception e2) {
                     throw new TaskListException(e2);
                 }
+            } else {
+                throw new TaskListException(e);
             }
         }
         if (result == null) {
@@ -171,10 +173,20 @@ public class CamundaTaskListClient {
         public CamundaTaskListClient build() throws TaskListException {
             CamundaTaskListClient client = new CamundaTaskListClient();
             client.authentication = authentication;
-            client.apolloClient = new ApolloClient.Builder().httpServerUrl(taskListUrl + "/graphql")
+            client.apolloClient = new ApolloClient.Builder().httpServerUrl(formatUrl(taskListUrl))
                     .addHttpHeader("", "").build();
             authentication.authenticate(client.apolloClient);
             return client;
+        }
+        
+        private String formatUrl(String url) {
+            if (url.endsWith("/graphql")) {
+                return url;
+            } 
+            if (url.endsWith("/")) {
+                return url + "graphql";
+            }
+            return url + "/graphql";
         }
     }
 }
