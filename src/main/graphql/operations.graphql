@@ -6,8 +6,8 @@ mutation UnclaimTask($id: String!) {
 	}
 }
 
-mutation ClaimTask($id: String!) {
-	claimTask(taskId: $id) {
+mutation ClaimTask($id: String!, $assignee: String!) {
+	claimTask(taskId: $id, assignee: $assignee) {
 		id
 		assignee
 		__typename
@@ -28,8 +28,8 @@ mutation CompleteTask($id: String!, $variables: [VariableInput!]!) {
 	}
 }
 
-query GetTasks($assignee: String, $assigned: Boolean, $state: TaskState, $pageSize: Int, $searchAfter: [String!], $searchBefore: [String!], $searchAfterOrEqual: [String!]) {
-	tasks(query: {assignee: $assignee, assigned: $assigned, state: $state, pageSize: $pageSize, searchAfter: $searchAfter, searchBefore: $searchBefore, searchAfterOrEqual: $searchAfterOrEqual}) {
+query GetTasks($candidateGroup: String, $assignee: String, $assigned: Boolean, $state: TaskState, $pageSize: Int, $searchAfter: [String!], $searchBefore: [String!], $searchAfterOrEqual: [String!]) {
+	tasks(query: {candidateGroup: $candidateGroup, assignee: $assignee, assigned: $assigned, state: $state, pageSize: $pageSize, searchAfter: $searchAfter, searchBefore: $searchBefore, searchAfterOrEqual: $searchAfterOrEqual}) {
 		id
 		name
 		processName
@@ -43,45 +43,8 @@ query GetTasks($assignee: String, $assigned: Boolean, $state: TaskState, $pageSi
 	}
 }
 
-query GetTasksWithVariable($assignee: String, $assigned: Boolean, $state: TaskState, $pageSize: Int, $searchAfter: [String!], $searchBefore: [String!], $searchAfterOrEqual: [String!]) {
-	tasks(query: {assignee: $assignee, assigned: $assigned, state: $state, pageSize: $pageSize, searchAfter: $searchAfter, searchBefore: $searchBefore, searchAfterOrEqual: $searchAfterOrEqual}) {
-		id
-		name
-		processName
-		assignee
-		creationTime
-		taskState
-		candidateGroups
-		sortValues
-		isFirst
-		__typename
-		variables {
-			id
-			name
-			previewValue
-			isValueTruncated
-			__typename
-		}
-	}
-}
-
-query GetGroupTasks($candidateGroup: String, $state: TaskState, $pageSize: Int) {
-	tasks(query: {candidateGroup: $candidateGroup, state: $state, pageSize: $pageSize}) {
-		id
-		name
-		processName
-		assignee
-		creationTime
-		taskState
-		candidateGroups
-		sortValues
-		isFirst
-		__typename
-	}
-}
-
-query GetGroupTasksWithVariable($candidateGroup: String, $state: TaskState, $pageSize: Int) {
-	tasks(query: {candidateGroup: $candidateGroup, state: $state, pageSize: $pageSize}) {
+query GetTasksWithVariable($candidateGroup: String, $assignee: String, $assigned: Boolean, $state: TaskState, $pageSize: Int, $searchAfter: [String!], $searchBefore: [String!], $searchAfterOrEqual: [String!]) {
+	tasks(query: {candidateGroup: $candidateGroup, assignee: $assignee, assigned: $assigned, state: $state, pageSize: $pageSize, searchAfter: $searchAfter, searchBefore: $searchBefore, searchAfterOrEqual: $searchAfterOrEqual}) {
 		id
 		name
 		processName

@@ -2,6 +2,7 @@ package io.camunda.tasklist.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.apollographql.apollo3.api.Optional;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -11,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.tasklist.dto.Task;
 import io.camunda.tasklist.dto.TaskState;
 import io.camunda.tasklist.exception.TaskListException;
+import io.generated.tasklist.client.type.VariableInput;
 
 public class ApolloUtils {
 
@@ -51,6 +53,20 @@ public class ApolloUtils {
             result.add(toTask(apolloTask));
         }
         return result;
+    }
+    
+
+
+    public static List<VariableInput> toVariableInput(Map<String, Object> variablesMap) {
+        List<VariableInput> variables = new ArrayList<>();
+        for (Map.Entry<String, Object> entry : variablesMap.entrySet()) {
+            if (entry.getValue() instanceof String) {
+                variables.add(new VariableInput(entry.getKey(), '"' + String.valueOf(entry.getValue()) + '"'));
+            } else {
+                variables.add(new VariableInput(entry.getKey(), String.valueOf(entry.getValue())));
+            }
+        }
+        return variables;
     }
 
     private static ObjectMapper getObjectMapper() {

@@ -12,17 +12,29 @@ Simply build a CamundaTaskListClient that takes an authentication and the taskli
 
 ```java
 SimpleAuthentication sa = new SimpleAuthentication("demo", "demo", "http://localhost:8081");
-CamundaTaskListClient client = new CamundaTaskListClient.Builder().taskListUrl("http://localhost:8081").authentication(sa).build();
-List<Task> tasks = client.getTasks(true, "demo", TaskState.CREATED, null);
+
+//shouldReturnVariables will change the default behaviour for the client to query variables along with tasks.
+CamundaTaskListClient client = new CamundaTaskListClient.Builder().taskListUrl("http://localhost:8081").shouldReturnVariables().authentication(sa).build();
+//get tasks assigned to demo
+List<Task> tasks = client.getAssigneeTasks("demo", TaskState.CREATED, null);
 for(Task task : tasks) {
     client.unclaim(task.getId());
 }
-tasks = client.getTasks(false, null, null, null);
+//get tasks associated with group "toto"
+tasks = client.getGroupTasks("toto", null, null);
+
+//get 10 completed tasks without their variables (last parameter) associated with group "toto", assigned (second parameter) to paul (thrid parameter)
+tasks = client.getTasks("toto", true, "paul", TaskState.COMPLETED, 10, false);
+
+//get unassigned tasks
+tasks = client.getTasks(false, null, null);
 for(Task task : tasks) {
-    client.claim(task.getId());
+	//assign task to paul
+	client.claim(task.getId(), "paul");
 }
 for(Task task : tasks) {
-    client.completeTask(task.getId(), Map.of("toto", "toto"));
+	//complete task with variables
+	client.completeTask(task.getId(), Map.of("key", "value"));
 }
 ```
 
@@ -34,7 +46,7 @@ CamundaTaskListClient client = new CamundaTaskListClient.Builder().authenticatio
     .taskListUrl("https://bru-2.tasklist.camunda.io/757dbc30-5127-4bed-XXXX-XXXXXXXXXXXX").build();
 
 
-client.getTasks(null, null, TaskState.CREATED, 50);
+client.getTasks(false, TaskState.CREATED, 50);
 ```
 
 # use it in your project
@@ -44,7 +56,7 @@ You can import it to your maven or gradle project as a dependency
 <dependency>
 	<groupId>io.camunda</groupId>
 	<artifactId>camunda-tasklist-client-java</artifactId>
-	<version>1.0.4</version>
+	<version>1.0.5</version>
 </dependency>
 ```
 # Troubleshooting
