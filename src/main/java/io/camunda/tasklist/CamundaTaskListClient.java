@@ -148,7 +148,7 @@ public class CamundaTaskListClient {
         /**
          * Default behaviour will be to get variables along with tasks. Default value is false. Can also be overwritten in the getTasks methods
          * @param shouldReturnVariables
-         * @return
+         * @return the builder
          */
         public Builder shouldReturnVariables() {
             this.defaultShouldReturnVariables = true;
