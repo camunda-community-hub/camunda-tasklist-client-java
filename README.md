@@ -38,6 +38,9 @@ for(Task task : tasks) {
 }
 ```
 
+# Authentication
+You can use the ***SimpleAuthentication*** to connect to a local Camunda TaskList if your setup is "simple": ***without identity and keycloak***.
+
 To connect to the **SaaS** TaskList, you need to use the **SaasAuthentication** rather than the SimpleAuthentication. The SaaSAuthentication requires the ClientId and SecretId
 
 ```java
