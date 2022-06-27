@@ -52,6 +52,8 @@ public class SimpleAuthentication implements AuthInterface {
                 String cookie = conn.getHeaderField("Set-Cookie");
                 client.getApolloClient().getHttpHeaders().clear();
                 client.getApolloClient().getHttpHeaders().add(new HttpHeader("Cookie", cookie));
+            } else {
+                throw new TaskListException("Error "+conn.getResponseCode()+" obtaining access token : "+conn.getResponseMessage());
             }
         } catch (IOException e) {
             throw new TaskListException(e);

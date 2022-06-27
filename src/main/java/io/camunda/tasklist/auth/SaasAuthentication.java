@@ -53,6 +53,8 @@ public class SaasAuthentication implements AuthInterface {
                     client.getApolloClient().getHttpHeaders().clear();
                     client.getApolloClient().getHttpHeaders().add(new HttpHeader("Authorization", "Bearer " + token));
                 }
+            } else {
+                throw new TaskListException("Error "+conn.getResponseCode()+" obtaining access token : "+conn.getResponseMessage());
             }
         } catch (IOException e) {
             throw new TaskListException(e);
