@@ -13,11 +13,11 @@ public class JsonUtils {
 
     private static ObjectMapper mapper;
 
-    public static JsonNode toJsonNode(InputStream is) throws IOException {
+    public static JsonNode toJsonNode(String json) throws IOException {
         if (mapper == null) {
             mapper = new ObjectMapper();
         }
-        return mapper.readTree(is);
+        return mapper.readTree(json);
     }
 
 }

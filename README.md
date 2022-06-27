@@ -11,7 +11,7 @@ This project is designed to simplify communication between a java backend and th
 Simply build a CamundaTaskListClient that takes an authentication and the tasklist url as parameters.
 
 ```java
-SimpleAuthentication sa = new SimpleAuthentication("demo", "demo", "http://localhost:8081");
+SimpleAuthentication sa = new SimpleAuthentication("demo", "demo");
 
 //shouldReturnVariables will change the default behaviour for the client to query variables along with tasks.
 CamundaTaskListClient client = new CamundaTaskListClient.Builder().taskListUrl("http://localhost:8081").shouldReturnVariables().authentication(sa).build();
@@ -56,7 +56,7 @@ You can import it to your maven or gradle project as a dependency
 <dependency>
 	<groupId>io.camunda</groupId>
 	<artifactId>camunda-tasklist-client-java</artifactId>
-	<version>1.0.5</version>
+	<version>1.0.6</version>
 </dependency>
 ```
 # Troubleshooting

@@ -28,7 +28,9 @@ public class CamundaTaskListClient {
     private AuthInterface authentication;
 
     private ApolloClient apolloClient;
-    
+
+    private String taskListUrl;
+
     private boolean defaultShouldReturnVariables;
 
     public Task unclaim(String taskId) throws TaskListException {
@@ -36,12 +38,14 @@ public class CamundaTaskListClient {
         ApolloResponse<UnclaimTaskMutation.Data> response = execute(unclaimCall);
         return ApolloUtils.toTask(response.data.unclaimTask);
     }
+
     public Task claim(String taskId, String assignee) throws TaskListException {
         ApolloCall<ClaimTaskMutation.Data> claimCall = apolloClient.mutation(new ClaimTaskMutation(taskId, assignee));
         ApolloResponse<ClaimTaskMutation.Data> response = execute(claimCall);
         return ApolloUtils.toTask(response.data.claimTask);
 
     }
+
     public Task completeTask(String taskId, Map<String, Object> variablesMap) throws TaskListException {
 
         ApolloCall<CompleteTaskMutation.Data> completeTaskCall = apolloClient
@@ -49,33 +53,36 @@ public class CamundaTaskListClient {
         ApolloResponse<CompleteTaskMutation.Data> response = execute(completeTaskCall);
         return ApolloUtils.toTask(response.data.completeTask);
     }
-    public List<Task> getTasks(Boolean assigned, TaskState state, Integer pageSize)
-            throws TaskListException {
+
+    public List<Task> getTasks(Boolean assigned, TaskState state, Integer pageSize) throws TaskListException {
         return getTasks(assigned, state, pageSize, defaultShouldReturnVariables);
     }
+
     public List<Task> getTasks(Boolean assigned, TaskState state, Integer pageSize, boolean getVariables)
             throws TaskListException {
         return getTasks(null, assigned, null, state, pageSize, getVariables);
     }
-    public List<Task> getAssigneeTasks(String assigneeId, TaskState state, Integer pageSize)
-            throws TaskListException {
+
+    public List<Task> getAssigneeTasks(String assigneeId, TaskState state, Integer pageSize) throws TaskListException {
         return getAssigneeTasks(assigneeId, state, pageSize, defaultShouldReturnVariables);
     }
+
     public List<Task> getAssigneeTasks(String assigneeId, TaskState state, Integer pageSize, boolean getVariables)
             throws TaskListException {
         return getTasks(null, true, assigneeId, state, pageSize, getVariables);
     }
-    public List<Task> getGroupTasks(String group, TaskState state, Integer pageSize)
-            throws TaskListException {
-       return getGroupTasks(group, state, pageSize, defaultShouldReturnVariables);
+
+    public List<Task> getGroupTasks(String group, TaskState state, Integer pageSize) throws TaskListException {
+        return getGroupTasks(group, state, pageSize, defaultShouldReturnVariables);
     }
+
     public List<Task> getGroupTasks(String group, TaskState state, Integer pageSize, boolean getVariables)
             throws TaskListException {
-       return getTasks(group, null, null, state, pageSize, getVariables);
+        return getTasks(group, null, null, state, pageSize, getVariables);
     }
-    
-    public List<Task> getTasks(String group, Boolean assigned, String assigneeId, TaskState state, Integer pageSize, boolean getVariables)
-            throws TaskListException {
+
+    public List<Task> getTasks(String group, Boolean assigned, String assigneeId, TaskState state, Integer pageSize,
+            boolean getVariables) throws TaskListException {
 
         Optional<String> optGroup = ApolloUtils.optional(group);
         Optional<String> optAssignee = ApolloUtils.optional(assigneeId);
@@ -84,14 +91,14 @@ public class CamundaTaskListClient {
         Optional<io.generated.tasklist.client.type.TaskState> optState = ApolloUtils.optional(state);
 
         if (!getVariables) {
-            ApolloCall<GetTasksQuery.Data> queryCall = apolloClient
-                    .query(new GetTasksQuery(optGroup, optAssignee, optAssigned, optState, optPageSize, null, null, null));
+            ApolloCall<GetTasksQuery.Data> queryCall = apolloClient.query(
+                    new GetTasksQuery(optGroup, optAssignee, optAssigned, optState, optPageSize, null, null, null));
             ApolloResponse<GetTasksQuery.Data> response = execute(queryCall);
-    
+
             return ApolloUtils.toTasks(response.data.tasks);
         }
-        ApolloCall<GetTasksWithVariableQuery.Data> queryCall = apolloClient.query(
-                new GetTasksWithVariableQuery(optGroup, optAssignee, optAssigned, optState, optPageSize, null, null, null));
+        ApolloCall<GetTasksWithVariableQuery.Data> queryCall = apolloClient.query(new GetTasksWithVariableQuery(
+                optGroup, optAssignee, optAssigned, optState, optPageSize, null, null, null));
         ApolloResponse<GetTasksWithVariableQuery.Data> response = execute(queryCall);
 
         return ApolloUtils.toTasks(response.data.tasks);
@@ -103,7 +110,7 @@ public class CamundaTaskListClient {
             result = Rx3Apollo.single(call).blockingGet();
         } catch (ApolloHttpException e) {
             if (e.getStatusCode() == 401) {
-                authentication.authenticate(apolloClient);
+                authentication.authenticate(this);
                 try {
                     result = Rx3Apollo.single(call).blockingGet();
                 } catch (Exception e2) {
@@ -123,12 +130,20 @@ public class CamundaTaskListClient {
         return result;
     }
 
+    public ApolloClient getApolloClient() {
+        return apolloClient;
+    }
+
+    public String getTaskListUrl() {
+        return taskListUrl;
+    }
+
     public static class Builder {
 
         private AuthInterface authentication;
 
         private String taskListUrl;
-        
+
         private boolean defaultShouldReturnVariables = false;
 
         public Builder() {
@@ -146,7 +161,9 @@ public class CamundaTaskListClient {
         }
 
         /**
-         * Default behaviour will be to get variables along with tasks. Default value is false. Can also be overwritten in the getTasks methods
+         * Default behaviour will be to get variables along with tasks. Default value is
+         * false. Can also be overwritten in the getTasks methods
+         * 
          * @return the builder
          */
         public Builder shouldReturnVariables() {
@@ -157,17 +174,18 @@ public class CamundaTaskListClient {
         public CamundaTaskListClient build() throws TaskListException {
             CamundaTaskListClient client = new CamundaTaskListClient();
             client.authentication = authentication;
+            client.taskListUrl = taskListUrl;
             client.defaultShouldReturnVariables = defaultShouldReturnVariables;
-            client.apolloClient = new ApolloClient.Builder().httpServerUrl(formatUrl(taskListUrl))
-                    .addHttpHeader("", "").build();
-            authentication.authenticate(client.apolloClient);
+            client.apolloClient = new ApolloClient.Builder().httpServerUrl(formatUrl(taskListUrl)).addHttpHeader("", "")
+                    .build();
+            authentication.authenticate(client);
             return client;
         }
-        
+
         private String formatUrl(String url) {
             if (url.endsWith("/graphql")) {
                 return url;
-            } 
+            }
             if (url.endsWith("/")) {
                 return url + "graphql";
             }

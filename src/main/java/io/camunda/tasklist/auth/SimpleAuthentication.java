@@ -1,21 +1,13 @@
 package io.camunda.tasklist.auth;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
-import org.apache.hc.client5.http.classic.methods.HttpPost;
-import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
-import org.apache.hc.client5.http.impl.classic.HttpClients;
-import org.apache.hc.core5.http.NameValuePair;
-import org.apache.hc.core5.http.ProtocolException;
-import org.apache.hc.core5.http.message.BasicNameValuePair;
-
-import com.apollographql.apollo3.ApolloClient;
 import com.apollographql.apollo3.api.http.HttpHeader;
 
+import io.camunda.tasklist.CamundaTaskListClient;
 import io.camunda.tasklist.exception.TaskListException;
 
 /**
@@ -30,32 +22,50 @@ public class SimpleAuthentication implements AuthInterface {
 
     private String taskListPassword;
 
-    private String taskListUrl;
-
-    public SimpleAuthentication(String taskListUsername, String taskListPassword, String taskListUrl) {
+    public SimpleAuthentication(String taskListUsername, String taskListPassword) {
         this.taskListUsername = taskListUsername;
         this.taskListPassword = taskListPassword;
-        this.taskListUrl = taskListUrl;
     }
 
     @Override
-    public void authenticate(ApolloClient client) throws TaskListException {
+    public void authenticate(CamundaTaskListClient client) throws TaskListException {
+        try {
+            URL url = new URL(getLoginUrl(client.getTaskListUrl()));
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setUseCaches(false);
+            conn.setConnectTimeout(1000 * 5);
+            conn.setDoOutput(true);
+            conn.setDoInput(true);
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            conn.setRequestProperty("charset", "utf-8");
+            String loginParameters = "username=" + taskListUsername + "&password=" + taskListPassword;
+            byte[] postData = loginParameters.getBytes(StandardCharsets.UTF_8);
+            int postDataLength = postData.length;
+            conn.setRequestProperty("Content-Length", Integer.toString(postDataLength));
+            conn.setUseCaches(false);
+            conn.getOutputStream().write(postData);
+            conn.connect();
 
-        HttpPost httpPost = new HttpPost(taskListUrl + "/api/login");
-
-        List<NameValuePair> params = new ArrayList<NameValuePair>();
-        params.add(new BasicNameValuePair("username", taskListUsername));
-        params.add(new BasicNameValuePair("password", taskListPassword));
-        httpPost.setEntity(new UrlEncodedFormEntity(params));
-
-        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-            try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
-                String cookie = response.getHeader("Set-Cookie").getValue();
-                client.getHttpHeaders().clear();
-                client.getHttpHeaders().add(new HttpHeader("Cookie", cookie));
+            if (conn.getResponseCode() == HttpURLConnection.HTTP_NO_CONTENT
+                    || conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                String cookie = conn.getHeaderField("Set-Cookie");
+                client.getApolloClient().getHttpHeaders().clear();
+                client.getApolloClient().getHttpHeaders().add(new HttpHeader("Cookie", cookie));
             }
-        } catch (IOException | ProtocolException e) {
+        } catch (IOException e) {
             throw new TaskListException(e);
         }
+
+    }
+
+    private String getLoginUrl(String tasklistUrl) {
+        if (tasklistUrl.endsWith("/graphql")) {
+            return tasklistUrl.substring(0, tasklistUrl.length() - 8) + "/api/login";
+        }
+        if (tasklistUrl.endsWith("/")) {
+            return tasklistUrl + "api/login";
+        }
+        return tasklistUrl + "/api/login";
     }
 }
