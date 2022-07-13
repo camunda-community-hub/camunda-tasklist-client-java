@@ -2,7 +2,6 @@
 mutation UnclaimTask($id: String!) {
 	unclaimTask(taskId: $id) {
 		assignee
-		__typename
 	}
 }
 
@@ -10,7 +9,6 @@ mutation ClaimTask($id: String!, $assignee: String!) {
 	claimTask(taskId: $id, assignee: $assignee) {
 		id
 		assignee
-		__typename
 	}
 }
 
@@ -21,10 +19,8 @@ mutation CompleteTask($id: String!, $variables: [VariableInput!]!) {
 		variables {
 			name
 			value
-			__typename
 		}
 		completionTime
-		__typename
 	}
 }
 
@@ -39,7 +35,6 @@ query GetTasks($candidateGroup: String, $assignee: String, $assigned: Boolean, $
 		candidateGroups
 		sortValues
 		isFirst
-		__typename
 	}
 }
 
@@ -54,13 +49,10 @@ query GetTasksWithVariable($candidateGroup: String, $assignee: String, $assigned
 		candidateGroups
 		sortValues
 		isFirst
-		__typename
 		variables {
 			id
 			name
-			previewValue
-			isValueTruncated
-			__typename
+			value
 		}
 	}
 }

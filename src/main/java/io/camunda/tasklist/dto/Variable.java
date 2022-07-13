@@ -5,9 +5,9 @@ public class Variable {
 
     private String name;
 
-    private String previewValue;
-
-    private Boolean isValueTruncated;
+    private Object value;
+    
+    private VariableType type;
 
     public String getId() {
         return id;
@@ -25,19 +25,19 @@ public class Variable {
         this.name = name;
     }
 
-    public String getPreviewValue() {
-        return previewValue;
+    public Object getValue() {
+        return value;
     }
 
-    public void setPreviewValue(String previewValue) {
-        this.previewValue = previewValue;
+    public void setValue(Object value) {
+        this.value = value;
     }
 
-    public Boolean getIsValueTruncated() {
-        return isValueTruncated;
+    public VariableType getType() {
+        return type;
     }
 
-    public void setIsValueTruncated(Boolean isValueTruncated) {
-        this.isValueTruncated = isValueTruncated;
+    public void setType(VariableType type) {
+        this.type = type;
     }
 }

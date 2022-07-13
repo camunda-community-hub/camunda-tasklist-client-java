@@ -6,11 +6,15 @@ import java.util.Map;
 
 import com.apollographql.apollo3.api.Optional;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.camunda.tasklist.dto.Task;
 import io.camunda.tasklist.dto.TaskState;
+import io.camunda.tasklist.dto.VariableType;
 import io.camunda.tasklist.exception.TaskListException;
 import io.generated.tasklist.client.type.VariableInput;
 
@@ -39,9 +43,42 @@ public class ApolloUtils {
                         io.generated.tasklist.client.type.TaskState.safeValueOf(value.getRawValue()));
     }
 
+    public static io.camunda.tasklist.dto.Variable improveVariable(io.camunda.tasklist.dto.Variable var) throws JsonMappingException, JsonProcessingException {
+        String value = (String) var.getValue();
+        JsonNode nodeValue = getObjectMapper().readTree(value);
+        if (nodeValue.canConvertToLong()) {
+            var.setValue(nodeValue.asLong());
+            var.setType(VariableType.NUMBER);
+            return var;
+        }
+        if (nodeValue.isBoolean()) {
+            var.setValue(nodeValue.asBoolean());
+            var.setType(VariableType.BOOLEAN);
+            return var;
+        }
+        if (nodeValue.isTextual()) {
+            var.setValue(nodeValue.textValue());
+            var.setType(VariableType.STRING);
+            return var;
+        }
+        if (nodeValue.isArray()) {
+            var.setValue(getObjectMapper().convertValue(nodeValue, new TypeReference<List<?>>(){}));
+            var.setType(VariableType.LIST);
+            return var;
+        }
+        var.setValue(getObjectMapper().convertValue(nodeValue, new TypeReference<Map<String, Object>>(){}));
+        var.setType(VariableType.MAP);
+        return var;
+        
+    }
+    
     public static Task toTask(Object apolloTask) throws TaskListException {
         try {
-            return getObjectMapper().readValue(getObjectMapper().writeValueAsString(apolloTask), Task.class);
+            Task task = getObjectMapper().readValue(getObjectMapper().writeValueAsString(apolloTask), Task.class);
+            for(io.camunda.tasklist.dto.Variable var : task.getVariables()) {
+                improveVariable(var);
+            }
+            return task;
         } catch (JsonProcessingException e) {
             throw new TaskListException(e);
         }
