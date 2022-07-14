@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.camunda.tasklist.dto.Form;
 import io.camunda.tasklist.dto.Task;
 import io.camunda.tasklist.dto.TaskState;
 import io.camunda.tasklist.dto.VariableType;
@@ -40,7 +41,7 @@ public class ApolloUtils {
     public static Optional<io.generated.tasklist.client.type.TaskState> optional(TaskState value) {
         return value == null ? null
                 : new Optional.Present<io.generated.tasklist.client.type.TaskState>(
-                        io.generated.tasklist.client.type.TaskState.safeValueOf(value.getRawValue()));
+                io.generated.tasklist.client.type.TaskState.safeValueOf(value.getRawValue()));
     }
 
     public static io.camunda.tasklist.dto.Variable improveVariable(io.camunda.tasklist.dto.Variable var) throws JsonMappingException, JsonProcessingException {
@@ -75,8 +76,10 @@ public class ApolloUtils {
     public static Task toTask(Object apolloTask) throws TaskListException {
         try {
             Task task = getObjectMapper().readValue(getObjectMapper().writeValueAsString(apolloTask), Task.class);
-            for(io.camunda.tasklist.dto.Variable var : task.getVariables()) {
-                improveVariable(var);
+            if(task.getVariables() != null) {
+                for (io.camunda.tasklist.dto.Variable var : task.getVariables()) {
+                    improveVariable(var);
+                }
             }
             return task;
         } catch (JsonProcessingException e) {
@@ -91,8 +94,6 @@ public class ApolloUtils {
         }
         return result;
     }
-    
-
 
     public static List<VariableInput> toVariableInput(Map<String, Object> variablesMap) {
         List<VariableInput> variables = new ArrayList<>();
@@ -104,6 +105,14 @@ public class ApolloUtils {
             }
         }
         return variables;
+    }
+
+    public static Form toForm(Object apolloTask) throws TaskListException {
+        try {
+            return getObjectMapper().readValue(getObjectMapper().writeValueAsString(apolloTask), Form.class);
+        } catch (JsonProcessingException e) {
+            throw new TaskListException(e);
+        }
     }
 
     private static ObjectMapper getObjectMapper() {
