@@ -71,7 +71,7 @@ You can import it to your maven or gradle project as a dependency
 <dependency>
 	<groupId>io.camunda</groupId>
 	<artifactId>camunda-tasklist-client-java</artifactId>
-	<version>1.1.0</version>
+	<version>1.1.2</version>
 </dependency>
 ```
 # Troubleshooting

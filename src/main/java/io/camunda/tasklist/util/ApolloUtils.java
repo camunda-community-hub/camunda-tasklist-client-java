@@ -76,6 +76,7 @@ public class ApolloUtils {
     public static Task toTask(Object apolloTask) throws TaskListException {
         try {
             Task task = getObjectMapper().readValue(getObjectMapper().writeValueAsString(apolloTask), Task.class);
+
             if(task.getVariables() != null) {
                 for (io.camunda.tasklist.dto.Variable var : task.getVariables()) {
                     improveVariable(var);
@@ -98,10 +99,12 @@ public class ApolloUtils {
     public static List<VariableInput> toVariableInput(Map<String, Object> variablesMap) {
         List<VariableInput> variables = new ArrayList<>();
         for (Map.Entry<String, Object> entry : variablesMap.entrySet()) {
-            if (entry.getValue() instanceof String) {
-                variables.add(new VariableInput(entry.getKey(), '"' + String.valueOf(entry.getValue()) + '"'));
-            } else {
-                variables.add(new VariableInput(entry.getKey(), String.valueOf(entry.getValue())));
+            if (entry.getValue()!=null) {
+                if (entry.getValue() instanceof String) {
+                    variables.add(new VariableInput(entry.getKey(), '"' + (String) entry.getValue() + '"'));
+                } else {
+                    variables.add(new VariableInput(entry.getKey(), String.valueOf(entry.getValue())));
+                }
             }
         }
         return variables;

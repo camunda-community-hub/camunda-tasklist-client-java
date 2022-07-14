@@ -24,6 +24,8 @@ public class Task {
     private Boolean isFirst;
 
     private List<Variable> variables;
+    
+    private String formKey;
 
     private String formKey;
 
@@ -114,7 +116,7 @@ public class Task {
     public void setFormKey(String formKey) {
         this.formKey = formKey;
     }
-
+    
     public String getProcessDefinitionId() {
         return processDefinitionId;
     }
@@ -122,4 +124,5 @@ public class Task {
     public void setProcessDefinitionId(String processDefinitionId) {
         this.processDefinitionId = processDefinitionId;
     }
+
 }
