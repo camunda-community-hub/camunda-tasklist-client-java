@@ -36,6 +36,18 @@ for(Task task : tasks) {
 	//complete task with variables
 	client.completeTask(task.getId(), Map.of("key", "value"));
 }
+
+//get more information about a single task (including form key)
+Task task = tasks.get(0);
+task = client.getTask(task.getId());
+
+//get form schema
+String formKey = task.getFormKey();
+String formId = formKey.substring(formKey.lastIndexOf(":")+1);
+String processDefinitionId = task.getProcessDefinitionId();
+
+Form form = client.getForm(taskId, processDefinitionId);
+String schema = form.getSchema();
 ```
 
 # Authentication

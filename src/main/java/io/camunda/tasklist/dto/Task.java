@@ -9,6 +9,8 @@ public class Task {
 
     private String processName;
 
+    private String processDefinitionId;
+
     private String assignee;
 
     private String creationTime;
@@ -23,6 +25,8 @@ public class Task {
 
     private List<Variable> variables;
     
+    private String formKey;
+
     private String formKey;
 
     public String getId() {
@@ -112,4 +116,13 @@ public class Task {
     public void setFormKey(String formKey) {
         this.formKey = formKey;
     }
+    
+    public String getProcessDefinitionId() {
+        return processDefinitionId;
+    }
+
+    public void setProcessDefinitionId(String processDefinitionId) {
+        this.processDefinitionId = processDefinitionId;
+    }
+
 }

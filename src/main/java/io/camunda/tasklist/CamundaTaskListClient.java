@@ -13,15 +13,12 @@ import com.apollographql.apollo3.exception.ApolloHttpException;
 import com.apollographql.apollo3.rx3.Rx3Apollo;
 
 import io.camunda.tasklist.auth.AuthInterface;
+import io.camunda.tasklist.dto.Form;
 import io.camunda.tasklist.dto.Task;
 import io.camunda.tasklist.dto.TaskState;
 import io.camunda.tasklist.exception.TaskListException;
 import io.camunda.tasklist.util.ApolloUtils;
-import io.generated.tasklist.client.ClaimTaskMutation;
-import io.generated.tasklist.client.CompleteTaskMutation;
-import io.generated.tasklist.client.GetTasksQuery;
-import io.generated.tasklist.client.GetTasksWithVariableQuery;
-import io.generated.tasklist.client.UnclaimTaskMutation;
+import io.generated.tasklist.client.*;
 
 public class CamundaTaskListClient {
 
@@ -81,8 +78,20 @@ public class CamundaTaskListClient {
         return getTasks(group, null, null, state, pageSize, getVariables);
     }
 
+    public Task getTask(String taskId) throws TaskListException {
+        ApolloCall<GetTaskQuery.Data> queryCall = apolloClient.query(new GetTaskQuery(taskId));
+        ApolloResponse<GetTaskQuery.Data> response = execute(queryCall);
+        return ApolloUtils.toTask(response.data.task);
+    }
+
+    public Form getForm(String formId, String processDefinitionId) throws TaskListException {
+        ApolloCall<GetFormQuery.Data> queryCall = apolloClient.query(new GetFormQuery(formId, processDefinitionId));
+        ApolloResponse<GetFormQuery.Data> response = execute(queryCall);
+        return ApolloUtils.toForm(response.data.form);
+    }
+
     public List<Task> getTasks(String group, Boolean assigned, String assigneeId, TaskState state, Integer pageSize,
-            boolean getVariables) throws TaskListException {
+                               boolean getVariables) throws TaskListException {
 
         Optional<String> optGroup = ApolloUtils.optional(group);
         Optional<String> optAssignee = ApolloUtils.optional(assigneeId);
@@ -102,6 +111,18 @@ public class CamundaTaskListClient {
         ApolloResponse<GetTasksWithVariableQuery.Data> response = execute(queryCall);
 
         return ApolloUtils.toTasks(response.data.tasks);
+    }
+
+    public Task getTask(String taskId) throws TaskListException {
+        ApolloCall<GetTaskQuery.Data> queryCall = apolloClient.query(new GetTaskQuery(taskId));
+        ApolloResponse<GetTaskQuery.Data> response = execute(queryCall);
+        return ApolloUtils.toTask(response.data.task);
+    }
+
+    public Form getForm(String formId, String processDefinitionId) throws TaskListException {
+        ApolloCall<GetFormQuery.Data> queryCall = apolloClient.query(new GetFormQuery(formId, processDefinitionId));
+        ApolloResponse<GetFormQuery.Data> response = execute(queryCall);
+        return ApolloUtils.toForm(response.data.form);
     }
 
     private <T extends Operation.Data> ApolloResponse<T> execute(ApolloCall<T> call) throws TaskListException {
