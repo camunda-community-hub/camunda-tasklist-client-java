@@ -35,6 +35,8 @@ query GetTasks($candidateGroup: String, $assignee: String, $assigned: Boolean, $
 		candidateGroups
 		sortValues
 		isFirst
+		formKey
+		processDefinitionId
 	}
 }
 
@@ -49,6 +51,8 @@ query GetTasksWithVariable($candidateGroup: String, $assignee: String, $assigned
 		candidateGroups
 		sortValues
 		isFirst
+		formKey
+		processDefinitionId
 		variables {
 			id
 			name
@@ -68,7 +72,6 @@ query GetTask($id: String!) {
     processName
     creationTime
     completionTime
-    __typename
   }
 }
 

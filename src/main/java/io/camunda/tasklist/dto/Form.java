@@ -1,7 +1,5 @@
 package io.camunda.tasklist.dto;
 
-import java.util.List;
-
 public class Form {
     private String id;
 
