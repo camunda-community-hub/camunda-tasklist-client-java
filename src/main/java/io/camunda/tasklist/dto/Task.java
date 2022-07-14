@@ -27,8 +27,6 @@ public class Task {
     
     private String formKey;
 
-    private String formKey;
-
     public String getId() {
         return id;
     }

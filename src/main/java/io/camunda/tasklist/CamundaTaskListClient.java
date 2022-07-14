@@ -113,18 +113,6 @@ public class CamundaTaskListClient {
         return ApolloUtils.toTasks(response.data.tasks);
     }
 
-    public Task getTask(String taskId) throws TaskListException {
-        ApolloCall<GetTaskQuery.Data> queryCall = apolloClient.query(new GetTaskQuery(taskId));
-        ApolloResponse<GetTaskQuery.Data> response = execute(queryCall);
-        return ApolloUtils.toTask(response.data.task);
-    }
-
-    public Form getForm(String formId, String processDefinitionId) throws TaskListException {
-        ApolloCall<GetFormQuery.Data> queryCall = apolloClient.query(new GetFormQuery(formId, processDefinitionId));
-        ApolloResponse<GetFormQuery.Data> response = execute(queryCall);
-        return ApolloUtils.toForm(response.data.form);
-    }
-
     private <T extends Operation.Data> ApolloResponse<T> execute(ApolloCall<T> call) throws TaskListException {
         ApolloResponse<T> result = null;
         try {
