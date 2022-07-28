@@ -96,18 +96,18 @@ public class ApolloUtils {
         return result;
     }
 
-    public static List<VariableInput> toVariableInput(Map<String, Object> variablesMap) {
-        List<VariableInput> variables = new ArrayList<>();
-        for (Map.Entry<String, Object> entry : variablesMap.entrySet()) {
-            if (entry.getValue()!=null) {
-                if (entry.getValue() instanceof String) {
-                    variables.add(new VariableInput(entry.getKey(), '"' + (String) entry.getValue() + '"'));
-                } else {
-                    variables.add(new VariableInput(entry.getKey(), String.valueOf(entry.getValue())));
+    public static List<VariableInput> toVariableInput(Map<String, Object> variablesMap) throws TaskListException {
+        try {
+            List<VariableInput> variables = new ArrayList<>();
+            for (Map.Entry<String, Object> entry : variablesMap.entrySet()) {
+                if (entry.getValue()!=null) {
+                    variables.add(new VariableInput(entry.getKey(), getObjectMapper().writeValueAsString(entry.getValue())));
                 }
             }
+            return variables;
+        } catch (JsonProcessingException e) {
+            throw new TaskListException(e);
         }
-        return variables;
     }
 
     public static Form toForm(Object apolloTask) throws TaskListException {
