@@ -22,9 +22,21 @@ public class SimpleAuthentication implements AuthInterface {
 
     private String taskListPassword;
 
+    public SimpleAuthentication() {
+        
+    }
+    
     public SimpleAuthentication(String taskListUsername, String taskListPassword) {
         this.taskListUsername = taskListUsername;
         this.taskListPassword = taskListPassword;
+    }
+    public SimpleAuthentication username(String taskListUsername) {
+        this.taskListUsername = taskListUsername;
+        return this;
+    }
+    public SimpleAuthentication password(String taskListPassword) {
+        this.taskListPassword = taskListPassword;
+        return this;
     }
 
     @Override

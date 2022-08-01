@@ -4,7 +4,7 @@
 
 # Camunda TaskList Client
 
-This project is designed to simplify communication between a java backend and the Camunda 8 task list. This project is still a draft.
+This project is designed to simplify communication between a java backend and the Camunda 8 task list. Contributions through PR are welcome!
 
 # How to use the client
 
@@ -53,7 +53,7 @@ String schema = form.getSchema();
 # Authentication
 You can use the ***SimpleAuthentication*** to connect to a local Camunda TaskList if your setup is "simple": ***without identity and keycloak***.
 
-To connect to the **SaaS** TaskList, you need to use the **SaasAuthentication** rather than the SimpleAuthentication. The SaaSAuthentication requires the ClientId and SecretId
+To connect to the **SaaS** TaskList, you need to use the **SaasAuthentication**. The SaaSAuthentication requires the clientId and clientSecret
 
 ```java
 SaasAuthentication sa = new SaasAuthentication("2~nB1MwkUU45FuXXX", "aBRKtreXQF3uD2MYYY");
@@ -64,6 +64,15 @@ CamundaTaskListClient client = new CamundaTaskListClient.Builder().authenticatio
 client.getTasks(false, TaskState.CREATED, 50);
 ```
 
+To connect to the **Local** TaskList with **Identity & Keycloak**, you need to use the **LocalIdentityAuthentication**. The SaaSAuthentication requires the clientId and clientSecret. You can also change the Keycloak realm and the baseUrl depending on your installation.
+
+```java
+LocalIdentityAuthentication la = new LocalIdentityAuthentication().clientId("java").clientSecret("foTPogjlI0hidwbDZcYFWzmU8FOQwLx0").baseUrl("http://localhost:18080").keycloakRealm("camunda-platform");
+CamundaTaskListClient client = new CamundaTaskListClient.Builder().shouldReturnVariables().taskListUrl("http://localhost:8082/").authentication(la).build();
+       
+client.getTasks(false, TaskState.CREATED, 50);
+```
+
 # use it in your project
 You can import it to your maven or gradle project as a dependency
 
@@ -71,11 +80,12 @@ You can import it to your maven or gradle project as a dependency
 <dependency>
 	<groupId>io.camunda</groupId>
 	<artifactId>camunda-tasklist-client-java</artifactId>
-	<version>1.2.2</version>
+	<version>1.3.0</version>
 </dependency>
 ```
 # Troubleshooting
 Depending on your project, you may encounter the "companion" error :
+
 ```
 java.lang.NoSuchFieldError: Companion
 	at com.apollographql.apollo3.network.http.DefaultHttpEngine$execute$2$httpRequest$2$2.contentType(OkHttpEngine.kt:56) ~[apollo-runtime-jvm-3.2.1.jar:3.2.1]

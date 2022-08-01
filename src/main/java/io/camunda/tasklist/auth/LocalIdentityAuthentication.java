@@ -3,8 +3,10 @@ package io.camunda.tasklist.auth;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
 import com.apollographql.apollo3.api.http.HttpHeader;
@@ -14,43 +16,60 @@ import io.camunda.tasklist.CamundaTaskListClient;
 import io.camunda.tasklist.exception.TaskListException;
 import io.camunda.tasklist.util.JsonUtils;
 
-public class SaasAuthentication implements AuthInterface {
+public class LocalIdentityAuthentication implements AuthInterface {
 
     private String clientId;
     private String clientSecret;
+    private String baseUrl = "http://localhost:18080";
+    private String keycloakRealm = "camunda-platform";
 
-    public SaasAuthentication() {
+    public LocalIdentityAuthentication() {
     }
     
-    public SaasAuthentication(String clientId, String clientSecret) {
+    public LocalIdentityAuthentication(String clientId, String clientSecret) {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
     }
     
-    public SaasAuthentication clientId(String clientId) {
+    public LocalIdentityAuthentication clientId(String clientId) {
         this.clientId = clientId;
         return this;
     }
-    public SaasAuthentication clientSecret(String clientSecret) {
+    public LocalIdentityAuthentication clientSecret(String clientSecret) {
         this.clientSecret = clientSecret;
         return this;
     }
-
+    public LocalIdentityAuthentication baseUrl(String url) {
+        this.baseUrl = url;
+        return this;
+    }
+    public LocalIdentityAuthentication keycloakRealm(String keycloakRealm) {
+        this.keycloakRealm = keycloakRealm;
+        return this;
+    }
+    
+    private String encode(String value) throws UnsupportedEncodingException {
+        return URLEncoder.encode(value, StandardCharsets.UTF_8);
+    }
+    
+    private String getConnectionString() throws UnsupportedEncodingException{
+        return "grant_type=client_credentials&client_id="+encode(clientId)+"&client_secret="+encode(clientSecret);
+    }
+    
     @Override
     public void authenticate(CamundaTaskListClient client) throws TaskListException {
         try {
-            URL url = new URL("https://login.cloud.camunda.io/oauth/token");
+            URL url = new URL(this.baseUrl+"/auth/realms/"+keycloakRealm+"/protocol/openid-connect/token");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setUseCaches(false);
             conn.setConnectTimeout(1000 * 5);
             conn.setDoOutput(true);
             conn.setDoInput(true);
             conn.setRequestMethod("POST");
-            conn.setRequestProperty("Content-Type", "application/json");
-            conn.setRequestProperty("Accept", "application/json");
-            conn.setRequestProperty("charset", "utf-8");
-            String data = "{\"grant_type\":\"client_credentials\", \"audience\":\"tasklist.camunda.io\", \"client_id\": \""
-                    + clientId + "\", \"client_secret\":\"" + clientSecret + "\"}";
+            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+
+            String data = getConnectionString();
+            
             conn.getOutputStream().write(data.getBytes(StandardCharsets.UTF_8));
             conn.connect();
 
