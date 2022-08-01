@@ -49,7 +49,7 @@ public class LocalIdentityAuthentication implements AuthInterface {
     }
     
     private String encode(String value) throws UnsupportedEncodingException {
-        return URLEncoder.encode(value, StandardCharsets.UTF_8);
+        return URLEncoder.encode(value, StandardCharsets.UTF_8.toString());
     }
     
     private String getConnectionString() throws UnsupportedEncodingException{
