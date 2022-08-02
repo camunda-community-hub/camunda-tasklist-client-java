@@ -79,8 +79,17 @@ public class CamundaTaskListClient {
     }
 
     public Task getTask(String taskId) throws TaskListException {
-        ApolloCall<GetTaskQuery.Data> queryCall = apolloClient.query(new GetTaskQuery(taskId));
-        ApolloResponse<GetTaskQuery.Data> response = execute(queryCall);
+       return getTask(taskId, defaultShouldReturnVariables);
+    }
+
+    public Task getTask(String taskId, boolean getVariables) throws TaskListException {
+        if (!getVariables) {
+            ApolloCall<GetTaskQuery.Data> queryCall = apolloClient.query(new GetTaskQuery(taskId));
+            ApolloResponse<GetTaskQuery.Data> response = execute(queryCall);
+            return ApolloUtils.toTask(response.data.task);
+        }
+        ApolloCall<GetTaskWithVariablesQuery.Data> queryCall = apolloClient.query(new GetTaskWithVariablesQuery(taskId));
+        ApolloResponse<GetTaskWithVariablesQuery.Data> response = execute(queryCall);
         return ApolloUtils.toTask(response.data.task);
     }
 

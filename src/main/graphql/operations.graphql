@@ -75,6 +75,25 @@ query GetTask($id: String!) {
   }
 }
 
+query GetTaskWithVariables($id: String!) {
+  task(id: $id) {
+    id
+    formKey
+    processDefinitionId
+    assignee
+    name
+    taskState
+    processName
+    creationTime
+    completionTime
+    variables {
+      id
+      name
+      value
+    }
+  }
+}
+
 query GetForm ($id: String!, $processDefinitionId: String!) {
     form (id: $id, processDefinitionId: $processDefinitionId) {
         id
