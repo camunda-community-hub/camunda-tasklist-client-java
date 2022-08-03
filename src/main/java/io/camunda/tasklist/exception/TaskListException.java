@@ -1,5 +1,7 @@
 package io.camunda.tasklist.exception;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 public class TaskListException extends Exception {
 
     /**
@@ -17,5 +19,9 @@ public class TaskListException extends Exception {
 
     public TaskListException(String message) {
         super(message);
+    }
+
+    public TaskListException(String message, Exception e) {
+        super(message, e);
     }
 }

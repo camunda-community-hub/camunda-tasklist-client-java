@@ -29,6 +29,8 @@ public class CamundaTaskListClient {
     private String taskListUrl;
 
     private boolean defaultShouldReturnVariables;
+    
+    private int tokenExpiration;
 
     public Task unclaim(String taskId) throws TaskListException {
         ApolloCall<UnclaimTaskMutation.Data> unclaimCall = apolloClient.mutation(new UnclaimTaskMutation(taskId));
@@ -123,6 +125,7 @@ public class CamundaTaskListClient {
     }
 
     private <T extends Operation.Data> ApolloResponse<T> execute(ApolloCall<T> call) throws TaskListException {
+        reconnectEventually();
         ApolloResponse<T> result = null;
         try {
             result = Rx3Apollo.single(call).blockingGet();
@@ -154,6 +157,16 @@ public class CamundaTaskListClient {
 
     public String getTaskListUrl() {
         return taskListUrl;
+    }
+
+    public void setTokenExpiration(int tokenExpiration) {
+        this.tokenExpiration = tokenExpiration;
+    }
+
+    private void reconnectEventually() throws TaskListException {
+        if (this.tokenExpiration>0 && this.tokenExpiration<(System.currentTimeMillis()/1000+30)) {
+            authentication.authenticate(this);
+        }
     }
 
     public static class Builder {

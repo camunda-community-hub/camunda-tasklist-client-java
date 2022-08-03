@@ -7,14 +7,13 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
-import com.apollographql.apollo3.api.http.HttpHeader;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import io.camunda.tasklist.CamundaTaskListClient;
 import io.camunda.tasklist.exception.TaskListException;
 import io.camunda.tasklist.util.JsonUtils;
 
-public class SaasAuthentication implements AuthInterface {
+public class SaasAuthentication extends JwtAuthentication {
 
     private String clientId;
     private String clientSecret;
@@ -63,8 +62,7 @@ public class SaasAuthentication implements AuthInterface {
                     }
                     JsonNode responseBody = JsonUtils.toJsonNode(response.toString());
                     String token = responseBody.get("access_token").asText();
-                    client.getApolloClient().getHttpHeaders().clear();
-                    client.getApolloClient().getHttpHeaders().add(new HttpHeader("Authorization", "Bearer " + token));
+                    setToken(client, token);
                 }
             } else {
                 throw new TaskListException("Error "+conn.getResponseCode()+" obtaining access token : "+conn.getResponseMessage());
