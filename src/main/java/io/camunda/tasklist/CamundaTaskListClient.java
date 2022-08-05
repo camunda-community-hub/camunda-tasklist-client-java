@@ -164,7 +164,7 @@ public class CamundaTaskListClient {
     }
 
     private void reconnectEventually() throws TaskListException {
-        if (this.tokenExpiration>0 && this.tokenExpiration<(System.currentTimeMillis()/1000+30)) {
+        if (this.tokenExpiration>0 && this.tokenExpiration<(System.currentTimeMillis()/1000+3)) {
             authentication.authenticate(this);
         }
     }
