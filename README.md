@@ -64,11 +64,11 @@ CamundaTaskListClient client = new CamundaTaskListClient.Builder().authenticatio
 client.getTasks(false, TaskState.CREATED, 50);
 ```
 
-To connect to the **Local** TaskList with **Identity & Keycloak**, you need to use the **LocalIdentityAuthentication**. The SaaSAuthentication requires the clientId and clientSecret. You can also change the Keycloak realm and the baseUrl depending on your installation.
+To connect to the **Local** TaskList with **Identity & Keycloak**, you need to use the **SelfManagedAuthentication**. The SelfManagedAuthentication requires the clientId and clientSecret. You can also change the Keycloak realm and the keycloakUrl depending on your installation.
 
 ```java
-LocalIdentityAuthentication la = new LocalIdentityAuthentication().clientId("java").clientSecret("foTPogjlI0hidwbDZcYFWzmU8FOQwLx0").baseUrl("http://localhost:18080").keycloakRealm("camunda-platform");
-CamundaTaskListClient client = new CamundaTaskListClient.Builder().shouldReturnVariables().taskListUrl("http://localhost:8082/").authentication(la).build();
+SelfManagedAuthentication sma = new SelfManagedAuthentication().clientId("java").clientSecret("foTPogjlI0hidwbDZcYFWzmU8FOQwLx0").baseUrl("http://localhost:18080").keycloakRealm("camunda-platform");
+CamundaTaskListClient client = new CamundaTaskListClient.Builder().shouldReturnVariables().taskListUrl("http://localhost:8082/").authentication(sma).build();
        
 client.getTasks(false, TaskState.CREATED, 50);
 ```
@@ -80,7 +80,7 @@ You can import it to your maven or gradle project as a dependency
 <dependency>
 	<groupId>io.camunda</groupId>
 	<artifactId>camunda-tasklist-client-java</artifactId>
-	<version>1.4.2</version>
+	<version>1.5.0</version>
 </dependency>
 ```
 # Troubleshooting

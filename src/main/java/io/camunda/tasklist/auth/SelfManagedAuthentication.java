@@ -17,37 +17,35 @@ import io.camunda.tasklist.util.JsonUtils;
 
 /**
  * This Class is used to authenticate against a Self-Managed Camunda 8 Tasklist.
- * @deprecated replaced by {@link io.camunda.tasklist.auth.SelfManagedAuthentication}
  */
-@Deprecated
-public class LocalIdentityAuthentication extends JwtAuthentication {
+public class SelfManagedAuthentication extends JwtAuthentication {
 
     private String clientId;
     private String clientSecret;
-    private String baseUrl = "http://localhost:18080";
+    private String keycloakUrl = "http://localhost:18080";
     private String keycloakRealm = "camunda-platform";
 
-    public LocalIdentityAuthentication() {
+    public SelfManagedAuthentication() {
     }
     
-    public LocalIdentityAuthentication(String clientId, String clientSecret) {
+    public SelfManagedAuthentication(String clientId, String clientSecret) {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
     }
     
-    public LocalIdentityAuthentication clientId(String clientId) {
+    public SelfManagedAuthentication clientId(String clientId) {
         this.clientId = clientId;
         return this;
     }
-    public LocalIdentityAuthentication clientSecret(String clientSecret) {
+    public SelfManagedAuthentication clientSecret(String clientSecret) {
         this.clientSecret = clientSecret;
         return this;
     }
-    public LocalIdentityAuthentication baseUrl(String url) {
-        this.baseUrl = url;
+    public SelfManagedAuthentication keycloakUrl(String url) {
+        this.keycloakUrl = url;
         return this;
     }
-    public LocalIdentityAuthentication keycloakRealm(String keycloakRealm) {
+    public SelfManagedAuthentication keycloakRealm(String keycloakRealm) {
         this.keycloakRealm = keycloakRealm;
         return this;
     }
@@ -63,7 +61,7 @@ public class LocalIdentityAuthentication extends JwtAuthentication {
     @Override
     public void authenticate(CamundaTaskListClient client) throws TaskListException {
         try {
-            URL url = new URL(this.baseUrl+"/auth/realms/"+keycloakRealm+"/protocol/openid-connect/token");
+            URL url = new URL(this.keycloakUrl+"/auth/realms/"+keycloakRealm+"/protocol/openid-connect/token");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setUseCaches(false);
             conn.setConnectTimeout(1000 * 5);
