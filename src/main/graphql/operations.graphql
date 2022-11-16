@@ -69,6 +69,7 @@ query GetTask($id: String!) {
     assignee
     name
     taskState
+    candidateGroups
     processName
     creationTime
     completionTime
@@ -83,6 +84,7 @@ query GetTaskWithVariables($id: String!) {
     assignee
     name
     taskState
+    candidateGroups
     processName
     creationTime
     completionTime
