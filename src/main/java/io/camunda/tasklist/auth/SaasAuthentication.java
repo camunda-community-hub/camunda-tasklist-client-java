@@ -17,6 +17,9 @@ public class SaasAuthentication extends JwtAuthentication {
 
     private String clientId;
     private String clientSecret;
+    private String baseUrl;
+    private String authUrl;
+
 
     public SaasAuthentication() {
     }
@@ -24,6 +27,15 @@ public class SaasAuthentication extends JwtAuthentication {
     public SaasAuthentication(String clientId, String clientSecret) {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
+        this.authUrl = "https://login.cloud.camunda.io/oauth/token";
+        this.baseUrl = "tasklist.camunda.io";
+    }
+
+    public SaasAuthentication(String authUrl, String baseUrl, String clientId, String clientSecret) {
+        this.clientId = clientId;
+        this.clientSecret = clientSecret;
+        this.baseUrl = baseUrl;
+        this.authUrl = authUrl;
     }
     
     public SaasAuthentication clientId(String clientId) {
@@ -34,11 +46,19 @@ public class SaasAuthentication extends JwtAuthentication {
         this.clientSecret = clientSecret;
         return this;
     }
+    public SaasAuthentication authUrl(String authUrl) {
+      this.authUrl = authUrl;
+      return this;
+    }
+    public SaasAuthentication baseUrl(String baseUrl) {
+      this.baseUrl = baseUrl;
+      return this;
+    }
 
     @Override
     public void authenticate(CamundaTaskListClient client) throws TaskListException {
         try {
-            URL url = new URL("https://login.cloud.camunda.io/oauth/token");
+            URL url = new URL(authUrl);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setUseCaches(false);
             conn.setConnectTimeout(1000 * 5);
@@ -48,7 +68,7 @@ public class SaasAuthentication extends JwtAuthentication {
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setRequestProperty("Accept", "application/json");
             conn.setRequestProperty("charset", "utf-8");
-            String data = "{\"grant_type\":\"client_credentials\", \"audience\":\"tasklist.camunda.io\", \"client_id\": \""
+            String data = "{\"grant_type\":\"client_credentials\", \"audience\":\""+baseUrl+"\", \"client_id\": \""
                     + clientId + "\", \"client_secret\":\"" + clientSecret + "\"}";
             conn.getOutputStream().write(data.getBytes(StandardCharsets.UTF_8));
             conn.connect();
