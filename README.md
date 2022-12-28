@@ -16,7 +16,7 @@ SimpleAuthentication sa = new SimpleAuthentication("demo", "demo");
 //shouldReturnVariables will change the default behaviour for the client to query variables along with tasks.
 CamundaTaskListClient client = new CamundaTaskListClient.Builder().taskListUrl("http://localhost:8081").shouldReturnVariables().authentication(sa).build();
 //get tasks assigned to demo
-List<Task> tasks = client.getAssigneeTasks("demo", TaskState.CREATED, null);
+TaskList tasks = client.getAssigneeTasks("demo", TaskState.CREATED, null);
 for(Task task : tasks) {
     client.unclaim(task.getId());
 }
@@ -25,6 +25,11 @@ tasks = client.getGroupTasks("toto", null, null);
 
 //get 10 completed tasks without their variables (last parameter) associated with group "toto", assigned (second parameter) to paul (thrid parameter)
 tasks = client.getTasks("toto", true, "paul", TaskState.COMPLETED, 10, false);
+
+//navigate after, before, afterOrEqual to previous result.
+tasks = client.after(tasks);
+tasks = client.before(tasks);
+tasks = client.afterOrEqual(tasks);
 
 //get unassigned tasks
 tasks = client.getTasks(false, null, null);
@@ -37,9 +42,8 @@ for(Task task : tasks) {
 	client.completeTask(task.getId(), Map.of("key", "value"));
 }
 
-//get more information about a single task (including form key)
-Task task = tasks.get(0);
-task = client.getTask(task.getId());
+//get a single task
+task = client.getTask("1");
 
 //get form schema
 String formKey = task.getFormKey();
@@ -49,6 +53,8 @@ String processDefinitionId = task.getProcessDefinitionId();
 Form form = client.getForm(taskId, processDefinitionId);
 String schema = form.getSchema();
 ```
+
+
 
 # Authentication
 You can use the ***SimpleAuthentication*** to connect to a local Camunda TaskList if your setup is "simple": ***without identity and keycloak***.
@@ -80,7 +86,7 @@ You can import it to your maven or gradle project as a dependency
 <dependency>
 	<groupId>io.camunda</groupId>
 	<artifactId>camunda-tasklist-client-java</artifactId>
-	<version>1.5.2</version>
+	<version>1.6.0</version>
 </dependency>
 ```
 # Troubleshooting

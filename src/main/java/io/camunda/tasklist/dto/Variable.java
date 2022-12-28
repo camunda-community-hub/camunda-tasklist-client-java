@@ -1,43 +1,43 @@
 package io.camunda.tasklist.dto;
 
 public class Variable {
-    private String id;
+  private String id;
 
-    private String name;
+  private String name;
 
-    private Object value;
-    
-    private VariableType type;
+  private Object value;
 
-    public String getId() {
-        return id;
-    }
+  private VariableType type;
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public String getName() {
-        return name;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public Object getValue() {
-        return value;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public void setValue(Object value) {
-        this.value = value;
-    }
+  public Object getValue() {
+    return value;
+  }
 
-    public VariableType getType() {
-        return type;
-    }
+  public void setValue(Object value) {
+    this.value = value;
+  }
 
-    public void setType(VariableType type) {
-        this.type = type;
-    }
+  public VariableType getType() {
+    return type;
+  }
+
+  public void setType(VariableType type) {
+    this.type = type;
+  }
 }

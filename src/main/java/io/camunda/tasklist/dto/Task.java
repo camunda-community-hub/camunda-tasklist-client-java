@@ -3,124 +3,124 @@ package io.camunda.tasklist.dto;
 import java.util.List;
 
 public class Task {
-    private String id;
+  private String id;
 
-    private String name;
+  private String name;
 
-    private String processName;
+  private String processName;
 
-    private String processDefinitionId;
+  private String processDefinitionId;
 
-    private String assignee;
+  private String assignee;
 
-    private String creationTime;
+  private String creationTime;
 
-    private TaskState taskState;
-    
-    private List<String> candidateGroups;
+  private TaskState taskState;
 
-    private List<String> sortValues;
+  private List<String> candidateGroups;
 
-    private Boolean isFirst;
+  private List<String> sortValues;
 
-    private List<Variable> variables;
-    
-    private String formKey;
+  private Boolean isFirst;
 
-    public String getId() {
-        return id;
-    }
+  private List<Variable> variables;
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  private String formKey;
 
-    public String getName() {
-        return name;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    public String getProcessName() {
-        return processName;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public void setProcessName(String processName) {
-        this.processName = processName;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public String getAssignee() {
-        return assignee;
-    }
+  public String getProcessName() {
+    return processName;
+  }
 
-    public void setAssignee(String assignee) {
-        this.assignee = assignee;
-    }
+  public void setProcessName(String processName) {
+    this.processName = processName;
+  }
 
-    public String getCreationTime() {
-        return creationTime;
-    }
+  public String getAssignee() {
+    return assignee;
+  }
 
-    public void setCreationTime(String creationTime) {
-        this.creationTime = creationTime;
-    }
+  public void setAssignee(String assignee) {
+    this.assignee = assignee;
+  }
 
-    public TaskState getTaskState() {
-        return taskState;
-    }
+  public String getCreationTime() {
+    return creationTime;
+  }
 
-    public void setTaskState(TaskState taskState) {
-        this.taskState = taskState;
-    }
+  public void setCreationTime(String creationTime) {
+    this.creationTime = creationTime;
+  }
 
-    public List<String> getSortValues() {
-        return sortValues;
-    }
+  public TaskState getTaskState() {
+    return taskState;
+  }
 
-    public void setSortValues(List<String> sortValues) {
-        this.sortValues = sortValues;
-    }
+  public void setTaskState(TaskState taskState) {
+    this.taskState = taskState;
+  }
 
-    public Boolean getIsFirst() {
-        return isFirst;
-    }
+  public List<String> getSortValues() {
+    return sortValues;
+  }
 
-    public void setIsFirst(Boolean isFirst) {
-        this.isFirst = isFirst;
-    }
+  public void setSortValues(List<String> sortValues) {
+    this.sortValues = sortValues;
+  }
 
-    public List<Variable> getVariables() {
-        return variables;
-    }
+  public Boolean getIsFirst() {
+    return isFirst;
+  }
 
-    public void setVariables(List<Variable> variables) {
-        this.variables = variables;
-    }
+  public void setIsFirst(Boolean isFirst) {
+    this.isFirst = isFirst;
+  }
 
-    public List<String> getCandidateGroups() {
-        return candidateGroups;
-    }
+  public List<Variable> getVariables() {
+    return variables;
+  }
 
-    public void setCandidateGroups(List<String> candidateGroups) {
-        this.candidateGroups = candidateGroups;
-    }
+  public void setVariables(List<Variable> variables) {
+    this.variables = variables;
+  }
 
-    public String getFormKey() {
-        return formKey;
-    }
+  public List<String> getCandidateGroups() {
+    return candidateGroups;
+  }
 
-    public void setFormKey(String formKey) {
-        this.formKey = formKey;
-    }
-    
-    public String getProcessDefinitionId() {
-        return processDefinitionId;
-    }
+  public void setCandidateGroups(List<String> candidateGroups) {
+    this.candidateGroups = candidateGroups;
+  }
 
-    public void setProcessDefinitionId(String processDefinitionId) {
-        this.processDefinitionId = processDefinitionId;
-    }
+  public String getFormKey() {
+    return formKey;
+  }
+
+  public void setFormKey(String formKey) {
+    this.formKey = formKey;
+  }
+
+  public String getProcessDefinitionId() {
+    return processDefinitionId;
+  }
+
+  public void setProcessDefinitionId(String processDefinitionId) {
+    this.processDefinitionId = processDefinitionId;
+  }
 
 }

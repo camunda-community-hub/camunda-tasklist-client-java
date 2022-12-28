@@ -12,29 +12,29 @@ import io.camunda.tasklist.exception.TaskListException;
 
 public abstract class JwtAuthentication implements AuthInterface {
 
-    private static final ObjectMapper MAPPER = new ObjectMapper();
-    private static final Base64.Decoder DECODER = Base64.getUrlDecoder();
+  private static final ObjectMapper MAPPER = new ObjectMapper();
+  private static final Base64.Decoder DECODER = Base64.getUrlDecoder();
 
-    public int getExpiration(String token) throws TaskListException {
-        try {
-            String[] chunks = token.split("\\.");
-            String payload = new String(DECODER.decode(chunks[1]));
-            JsonNode jsonPayload = MAPPER.readValue(payload, JsonNode.class);
-            JsonNode exp = jsonPayload.get("exp");
-            if (exp == null) {
-                return 0;
-            } else {
-                return exp.asInt();
-            }
-        } catch (JsonProcessingException e) {
-            throw new TaskListException("Token is not readable", e);
-        }
+  public int getExpiration(String token) throws TaskListException {
+    try {
+      String[] chunks = token.split("\\.");
+      String payload = new String(DECODER.decode(chunks[1]));
+      JsonNode jsonPayload = MAPPER.readValue(payload, JsonNode.class);
+      JsonNode exp = jsonPayload.get("exp");
+      if (exp == null) {
+        return 0;
+      } else {
+        return exp.asInt();
+      }
+    } catch (JsonProcessingException e) {
+      throw new TaskListException("Token is not readable", e);
     }
+  }
 
-    public void setToken(CamundaTaskListClient client, String token) throws TaskListException {
-        client.getApolloClient().getHttpHeaders().clear();
-        client.getApolloClient().getHttpHeaders().add(new HttpHeader("Authorization", "Bearer " + token));
+  public void setToken(CamundaTaskListClient client, String token) throws TaskListException {
+    client.getApolloClient().getHttpHeaders().clear();
+    client.getApolloClient().getHttpHeaders().add(new HttpHeader("Authorization", "Bearer " + token));
 
-        client.setTokenExpiration(getExpiration(token));
-    }
+    client.setTokenExpiration(getExpiration(token));
+  }
 }
