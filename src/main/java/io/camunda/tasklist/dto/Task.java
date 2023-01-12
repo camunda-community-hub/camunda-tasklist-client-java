@@ -26,6 +26,8 @@ public class Task {
   private List<Variable> variables;
 
   private String formKey;
+  
+  private String taskDefinitionId;
 
   public String getId() {
     return id;
@@ -123,4 +125,12 @@ public class Task {
     this.processDefinitionId = processDefinitionId;
   }
 
+  public String getTaskDefinitionId() {
+    return taskDefinitionId;
+  }
+
+  public void setTaskDefinitionId(String taskDefinitionId) {
+    this.taskDefinitionId = taskDefinitionId;
+  }
+  
 }
