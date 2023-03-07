@@ -50,7 +50,7 @@ String formKey = task.getFormKey();
 String formId = formKey.substring(formKey.lastIndexOf(":")+1);
 String processDefinitionId = task.getProcessDefinitionId();
 
-Form form = client.getForm(taskId, processDefinitionId);
+Form form = client.getForm(formId, processDefinitionId);
 String schema = form.getSchema();
 ```
 
