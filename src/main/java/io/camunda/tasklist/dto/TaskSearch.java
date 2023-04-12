@@ -6,6 +6,9 @@ public class TaskSearch {
   private String assignee;
   private Boolean Assigned;
   private TaskState state;
+  private String processDefinitionId;
+  private String processInstanceId;
+  private String taskDefinitionId;
   private boolean withVariables;
   private Pagination pagination;
 
@@ -42,6 +45,32 @@ public class TaskSearch {
 
   public TaskSearch setState(TaskState state) {
     this.state = state;
+    return this;
+  }
+  public String getProcessDefinitionId() {
+    return processDefinitionId;
+  }
+
+  public TaskSearch setProcessDefinitionId(String processDefinitionId) {
+    this.processDefinitionId = processDefinitionId;
+    return this;
+  }
+
+  public String getProcessInstanceId() {
+    return processInstanceId;
+  }
+
+  public TaskSearch setProcessInstanceId(String processInstanceId) {
+    this.processInstanceId = processInstanceId;
+    return this;
+  }
+
+  public String getTaskDefinitionId() {
+    return taskDefinitionId;
+  }
+
+  public TaskSearch setTaskDefinitionId(String taskDefinitionId) {
+    this.taskDefinitionId = taskDefinitionId;
     return this;
   }
 

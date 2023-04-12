@@ -50,7 +50,11 @@ public class CamundaTaskListClient {
   }
 
   public Task claim(String taskId, String assignee) throws TaskListException {
-    ApolloCall<ClaimTaskMutation.Data> claimCall = apolloClient.mutation(new ClaimTaskMutation(taskId, assignee));
+    return claim(taskId, assignee, false);
+  }
+  public Task claim(String taskId, String assignee, Boolean allowOverrideAssignment) throws TaskListException {
+    Optional<Boolean> optAllowOverrideAssignment = ApolloUtils.optional(allowOverrideAssignment);
+    ApolloCall<ClaimTaskMutation.Data> claimCall = apolloClient.mutation(new ClaimTaskMutation(taskId, assignee, optAllowOverrideAssignment));
     ApolloResponse<ClaimTaskMutation.Data> response = execute(claimCall);
     return ApolloUtils.toTask(response.data.claimTask);
   }
@@ -169,15 +173,23 @@ public class CamundaTaskListClient {
   }
 
   public TaskList getTasks(TaskSearch search) throws TaskListException {
-    return getTasks(search.getGroup(), search.getAssigned(), search.getAssignee(), search.getState(), search.isWithVariables(), search.getPagination());
+    return getTasks(search.getGroup(), search.getAssigned(), search.getAssignee(), search.getState(), search.getProcessDefinitionId(), search.getProcessInstanceId(), search.getTaskDefinitionId(), search.isWithVariables(), search.getPagination());
   }
 
   public TaskList getTasks(String group, Boolean assigned, String assigneeId, TaskState state, boolean withVariables, Pagination pagination)
+      throws TaskListException {
+    return getTasks(group, assigned, assigneeId, state, null,null,null,withVariables, pagination);
+  }
+  
+  public TaskList getTasks(String group, Boolean assigned, String assigneeId, TaskState state, String processDefinitionId, String processInstanceId, String taskDefinitionId, boolean withVariables, Pagination pagination)
       throws TaskListException {
 
     Optional<String> optGroup = ApolloUtils.optional(group);
     Optional<String> optAssignee = ApolloUtils.optional(assigneeId);
     Optional<Boolean> optAssigned = ApolloUtils.optional(assigned);
+    Optional<String> optProcessDefinitionId = ApolloUtils.optional(processDefinitionId);
+    Optional<String> optProcessInstanceId = ApolloUtils.optional(processInstanceId);
+    Optional<String> optTaskDefinitionId = ApolloUtils.optional(taskDefinitionId);
     Optional<Integer> optPageSize = null;
     Optional<List<String>> optSearchBefore = null;
     Optional<List<String>> optSearchAfter = null;
@@ -202,14 +214,14 @@ public class CamundaTaskListClient {
 
     if (!withVariables) {
       ApolloCall<GetTasksQuery.Data> queryCall = apolloClient
-          .query(new GetTasksQuery(optGroup, optAssignee, optAssigned, optState, optPageSize, optSearchAfter, optSearchBefore, optSearchAfterOrEqual));
+          .query(new GetTasksQuery(optGroup, optAssignee, optAssigned, optState, optProcessDefinitionId, optProcessInstanceId, optTaskDefinitionId, optPageSize, optSearchAfter, optSearchBefore, optSearchAfterOrEqual));
       ApolloResponse<GetTasksQuery.Data> response = execute(queryCall);
 
       return new TaskList().setItems(ApolloUtils.toTasks(response.data.tasks)).setSearch(new TaskSearch().setAssigned(assigned).setAssignee(assigneeId)
           .setGroup(group).setState(state).setWithVariables(withVariables).setPagination(pagination));
     }
     ApolloCall<GetTasksWithVariableQuery.Data> queryCall = apolloClient.query(
-        new GetTasksWithVariableQuery(optGroup, optAssignee, optAssigned, optState, optPageSize, optSearchAfter, optSearchBefore, optSearchAfterOrEqual));
+        new GetTasksWithVariableQuery(optGroup, optAssignee, optAssigned, optState, optProcessDefinitionId, optProcessInstanceId, optTaskDefinitionId, optPageSize, optSearchAfter, optSearchBefore, optSearchAfterOrEqual));
     ApolloResponse<GetTasksWithVariableQuery.Data> response = execute(queryCall);
 
     return new TaskList().setItems(ApolloUtils.toTasks(response.data.tasks)).setSearch(new TaskSearch().setAssigned(assigned).setAssignee(assigneeId)

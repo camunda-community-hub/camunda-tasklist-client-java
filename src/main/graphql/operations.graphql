@@ -5,8 +5,8 @@ mutation UnclaimTask($id: String!) {
 	}
 }
 
-mutation ClaimTask($id: String!, $assignee: String!) {
-	claimTask(taskId: $id, assignee: $assignee) {
+mutation ClaimTask($id: String!, $assignee: String!, $allowOverrideAssignment: Boolean) {
+	claimTask(taskId: $id, assignee: $assignee, allowOverrideAssignment:  $allowOverrideAssignment) {
 		id
 		assignee
 	}
@@ -24,8 +24,8 @@ mutation CompleteTask($id: String!, $variables: [VariableInput!]!) {
 	}
 }
 
-query GetTasks($candidateGroup: String, $assignee: String, $assigned: Boolean, $state: TaskState, $pageSize: Int, $searchAfter: [String!], $searchBefore: [String!], $searchAfterOrEqual: [String!]) {
-	tasks(query: {candidateGroup: $candidateGroup, assignee: $assignee, assigned: $assigned, state: $state, pageSize: $pageSize, searchAfter: $searchAfter, searchBefore: $searchBefore, searchAfterOrEqual: $searchAfterOrEqual}) {
+query GetTasks($candidateGroup: String, $assignee: String, $assigned: Boolean, $state: TaskState, $processDefinitionId: String, $processInstanceId: String, $taskDefinitionId: String, $pageSize: Int, $searchAfter: [String!], $searchBefore: [String!], $searchAfterOrEqual: [String!]) {
+	tasks(query: {candidateGroup: $candidateGroup, assignee: $assignee, assigned: $assigned, state: $state, processDefinitionId: $processDefinitionId, processInstanceId: $processInstanceId, taskDefinitionId: $taskDefinitionId, pageSize: $pageSize, searchAfter: $searchAfter, searchBefore: $searchBefore, searchAfterOrEqual: $searchAfterOrEqual}) {
 		id
 		name
 		processName
@@ -41,8 +41,8 @@ query GetTasks($candidateGroup: String, $assignee: String, $assigned: Boolean, $
 	}
 }
 
-query GetTasksWithVariable($candidateGroup: String, $assignee: String, $assigned: Boolean, $state: TaskState, $pageSize: Int, $searchAfter: [String!], $searchBefore: [String!], $searchAfterOrEqual: [String!]) {
-	tasks(query: {candidateGroup: $candidateGroup, assignee: $assignee, assigned: $assigned, state: $state, pageSize: $pageSize, searchAfter: $searchAfter, searchBefore: $searchBefore, searchAfterOrEqual: $searchAfterOrEqual}) {
+query GetTasksWithVariable($candidateGroup: String, $assignee: String, $assigned: Boolean, $state: TaskState, $processDefinitionId: String, $processInstanceId: String, $taskDefinitionId: String, $pageSize: Int, $searchAfter: [String!], $searchBefore: [String!], $searchAfterOrEqual: [String!]) {
+	tasks(query: {candidateGroup: $candidateGroup, assignee: $assignee, assigned: $assigned, state: $state, processDefinitionId: $processDefinitionId, processInstanceId: $processInstanceId, taskDefinitionId: $taskDefinitionId, pageSize: $pageSize, searchAfter: $searchAfter, searchBefore: $searchBefore, searchAfterOrEqual: $searchAfterOrEqual}) {
 		id
 		name
 		processName

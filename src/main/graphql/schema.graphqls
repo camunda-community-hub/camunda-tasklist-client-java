@@ -50,10 +50,12 @@ input TaskQuery {
     assignee: String
     # given group is in candidate groups list
     candidateGroup: String
-    #Size of tasks page (default: 50).
-    pageSize: Int
+    processDefinitionId: String
+    processInstanceId: String
     # Task definition ID - what's the BPMN flow node?
     taskDefinitionId: String
+    #Size of tasks page (default: 50).
+    pageSize: Int
     #Array of values copied from `sortValues` of one of the tasks, query will return page of tasks going directly after this values plus same sort values.
     searchAfter: [String!]
     #Array of values copied from `sortValues` of one of the tasks, query will return page of tasks going directly after this values.
@@ -111,7 +113,7 @@ type Mutation {
     # Complete a task with taskId and optional variables. Returns the task.
     completeTask(taskId: String!, variables: [VariableInput!]!): Task!
     # Claim a task with taskId to currently logged in user. Returns the task.
-    claimTask(taskId: String!, assignee: String): Task!
+    claimTask(taskId: String!, assignee: String, allowOverrideAssignment: Boolean): Task!
     # Unclaim a task with taskId. Returns the task.
 	unclaimTask(taskId: String!): Task!
     # Delete process instance by given processInstanceId. Returns true if process instance could be deleted.
