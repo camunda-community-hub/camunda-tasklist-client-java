@@ -15,6 +15,10 @@ SimpleAuthentication sa = new SimpleAuthentication("demo", "demo");
 
 //shouldReturnVariables will change the default behaviour for the client to query variables along with tasks.
 CamundaTaskListClient client = new CamundaTaskListClient.Builder().taskListUrl("http://localhost:8081").shouldReturnVariables().authentication(sa).build();
+//get tasks from a process instance (TaskSearch can take many more parameters)
+TaskSearch ts = new TaskSearch().setProcessInstanceId("2251799818839086");
+TaskList tasksFromInstance = client.getTasks(ts);
+
 //get tasks assigned to demo
 TaskList tasks = client.getAssigneeTasks("demo", TaskState.CREATED, null);
 for(Task task : tasks) {
