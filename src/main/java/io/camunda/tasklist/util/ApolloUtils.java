@@ -1,5 +1,7 @@
 package io.camunda.tasklist.util;
 
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -11,12 +13,15 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import io.camunda.tasklist.dto.DateFilter;
 import io.camunda.tasklist.dto.Form;
 import io.camunda.tasklist.dto.Task;
 import io.camunda.tasklist.dto.TaskState;
 import io.camunda.tasklist.dto.VariableType;
 import io.camunda.tasklist.exception.TaskListException;
+import io.generated.tasklist.client.type.TaskOrderBy;
 import io.generated.tasklist.client.type.VariableInput;
 
 public class ApolloUtils {
@@ -40,6 +45,16 @@ public class ApolloUtils {
 
   public static Optional<Integer> optional(Integer value) {
     return value == null ? null : new Optional.Present<Integer>(value);
+  }
+
+  public static Optional<List<TaskOrderBy>> optionalSort(List<TaskOrderBy> value) {
+    return value == null ? null : new Optional.Present<List<TaskOrderBy>>(value);
+  }
+  
+  public static Optional<io.generated.tasklist.client.type.DateFilter> optional(DateFilter value) {
+    if (value == null) return null;
+    io.generated.tasklist.client.type.DateFilter target = new io.generated.tasklist.client.type.DateFilter(value.getFrom()==null ? null : value.getFrom().atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME), value.getTo()==null ? null : value.getTo().atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
+    return new Optional.Present<io.generated.tasklist.client.type.DateFilter>(target);
   }
 
   public static Optional<io.generated.tasklist.client.type.TaskState> optional(TaskState value) {
@@ -126,6 +141,7 @@ public class ApolloUtils {
   private static ObjectMapper getObjectMapper() {
     if (objectMapper == null) {
       objectMapper = new ObjectMapper();
+      objectMapper.registerModule(new JavaTimeModule());
       objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
     return objectMapper;

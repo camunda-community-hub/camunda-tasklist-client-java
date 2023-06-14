@@ -1,5 +1,6 @@
 package io.camunda.tasklist.dto;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class Task {
@@ -11,23 +12,31 @@ public class Task {
 
   private String processDefinitionId;
 
+  private String processInstanceId;
+
   private String assignee;
 
   private String creationTime;
 
   private TaskState taskState;
 
+  private List<String> candidateUsers;
+
   private List<String> candidateGroups;
+  
+  private LocalDateTime followUpDate;
+  
+  private LocalDateTime dueDate;
+
+  private String formKey;
+  
+  private String taskDefinitionId;
 
   private List<String> sortValues;
 
   private Boolean isFirst;
 
   private List<Variable> variables;
-
-  private String formKey;
-  
-  private String taskDefinitionId;
 
   public String getId() {
     return id;
@@ -132,5 +141,36 @@ public class Task {
   public void setTaskDefinitionId(String taskDefinitionId) {
     this.taskDefinitionId = taskDefinitionId;
   }
-  
+
+  public String getProcessInstanceId() {
+    return processInstanceId;
+  }
+
+  public void setProcessInstanceId(String processInstanceId) {
+    this.processInstanceId = processInstanceId;
+  }
+
+  public List<String> getCandidateUsers() {
+    return candidateUsers;
+  }
+
+  public void setCandidateUsers(List<String> candidateUsers) {
+    this.candidateUsers = candidateUsers;
+  }
+
+  public LocalDateTime getFollowUpDate() {
+    return followUpDate;
+  }
+
+  public void setFollowUpDate(LocalDateTime followUpDate) {
+    this.followUpDate = followUpDate;
+  }
+
+  public LocalDateTime getDueDate() {
+    return dueDate;
+  }
+
+  public void setDueDate(LocalDateTime dueDate) {
+    this.dueDate = dueDate;
+  }
 }

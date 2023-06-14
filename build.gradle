@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'io.camunda'
-version = '1.6.2'
+version = '1.7.0'
 
 sourceCompatibility = '8'
 
@@ -18,7 +18,8 @@ repositories {
 dependencies {
   def apolloVersion = "3.2.1"  
   api 'com.fasterxml.jackson.core:jackson-databind:2.13.1'
-
+  api 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.1'
+  
   api "com.apollographql.apollo3:apollo-runtime:${apolloVersion}"
   api "com.apollographql.apollo3:apollo-api:${apolloVersion}"
   api "com.apollographql.apollo3:apollo-ast:${apolloVersion}"

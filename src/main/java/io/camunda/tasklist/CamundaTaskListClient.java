@@ -13,6 +13,7 @@ import com.apollographql.apollo3.exception.ApolloHttpException;
 import com.apollographql.apollo3.rx3.Rx3Apollo;
 
 import io.camunda.tasklist.auth.AuthInterface;
+import io.camunda.tasklist.dto.DateFilter;
 import io.camunda.tasklist.dto.Form;
 import io.camunda.tasklist.dto.Pagination;
 import io.camunda.tasklist.dto.SearchType;
@@ -30,6 +31,7 @@ import io.generated.tasklist.client.GetTaskWithVariablesQuery;
 import io.generated.tasklist.client.GetTasksQuery;
 import io.generated.tasklist.client.GetTasksWithVariableQuery;
 import io.generated.tasklist.client.UnclaimTaskMutation;
+import io.generated.tasklist.client.type.TaskOrderBy;
 
 public class CamundaTaskListClient {
 
@@ -173,20 +175,22 @@ public class CamundaTaskListClient {
   }
 
   public TaskList getTasks(TaskSearch search) throws TaskListException {
-    return getTasks(search.getGroup(), search.getAssigned(), search.getAssignee(), search.getState(), search.getProcessDefinitionId(), search.getProcessInstanceId(), search.getTaskDefinitionId(), search.isWithVariables(), search.getPagination());
-  }
-
-  public TaskList getTasks(String group, Boolean assigned, String assigneeId, TaskState state, boolean withVariables, Pagination pagination)
-      throws TaskListException {
-    return getTasks(group, assigned, assigneeId, state, null,null,null,withVariables, pagination);
+    return getTasks(search.getCandidateUser(), search.getGroup(), search.getAssigned(), search.getAssignee(), search.getState(), search.getFollowUpDate(), search.getDueDate(), search.getProcessDefinitionId(), search.getProcessInstanceId(), search.getTaskDefinitionId(), search.isWithVariables(), search.getPagination());
   }
   
-  public TaskList getTasks(String group, Boolean assigned, String assigneeId, TaskState state, String processDefinitionId, String processInstanceId, String taskDefinitionId, boolean withVariables, Pagination pagination)
+  public TaskList getTasks(String group, Boolean assigned, String assigneeId, TaskState state, boolean withVariables, Pagination pagination) throws TaskListException {
+      return getTasks(null, group, assigned, assigneeId, state, null,null,null,null,null, withVariables, pagination);
+  }
+  
+  public TaskList getTasks(String candidateUser, String group, Boolean assigned, String assigneeId, TaskState state, DateFilter followUpDate, DateFilter dueDate, String processDefinitionId, String processInstanceId, String taskDefinitionId, boolean withVariables, Pagination pagination)
       throws TaskListException {
 
+    Optional<String> optCandidateUser = ApolloUtils.optional(candidateUser);
     Optional<String> optGroup = ApolloUtils.optional(group);
     Optional<String> optAssignee = ApolloUtils.optional(assigneeId);
     Optional<Boolean> optAssigned = ApolloUtils.optional(assigned);
+    Optional<io.generated.tasklist.client.type.DateFilter> optFollowUpDate = ApolloUtils.optional(followUpDate);
+    Optional<io.generated.tasklist.client.type.DateFilter> optDueDate = ApolloUtils.optional(dueDate);
     Optional<String> optProcessDefinitionId = ApolloUtils.optional(processDefinitionId);
     Optional<String> optProcessInstanceId = ApolloUtils.optional(processInstanceId);
     Optional<String> optTaskDefinitionId = ApolloUtils.optional(taskDefinitionId);
@@ -194,7 +198,9 @@ public class CamundaTaskListClient {
     Optional<List<String>> optSearchBefore = null;
     Optional<List<String>> optSearchAfter = null;
     Optional<List<String>> optSearchAfterOrEqual = null;
+    Optional<List<TaskOrderBy>> optSort = null; 
     if (pagination != null) {
+      optSort = ApolloUtils.optionalSort(pagination.getSort());
       optPageSize = ApolloUtils.optional(pagination.getPageSize());
       if (pagination.getSearch() != null && !pagination.getSearch().isEmpty() && pagination.getSearchType() != null) {
         switch (pagination.getSearchType()) {
@@ -214,18 +220,18 @@ public class CamundaTaskListClient {
 
     if (!withVariables) {
       ApolloCall<GetTasksQuery.Data> queryCall = apolloClient
-          .query(new GetTasksQuery(optGroup, optAssignee, optAssigned, optState, optProcessDefinitionId, optProcessInstanceId, optTaskDefinitionId, optPageSize, optSearchAfter, optSearchBefore, optSearchAfterOrEqual));
+          .query(new GetTasksQuery(optCandidateUser, optGroup, optAssignee, optAssigned, optState, optProcessDefinitionId, optProcessInstanceId, optTaskDefinitionId, optFollowUpDate, optDueDate, optPageSize, optSearchAfter, optSearchBefore, optSearchAfterOrEqual, optSort));
       ApolloResponse<GetTasksQuery.Data> response = execute(queryCall);
 
-      return new TaskList().setItems(ApolloUtils.toTasks(response.data.tasks)).setSearch(new TaskSearch().setAssigned(assigned).setAssignee(assigneeId)
-          .setGroup(group).setState(state).setWithVariables(withVariables).setPagination(pagination));
+      return new TaskList().setItems(ApolloUtils.toTasks(response.data.tasks)).setSearch(new TaskSearch().setCandidateUser(candidateUser).setAssigned(assigned).setAssignee(assigneeId)
+          .setGroup(group).setProcessDefinitionId(processDefinitionId).setProcessInstanceId(processInstanceId).setFollowUpDate(followUpDate).setDueDate(dueDate).setTaskDefinitionId(taskDefinitionId).setState(state).setWithVariables(withVariables).setPagination(pagination));
     }
     ApolloCall<GetTasksWithVariableQuery.Data> queryCall = apolloClient.query(
-        new GetTasksWithVariableQuery(optGroup, optAssignee, optAssigned, optState, optProcessDefinitionId, optProcessInstanceId, optTaskDefinitionId, optPageSize, optSearchAfter, optSearchBefore, optSearchAfterOrEqual));
+        new GetTasksWithVariableQuery(optCandidateUser, optGroup, optAssignee, optAssigned, optState, optProcessDefinitionId, optProcessInstanceId, optTaskDefinitionId, optFollowUpDate, optDueDate, optPageSize, optSearchAfter, optSearchBefore, optSearchAfterOrEqual, optSort));
     ApolloResponse<GetTasksWithVariableQuery.Data> response = execute(queryCall);
 
-    return new TaskList().setItems(ApolloUtils.toTasks(response.data.tasks)).setSearch(new TaskSearch().setAssigned(assigned).setAssignee(assigneeId)
-        .setGroup(group).setState(state).setWithVariables(withVariables).setPagination(pagination));
+    return new TaskList().setItems(ApolloUtils.toTasks(response.data.tasks)).setSearch(new TaskSearch().setCandidateUser(candidateUser).setAssigned(assigned).setAssignee(assigneeId)
+        .setGroup(group).setProcessDefinitionId(processDefinitionId).setProcessInstanceId(processInstanceId).setFollowUpDate(followUpDate).setDueDate(dueDate).setTaskDefinitionId(taskDefinitionId).setState(state).setWithVariables(withVariables).setPagination(pagination));
   }
 
   private <T extends Operation.Data> ApolloResponse<T> execute(ApolloCall<T> call) throws TaskListException {

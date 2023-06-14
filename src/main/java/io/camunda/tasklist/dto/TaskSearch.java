@@ -4,13 +4,43 @@ public class TaskSearch {
 
   private String group;
   private String assignee;
+  private String candidateUser;
   private Boolean Assigned;
   private TaskState state;
   private String processDefinitionId;
   private String processInstanceId;
   private String taskDefinitionId;
   private boolean withVariables;
+  private DateFilter followUpDate;
+  private DateFilter dueDate;
   private Pagination pagination;
+  
+  public String getCandidateUser() {
+    return candidateUser;
+  }
+
+  public TaskSearch setCandidateUser(String candidateUser) {
+    this.candidateUser = candidateUser;
+    return this;
+  }
+
+  public DateFilter getFollowUpDate() {
+    return followUpDate;
+  }
+
+  public TaskSearch setFollowUpDate(DateFilter followUpDate) {
+    this.followUpDate = followUpDate;
+    return this;
+  }
+
+  public DateFilter getDueDate() {
+    return dueDate;
+  }
+
+  public TaskSearch setDueDate(DateFilter dueDate) {
+    this.dueDate = dueDate;
+    return this;
+  }
 
   public String getGroup() {
     return group;

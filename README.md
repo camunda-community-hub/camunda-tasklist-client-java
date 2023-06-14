@@ -4,7 +4,10 @@
 
 # Camunda TaskList Client
 
-This project is designed to simplify communication between a java backend and the Camunda 8 task list. Contributions through PR are welcome!
+This project is designed to simplify communication between a java backend and the Camunda 8 task list GraphQL APIs. Contributions through PR are welcome!
+
+:information_source: Since version 8.2, Operate is providing Rest APIs and this client should not be used anymore.
+
 
 # How to use the client
 
@@ -90,7 +93,7 @@ You can import it to your maven or gradle project as a dependency
 <dependency>
 	<groupId>io.camunda</groupId>
 	<artifactId>camunda-tasklist-client-java</artifactId>
-	<version>1.6.2</version>
+	<version>1.7.0</version>
 </dependency>
 ```
 # Troubleshooting

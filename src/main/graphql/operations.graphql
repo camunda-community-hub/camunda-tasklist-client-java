@@ -24,37 +24,47 @@ mutation CompleteTask($id: String!, $variables: [VariableInput!]!) {
 	}
 }
 
-query GetTasks($candidateGroup: String, $assignee: String, $assigned: Boolean, $state: TaskState, $processDefinitionId: String, $processInstanceId: String, $taskDefinitionId: String, $pageSize: Int, $searchAfter: [String!], $searchBefore: [String!], $searchAfterOrEqual: [String!]) {
-	tasks(query: {candidateGroup: $candidateGroup, assignee: $assignee, assigned: $assigned, state: $state, processDefinitionId: $processDefinitionId, processInstanceId: $processInstanceId, taskDefinitionId: $taskDefinitionId, pageSize: $pageSize, searchAfter: $searchAfter, searchBefore: $searchBefore, searchAfterOrEqual: $searchAfterOrEqual}) {
+query GetTasks($candidateUser: String, $candidateGroup: String, $assignee: String, $assigned: Boolean, $state: TaskState, $processDefinitionId: String, $processInstanceId: String, $taskDefinitionId: String, $followUpDate: DateFilter, $dueDate: DateFilter, $pageSize: Int, $searchAfter: [String!], $searchBefore: [String!], $searchAfterOrEqual: [String!], $sort: [TaskOrderBy]) {
+	tasks(query: {candidateUser: $candidateUser, candidateGroup: $candidateGroup, assignee: $assignee, assigned: $assigned, state: $state, processDefinitionId: $processDefinitionId, processInstanceId: $processInstanceId, taskDefinitionId: $taskDefinitionId, followUpDate: $followUpDate, dueDate: $dueDate, pageSize: $pageSize, searchAfter: $searchAfter, searchBefore: $searchBefore, searchAfterOrEqual: $searchAfterOrEqual, sort: $sort}) {
 		id
 		name
 		processName
 		assignee
 		creationTime
+		completionTime
 		taskState
 		candidateGroups
+		candidateUsers
 		sortValues
 		isFirst
 		formKey
 		processDefinitionId
+		processInstanceId
 		taskDefinitionId
+		followUpDate
+		dueDate
 	}
 }
 
-query GetTasksWithVariable($candidateGroup: String, $assignee: String, $assigned: Boolean, $state: TaskState, $processDefinitionId: String, $processInstanceId: String, $taskDefinitionId: String, $pageSize: Int, $searchAfter: [String!], $searchBefore: [String!], $searchAfterOrEqual: [String!]) {
-	tasks(query: {candidateGroup: $candidateGroup, assignee: $assignee, assigned: $assigned, state: $state, processDefinitionId: $processDefinitionId, processInstanceId: $processInstanceId, taskDefinitionId: $taskDefinitionId, pageSize: $pageSize, searchAfter: $searchAfter, searchBefore: $searchBefore, searchAfterOrEqual: $searchAfterOrEqual}) {
+query GetTasksWithVariable($candidateUser: String, $candidateGroup: String, $assignee: String, $assigned: Boolean, $state: TaskState, $processDefinitionId: String, $processInstanceId: String, $taskDefinitionId: String, $followUpDate: DateFilter, $dueDate: DateFilter, $pageSize: Int, $searchAfter: [String!], $searchBefore: [String!], $searchAfterOrEqual: [String!], $sort: [TaskOrderBy]) {
+	tasks(query: {candidateUser: $candidateUser, candidateGroup: $candidateGroup, assignee: $assignee, assigned: $assigned, state: $state, processDefinitionId: $processDefinitionId, processInstanceId: $processInstanceId, taskDefinitionId: $taskDefinitionId, followUpDate: $followUpDate, dueDate: $dueDate, pageSize: $pageSize, searchAfter: $searchAfter, searchBefore: $searchBefore, searchAfterOrEqual: $searchAfterOrEqual, sort: $sort}) {
 		id
 		name
 		processName
 		assignee
 		creationTime
+		completionTime
 		taskState
 		candidateGroups
+		candidateUsers
 		sortValues
 		isFirst
 		formKey
 		processDefinitionId
+		processInstanceId
 		taskDefinitionId
+		followUpDate
+		dueDate
 		variables {
 			id
 			name
@@ -66,32 +76,44 @@ query GetTasksWithVariable($candidateGroup: String, $assignee: String, $assigned
 query GetTask($id: String!) {
   task(id: $id) {
     id
-    formKey
-    processDefinitionId
-    assignee
-    name
-    taskState
-    candidateGroups
-    processName
-    creationTime
-    completionTime
-    taskDefinitionId
+	name
+	processName
+	assignee
+	creationTime
+	completionTime
+	taskState
+	candidateGroups
+	candidateUsers
+	sortValues
+	isFirst
+	formKey
+	processDefinitionId
+	processInstanceId
+	taskDefinitionId
+	followUpDate
+	dueDate
   }
 }
 
 query GetTaskWithVariables($id: String!) {
   task(id: $id) {
     id
-    formKey
-    processDefinitionId
-    assignee
-    name
-    taskState
-    candidateGroups
-    processName
-    creationTime
-    completionTime
-    taskDefinitionId
+	name
+	processName
+	assignee
+	creationTime
+	completionTime
+	taskState
+	candidateGroups
+	candidateUsers
+	sortValues
+	isFirst
+	formKey
+	processDefinitionId
+	processInstanceId
+	taskDefinitionId
+	followUpDate
+	dueDate
     variables {
       id
       name

@@ -1,6 +1,11 @@
 package io.camunda.tasklist.dto;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import io.generated.tasklist.client.type.Sort;
+import io.generated.tasklist.client.type.TaskOrderBy;
+import io.generated.tasklist.client.type.TaskSortFields;
 
 public class Pagination {
 
@@ -9,6 +14,8 @@ public class Pagination {
   private List<String> search;
 
   private SearchType searchType;
+  
+  private List<TaskOrderBy> sort;
 
   public Integer getPageSize() {
     return pageSize;
@@ -36,6 +43,17 @@ public class Pagination {
     this.searchType = searchType;
     return this;
   }
+  
+  public List<TaskOrderBy> getSort() {
+    return sort;
+  }
+
+  public Pagination setSort(List<TaskOrderBy> sort) {
+    this.sort = sort;
+    return this;
+  }
+
+
 
   public static class Builder {
 
@@ -44,6 +62,8 @@ public class Pagination {
     private List<String> search;
 
     private SearchType searchType;
+    
+    private List<TaskOrderBy> sort;
 
     public Builder pageSize(Integer pageSize) {
       this.pageSize = pageSize;
@@ -67,9 +87,17 @@ public class Pagination {
       this.searchType = SearchType.AFTER_OR_EQUAL;
       return this;
     }
+    
+    public Builder sortBy(TaskSortFields field, Sort order) {
+      if (sort==null) {
+        sort = new ArrayList<>();
+      }
+      sort.add(new TaskOrderBy(field, order));
+      return this;
+    }
 
     public Pagination build() {
-      return new Pagination().setPageSize(pageSize).setSearch(search).setSearchType(searchType);
+      return new Pagination().setPageSize(pageSize).setSearch(search).setSearchType(searchType).setSort(sort);
     }
   }
 
