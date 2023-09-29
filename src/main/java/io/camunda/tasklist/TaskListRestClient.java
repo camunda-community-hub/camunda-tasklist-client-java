@@ -60,10 +60,6 @@ public class TaskListRestClient {
     this.accessTokenResponse = accessTokenResponse;
   }
 
-  public void authenticate() throws TaskListException {
-    this.authentication.authenticate(this);
-  }
-
   public HttpResponse<String> post(String endPoint, String body)
       throws TaskListException, TaskListRestException {
     return postOrPatch("POST", endPoint, body);
