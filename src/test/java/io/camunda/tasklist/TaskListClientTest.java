@@ -2,10 +2,7 @@ package io.camunda.tasklist;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.camunda.tasklist.auth.JWTAuthentication;
-import io.camunda.tasklist.dto.AccessTokenRequest;
-import io.camunda.tasklist.dto.Constants;
-import io.camunda.tasklist.dto.TaskSearchRequest;
-import io.camunda.tasklist.dto.TaskSearchResponse;
+import io.camunda.tasklist.dto.*;
 import io.camunda.tasklist.exception.TaskListException;
 import io.camunda.tasklist.exception.TaskListRestException;
 import io.camunda.tasklist.json.JsonUtils;
@@ -20,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -31,9 +29,10 @@ public abstract class TaskListClientTest {
   TaskListRestClient taskListRestClient;
   @Autowired
   ZeebeClient zeebeClient;
-
   @Value("${tasklist.unit-test.bpmnProcessId: 'tasklistRestAPIUnitTestProcess'}")
   String bpmnProcessId;
+  @Value("${tasklist.unit-test.processDefinitionKey}")
+  String processDefinitionKey;
 
   public void createInstance(Map<String, String> variables) {
     ProcessInstanceEvent event = zeebeClient.newCreateInstanceCommand()
@@ -51,33 +50,42 @@ public abstract class TaskListClientTest {
     TaskSearchRequest taskSearchRequest = new TaskSearchRequest();
     taskSearchRequest.setState(Constants.TASK_STATE_CREATED);
     taskSearchRequest.setAssigned(false);
-    //taskSearchRequest.setProcessDefinitionKey(processDefinitionKey.toString());
-    List<TaskSearchResponse> response = taskListRestClient.searchTasks(taskSearchRequest);
-    return response;
+    taskSearchRequest.setProcessDefinitionKey(processDefinitionKey);
+    return taskListRestClient.searchTasks(taskSearchRequest);
   }
 
   public List<TaskSearchResponse> findCreatedAssignedTasks() throws TaskListException, TaskListRestException {
     TaskSearchRequest taskSearchRequest = new TaskSearchRequest();
     taskSearchRequest.setState(Constants.TASK_STATE_CREATED);
     taskSearchRequest.setAssigned(true);
-    //taskSearchRequest.setProcessDefinitionKey(processDefinitionKey.toString());
-    List<TaskSearchResponse> response = taskListRestClient.searchTasks(taskSearchRequest);
-    return response;
+    taskSearchRequest.setProcessDefinitionKey(processDefinitionKey);
+    return taskListRestClient.searchTasks(taskSearchRequest);
   }
 
-  public void setup() throws TaskListException, TaskListRestException {
+  public void setup() throws TaskListException, TaskListRestException, InterruptedException {
+
     Map<String, String> variables = new HashMap<>();
+    boolean created = false;
     if (findCreatedUnAssignedTasks().size() <= 0) {
       createInstance(variables);
+      created = true;
     }
     if (findCreatedAssignedTasks().size() <= 0) {
       variables.put("assignee", "junit");
       createInstance(variables);
+      created = true;
+    }
+
+    // TODO: improve this using job worker
+    // If this is the first time running tests, then we need to wait 5 seconds to allow tasklist to index the newly
+    // created tasks
+    if(created) {
+      TimeUnit.SECONDS.sleep(5);
     }
   }
 
   @BeforeAll
-  public void before() throws TaskListException, TaskListRestException {
+  public void before() throws TaskListException, TaskListRestException, InterruptedException {
     setup();
   }
 
@@ -107,6 +115,49 @@ public abstract class TaskListClientTest {
     AccessTokenRequest result = jsonUtils.fromJson(json);
     assertNotNull(result);
     assertEquals("xxx", result.getClient_id());
+  }
+
+  @Test
+  public void findCreatedAssignedTasksTest() throws TaskListException, TaskListRestException {
+    List<TaskSearchResponse> tasks = findCreatedAssignedTasks();
+    assertTrue(tasks.size() > 0);
+  }
+
+  @Test
+  public void findCreatedUnAssignedTasksTest() throws TaskListException, TaskListRestException {
+    List<TaskSearchResponse> tasks = findCreatedUnAssignedTasks();
+    assertTrue(tasks.size() > 0);
+  }
+
+  public TaskResponse assignTask(String assignee) throws TaskListException, TaskListRestException {
+
+    String taskId = findCreatedUnAssignedTasks().get(0).getId();
+
+    TaskAssignRequest taskAssignRequest = new TaskAssignRequest();
+    taskAssignRequest.setAssignee(assignee);
+    taskAssignRequest.setAllowOverrideAssignment(true);
+    TaskResponse response = taskListRestClient.assignTask(taskId, taskAssignRequest);
+    assertNotNull(response);
+    return response;
+  }
+
+  @Test
+  public void assignTaskTest() throws TaskListException, TaskListRestException {
+    TaskResponse response = assignTask("junit");
+    assertEquals(response.getAssignee(), "junit");
+  }
+
+  public TaskResponse unassignTask(String taskId) throws TaskListException, TaskListRestException {
+    TaskResponse response = taskListRestClient.unassignTask(taskId);
+    assertNotNull(response);
+    return response;
+  }
+
+  @Test
+  public void unassignTaskTest() throws TaskListException, TaskListRestException {
+    String taskId = findCreatedAssignedTasks().get(0).getId();
+    TaskResponse response = unassignTask(taskId);
+    assertNull(response.getAssignee());
   }
 
 }
