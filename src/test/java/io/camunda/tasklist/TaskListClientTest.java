@@ -62,29 +62,15 @@ public abstract class TaskListClientTest {
     return taskListRestClient.searchTasks(taskSearchRequest);
   }
 
-  public void setup() throws TaskListException, TaskListRestException {
+  private void waitForIndexing() {
+    waitForIndexing(10);
+  }
 
-    Map<String, String> variables = new HashMap<>();
-    boolean created = false;
-    if (findCreatedUnAssignedTasks().size() <= 0) {
-      createInstance(variables);
-      created = true;
-    }
-    if (findCreatedAssignedTasks().size() <= 0) {
-      variables.put("assignee", "junit");
-      createInstance(variables);
-      created = true;
-    }
-
-    // TODO: improve this using job worker
-    // If this is the first time running tests, then we need to wait 5 seconds to allow tasklist to index the newly
-    // created tasks
-    if(created) {
-      try {
-        TimeUnit.SECONDS.sleep(10);
-      } catch (InterruptedException e) {
-        throw new RuntimeException(e);
-      }
+  private void waitForIndexing(Integer seconds) {
+    try {
+      TimeUnit.SECONDS.sleep(seconds);
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
     }
   }
 
@@ -116,20 +102,6 @@ public abstract class TaskListClientTest {
     assertEquals("xxx", result.getClient_id());
   }
 
-  @Test
-  public void findCreatedAssignedTasksTest() throws TaskListException, TaskListRestException {
-    setup();
-    List<TaskSearchResponse> tasks = findCreatedAssignedTasks();
-    assertTrue(tasks.size() > 0);
-  }
-
-  @Test
-  public void findCreatedUnAssignedTasksTest() throws TaskListException, TaskListRestException {
-    setup();
-    List<TaskSearchResponse> tasks = findCreatedUnAssignedTasks();
-    assertTrue(tasks.size() > 0);
-  }
-
   public TaskResponse assignTask(String assignee) throws TaskListException, TaskListRestException {
 
     String taskId = findCreatedUnAssignedTasks().get(0).getId();
@@ -142,13 +114,6 @@ public abstract class TaskListClientTest {
     return response;
   }
 
-  @Test
-  public void assignTaskTest() throws TaskListException, TaskListRestException {
-    setup();
-    TaskResponse response = assignTask("junit");
-    assertEquals(response.getAssignee(), "junit");
-  }
-
   public TaskResponse unassignTask(String taskId) throws TaskListException, TaskListRestException {
     TaskResponse response = taskListRestClient.unassignTask(taskId);
     assertNotNull(response);
@@ -156,18 +121,34 @@ public abstract class TaskListClientTest {
   }
 
   @Test
-  public void unassignTaskTest() throws TaskListException, TaskListRestException {
-    setup();
-    String taskId = findCreatedAssignedTasks().get(0).getId();
-    TaskResponse response = unassignTask(taskId);
+  public void taskLifecycleTest() throws TaskListException, TaskListRestException {
+
+    // Create unassigned task
+    Map<String, String> variables = new HashMap<>();
+    if (findCreatedUnAssignedTasks().size() <= 0) {
+      createInstance(variables);
+      waitForIndexing();
+    }
+
+    // Find unassigned tasks
+    List<TaskSearchResponse> tasks = findCreatedUnAssignedTasks();
+    assertTrue(tasks.size() > 0);
+
+    String taskId = tasks.get(0).getId();
+
+    // Assign task
+    TaskResponse response = assignTask("junit");
+    assertEquals(response.getAssignee(), "junit");
+
+    // Find assigned tasks
+    tasks = findCreatedAssignedTasks();
+    assertTrue(tasks.size() > 0);
+
+    // Un-assign task
+    response = unassignTask(taskId);
     assertNull(response.getAssignee());
-  }
 
-  @Test
-  public void completeTaskTest() throws TaskListException, TaskListRestException {
-    setup();
-    String taskId = findCreatedAssignedTasks().get(0).getId();
-
+    // Complete Task with variables
     Map<String, Object> instanceVariables = new HashMap<>();
     Map<String, String> mockPersonData = new HashMap<>();
     mockPersonData.put("name", "Dave");
@@ -175,9 +156,10 @@ public abstract class TaskListClientTest {
     mockPersonData.put("color", "red");
     instanceVariables.put("person", mockPersonData);
     instanceVariables.put("timestamp", Calendar.getInstance());
-    TaskResponse response = taskListRestClient.completeTask(taskId, instanceVariables);
+    response = taskListRestClient.completeTask(taskId, instanceVariables);
     assertNotNull(response);
     assertEquals(response.getTaskState(), Constants.TASK_STATE_COMPLETED);
+
   }
 
 }

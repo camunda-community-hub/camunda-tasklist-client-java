@@ -1,7 +1,6 @@
 package io.camunda.tasklist;
 
 import io.camunda.zeebe.spring.client.annotation.Deployment;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
