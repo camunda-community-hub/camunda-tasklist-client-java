@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>org.camunda.community</groupId>
-	<artifactId>camunda-8-tasklist-java-client</artifactId>
+	<artifactId>camunda-8-tasklist-java-rest-client</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Camunda 8 Tasklist Java Client</name>
 	<description>A Java client for the Camunda 8 TaskList Rest API</description>
