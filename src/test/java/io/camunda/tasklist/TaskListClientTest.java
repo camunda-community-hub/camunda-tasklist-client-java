@@ -9,7 +9,6 @@ import io.camunda.tasklist.json.JsonUtils;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.client.api.response.Topology;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -63,7 +62,7 @@ public abstract class TaskListClientTest {
     return taskListRestClient.searchTasks(taskSearchRequest);
   }
 
-  public void setup() throws TaskListException, TaskListRestException, InterruptedException {
+  public void setup() throws TaskListException, TaskListRestException {
 
     Map<String, String> variables = new HashMap<>();
     boolean created = false;
@@ -81,13 +80,12 @@ public abstract class TaskListClientTest {
     // If this is the first time running tests, then we need to wait 5 seconds to allow tasklist to index the newly
     // created tasks
     if(created) {
-      TimeUnit.SECONDS.sleep(5);
+      try {
+        TimeUnit.SECONDS.sleep(10);
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+      }
     }
-  }
-
-  @BeforeAll
-  public void before() throws TaskListException, TaskListRestException, InterruptedException {
-    setup();
   }
 
   @Test
@@ -120,12 +118,14 @@ public abstract class TaskListClientTest {
 
   @Test
   public void findCreatedAssignedTasksTest() throws TaskListException, TaskListRestException {
+    setup();
     List<TaskSearchResponse> tasks = findCreatedAssignedTasks();
     assertTrue(tasks.size() > 0);
   }
 
   @Test
   public void findCreatedUnAssignedTasksTest() throws TaskListException, TaskListRestException {
+    setup();
     List<TaskSearchResponse> tasks = findCreatedUnAssignedTasks();
     assertTrue(tasks.size() > 0);
   }
@@ -144,6 +144,7 @@ public abstract class TaskListClientTest {
 
   @Test
   public void assignTaskTest() throws TaskListException, TaskListRestException {
+    setup();
     TaskResponse response = assignTask("junit");
     assertEquals(response.getAssignee(), "junit");
   }
@@ -156,6 +157,7 @@ public abstract class TaskListClientTest {
 
   @Test
   public void unassignTaskTest() throws TaskListException, TaskListRestException {
+    setup();
     String taskId = findCreatedAssignedTasks().get(0).getId();
     TaskResponse response = unassignTask(taskId);
     assertNull(response.getAssignee());
@@ -163,6 +165,7 @@ public abstract class TaskListClientTest {
 
   @Test
   public void completeTaskTest() throws TaskListException, TaskListRestException {
+    setup();
     String taskId = findCreatedAssignedTasks().get(0).getId();
 
     Map<String, Object> instanceVariables = new HashMap<>();

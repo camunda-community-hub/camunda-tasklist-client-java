@@ -9,7 +9,6 @@ import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
 @ActiveProfiles("sm")
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class TaskListClientTestSm extends TaskListClientTest {
   @SpringBootApplication
   @Deployment(resources = "classpath:/bpmn/tasklistRestAPIUnitTestProcess.bpmn")
