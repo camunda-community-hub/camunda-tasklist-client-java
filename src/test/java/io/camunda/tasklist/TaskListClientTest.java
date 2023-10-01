@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -158,6 +159,22 @@ public abstract class TaskListClientTest {
     String taskId = findCreatedAssignedTasks().get(0).getId();
     TaskResponse response = unassignTask(taskId);
     assertNull(response.getAssignee());
+  }
+
+  @Test
+  public void completeTaskTest() throws TaskListException, TaskListRestException {
+    String taskId = findCreatedAssignedTasks().get(0).getId();
+
+    Map<String, Object> instanceVariables = new HashMap<>();
+    Map<String, String> mockPersonData = new HashMap<>();
+    mockPersonData.put("name", "Dave");
+    mockPersonData.put("country", "USA");
+    mockPersonData.put("color", "red");
+    instanceVariables.put("person", mockPersonData);
+    instanceVariables.put("timestamp", Calendar.getInstance());
+    TaskResponse response = taskListRestClient.completeTask(taskId, instanceVariables);
+    assertNotNull(response);
+    assertEquals(response.getTaskState(), Constants.TASK_STATE_COMPLETED);
   }
 
 }

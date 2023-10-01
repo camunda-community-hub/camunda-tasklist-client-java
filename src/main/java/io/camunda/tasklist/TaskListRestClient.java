@@ -255,16 +255,40 @@ public class TaskListRestClient {
     }
   }
 
+  public static List<VariableInput> convertToVariableInputList(Map<String, Object> map) throws TaskListException {
+    List<VariableInput> variableInputList = new ArrayList<>();
+
+    ObjectMapper objectMapper = new ObjectMapper();
+
+    for (Map.Entry<String, Object> entry : map.entrySet()) {
+      String name = entry.getKey();
+      Object value = entry.getValue();
+      VariableInput variableInput = new VariableInput();
+
+      variableInput.setName(name);
+
+      if (value instanceof String) {
+        variableInput.setValue((String) value);
+      } else {
+        // Serialize the object to a JSON string
+        try {
+          String jsonValue = objectMapper.writeValueAsString(value);
+          variableInput.setValue(jsonValue);
+        } catch (Exception e) {
+          throw new TaskListException("Unable to serialize instance variables", e);
+        }
+      }
+
+      variableInputList.add(variableInput);
+    }
+
+    return variableInputList;
+  }
+
   public TaskResponse completeTask(String taskId, Map<String, Object> variablesMap) throws TaskListException, TaskListRestException {
 
-    //TODO: convert variablesMap to TaskCompleteRequest
     TaskCompleteRequest taskCompleteRequest = new TaskCompleteRequest();
-    VariableInput variableInput = new VariableInput();
-    variableInput.setName("message");
-    variableInput.setValue("Note that the tasklist rest api client you are using is not fully implemented yet!");
-    List<VariableInput> variableInputs = new ArrayList<>();
-    variableInputs.add(variableInput);
-    taskCompleteRequest.setVariables(variableInputs);
+    taskCompleteRequest.setVariables(convertToVariableInputList(variablesMap));
 
     JsonUtils<TaskCompleteRequest> jsonRequest = new JsonUtils<>(TaskCompleteRequest.class);
     try {
