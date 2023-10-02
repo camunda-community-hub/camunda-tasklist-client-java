@@ -10,4 +10,7 @@ This is a [Camunda 8 Tasklist Rest API](https://docs.camunda.io/docs/next/apis-t
 
 ## Versioning
 
-The version of this project will match the corresponding version of Camunda 8 Tasklist. For example, version `8.3.0` of this library should be compatible with `8.3.0` of Camunda 8 Tasklist. 
+The version of this project will match the corresponding version of Camunda 8 Tasklist. For example, version `8.3.0-alpha6` of this library is compatible with `8.3.0-alpha6` of Camunda 8 Tasklist. 
+
+> [!NOTE]  
+> This project was created in October 2023 right before the 8.3 release. This [camunda-tasklist-client-java](https://github.com/camunda-community-hub/camunda-tasklist-client-java) graphql java implementation can be used for `8.2.x` and older versions.  
