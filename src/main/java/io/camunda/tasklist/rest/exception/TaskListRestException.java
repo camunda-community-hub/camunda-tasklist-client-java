@@ -1,6 +1,6 @@
-package io.camunda.tasklist.exception;
+package io.camunda.tasklist.rest.exception;
 
-import io.camunda.tasklist.dto.ErrorResponse;
+import io.camunda.tasklist.rest.dto.ErrorResponse;
 
 public class TaskListRestException extends Exception {
 

@@ -1,4 +1,4 @@
-package io.camunda.tasklist.json;
+package io.camunda.tasklist.rest.json;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;

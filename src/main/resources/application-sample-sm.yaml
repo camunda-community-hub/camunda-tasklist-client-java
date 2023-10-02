@@ -1,0 +1,8 @@
+tasklist:
+  client:
+    authorizationUrl: "https://KEYCLOAK_HOST/auth/realms/camunda-platform/protocol/openid-connect/token"
+    clientId: "tasklist"
+    clientSecret: "TASKLIST_CLIENT_SECRET"
+    contentType: "application/x-www-form-urlencoded"
+    taskListBaseUrl: "https://TASKLIST_HOST/tasklist"
+    audience: "tasklist.camunda.io"

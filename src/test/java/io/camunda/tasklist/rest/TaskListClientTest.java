@@ -1,11 +1,12 @@
-package io.camunda.tasklist;
+package io.camunda.tasklist.rest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import io.camunda.tasklist.auth.JWTAuthentication;
-import io.camunda.tasklist.dto.*;
-import io.camunda.tasklist.exception.TaskListException;
-import io.camunda.tasklist.exception.TaskListRestException;
-import io.camunda.tasklist.json.JsonUtils;
+import io.camunda.tasklist.rest.auth.JWTAuthentication;
+import io.camunda.tasklist.rest.exception.TaskListException;
+import io.camunda.tasklist.rest.exception.TaskListRestException;
+import io.camunda.tasklist.rest.json.JsonUtils;
+import io.camunda.tasklist.rest.TaskListRestClient;
+import io.camunda.tasklist.rest.dto.*;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.client.api.response.Topology;

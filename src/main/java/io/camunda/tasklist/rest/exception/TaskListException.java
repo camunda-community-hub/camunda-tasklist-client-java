@@ -1,4 +1,4 @@
-package io.camunda.tasklist.exception;
+package io.camunda.tasklist.rest.exception;
 
 public class TaskListException extends Exception {
 

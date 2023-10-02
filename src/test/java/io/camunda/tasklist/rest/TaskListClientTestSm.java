@@ -1,4 +1,4 @@
-package io.camunda.tasklist;
+package io.camunda.tasklist.rest;
 
 import io.camunda.zeebe.spring.client.annotation.Deployment;
 import org.springframework.boot.SpringApplication;
@@ -7,8 +7,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
-@ActiveProfiles("saas")
-public class TaskListClientTestSaas extends TaskListClientTest {
+@ActiveProfiles("sm")
+public class TaskListClientTestSm extends TaskListClientTest {
   @SpringBootApplication
   @Deployment(resources = "classpath:/bpmn/tasklistRestAPIUnitTestProcess.bpmn")
   public static class TaskListClientTestApp {

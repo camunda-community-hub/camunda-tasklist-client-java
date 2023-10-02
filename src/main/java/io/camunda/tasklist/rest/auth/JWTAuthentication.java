@@ -1,11 +1,11 @@
-package io.camunda.tasklist.auth;
+package io.camunda.tasklist.rest.auth;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import io.camunda.tasklist.TaskListRestClient;
-import io.camunda.tasklist.dto.AccessTokenRequest;
-import io.camunda.tasklist.dto.AccessTokenResponse;
-import io.camunda.tasklist.exception.TaskListException;
-import io.camunda.tasklist.json.JsonUtils;
+import io.camunda.tasklist.rest.TaskListRestClient;
+import io.camunda.tasklist.rest.dto.AccessTokenRequest;
+import io.camunda.tasklist.rest.dto.AccessTokenResponse;
+import io.camunda.tasklist.rest.exception.TaskListException;
+import io.camunda.tasklist.rest.json.JsonUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 

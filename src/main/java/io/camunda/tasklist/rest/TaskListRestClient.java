@@ -1,13 +1,13 @@
-package io.camunda.tasklist;
+package io.camunda.tasklist.rest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.camunda.tasklist.auth.Authentication;
-import io.camunda.tasklist.dto.*;
-import io.camunda.tasklist.exception.TaskListException;
-import io.camunda.tasklist.exception.TaskListRestException;
-import io.camunda.tasklist.json.JsonUtils;
+import io.camunda.tasklist.rest.auth.Authentication;
+import io.camunda.tasklist.rest.exception.TaskListException;
+import io.camunda.tasklist.rest.exception.TaskListRestException;
+import io.camunda.tasklist.rest.json.JsonUtils;
+import io.camunda.tasklist.rest.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-public class TaskListRestClient {
+public class TaskListRestClient implements TaskListRestApi {
 
   Authentication authentication;
   AccessTokenResponse accessTokenResponse;

@@ -1,4 +1,4 @@
-package io.camunda.tasklist.dto;
+package io.camunda.tasklist.rest.dto;
 
 public class TaskOrderBy {
 

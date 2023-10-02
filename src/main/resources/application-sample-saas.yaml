@@ -1,0 +1,8 @@
+tasklist:
+  client:
+    authorizationUrl: "https://login.cloud.camunda.io/oauth/token"
+    clientId: "CLOUD_CLIENT_ID"
+    clientSecret: "CLOUD_CLIENT_SECRET"
+    contentType: "application/json"
+    taskListBaseUrl: "https://REGION.tasklist.camunda.io/CLOUD_ORG_ID"
+    audience: "tasklist.camunda.io"
