@@ -4,5 +4,5 @@ tasklist:
     clientId: "CLOUD_CLIENT_ID"
     clientSecret: "CLOUD_CLIENT_SECRET"
     contentType: "application/json"
-    taskListBaseUrl: "https://REGION.tasklist.camunda.io/CLOUD_ORG_ID"
+    taskListBaseUrl: "https://REGION.tasklist.camunda.io/CLOUD_CLUSTER_ID"
     audience: "tasklist.camunda.io"

@@ -32,5 +32,3 @@ build/
 ### VS Code ###
 .vscode/
 
-src/test/resources/application-saas.yaml
-src/test/resources/application-sm.yaml
