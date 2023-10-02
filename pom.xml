@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>org.camunda.community</groupId>
 	<artifactId>camunda-8-tasklist-rest-java-client</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>8.3.0-alpha6</version>
 	<name>Camunda 8 Tasklist Java Client</name>
 	<description>A Java client for the Camunda 8 TaskList Rest API</description>
 	<properties>
