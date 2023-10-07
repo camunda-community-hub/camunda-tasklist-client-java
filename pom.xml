@@ -10,12 +10,13 @@
 	</parent>
 	<groupId>org.camunda.community</groupId>
 	<artifactId>camunda-8-tasklist-rest-java-client</artifactId>
-	<version>8.3.0-rc1-SNAPSHOT</version>
+	<version>8.2.15</version>
 	<name>Camunda 8 Tasklist Java Client</name>
 	<description>A Java client for the Camunda 8 TaskList Rest API</description>
 	<properties>
 		<java.version>17</java.version>
-		<camunda.version>8.3.0-rc1</camunda.version>
+		<camunda.version>8.2.15</camunda.version>
+		<spring-boot-starter-camunda.version>8.2.4</spring-boot-starter-camunda.version>
 	</properties>
 	<dependencies>
 		<!-- Runtime Dependencies -->
@@ -35,7 +36,7 @@
 		<dependency>
 			<groupId>io.camunda.spring</groupId>
 			<artifactId>spring-boot-starter-camunda</artifactId>
-			<version>8.2.4</version>
+			<version>${spring-boot-starter-camunda.version}</version>
 			<scope>test</scope>
 		</dependency>
 
