@@ -5,7 +5,6 @@ import io.camunda.tasklist.rest.auth.JWTAuthentication;
 import io.camunda.tasklist.rest.exception.TaskListException;
 import io.camunda.tasklist.rest.exception.TaskListRestException;
 import io.camunda.tasklist.rest.json.JsonUtils;
-import io.camunda.tasklist.rest.TaskListRestClient;
 import io.camunda.tasklist.rest.dto.*;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;

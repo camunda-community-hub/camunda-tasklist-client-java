@@ -1,0 +1,23 @@
+zeebe:
+  client:
+    broker:
+      gatewayAddress: "localhost:26500"
+      tenantId: "consulting"
+    security:
+      plaintext: true
+    cloud:
+      client-id: "zeebe"
+      client-secret: "secret"
+      auth-url: "http://localhost:18080/auth/realms/camunda-platform/protocol/openid-connect/token"
+
+tasklist:
+  client:
+    authorizationUrl: "http://localhost:18080/auth/realms/camunda-platform/protocol/openid-connect/token"
+    clientId: "tasklist"
+    clientSecret: "TASKLIST_CLIENT_SECRET"
+    contentType: "application/json"
+    taskListBaseUrl: "http://localhost:8082"
+    audience: "tasklist.camunda.io"
+  unit-test:
+    bpmnProcessId: "tasklistRestAPIUnitTestProcess"
+    processDefinitionKey: "PROCESS_DEFINITION_KEY"

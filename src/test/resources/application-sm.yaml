@@ -11,11 +11,11 @@ zeebe:
 
 tasklist:
   client:
-    authorizationUrl: "https://login.cloud.camunda.io/oauth/token"
+    authorizationUrl: "https://KEYCLOAK_HOST:443/auth/realms/camunda-platform/protocol/openid-connect/token"
     clientId: "CLOUD_CLIENT_ID"
     clientSecret: "CLOUD_CLIENT_SECRET"
     contentType: "application/json"
-    taskListBaseUrl: "https://REGION.tasklist.camunda.io/CLOUD_ORG_ID"
+    taskListBaseUrl: "https://TASKLIST_HOST/tasklist"
     audience: "tasklist.camunda.io"
   unit-test:
     bpmnProcessId: "tasklistRestAPIUnitTestProcess"
