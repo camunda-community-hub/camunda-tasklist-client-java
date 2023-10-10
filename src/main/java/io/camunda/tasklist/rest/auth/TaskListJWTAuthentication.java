@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
-public class JWTAuthentication implements Authentication {
+public class TaskListJWTAuthentication {
 
   final public static String CLIENT_CREDENTIALS = "client_credentials";
 
@@ -38,7 +38,7 @@ public class JWTAuthentication implements Authentication {
 
   HttpClient client;
 
-  public JWTAuthentication(
+  public TaskListJWTAuthentication(
       @Value("${tasklist.client.authorizationUrl:'tasklist.camunda.io'}") String authorizationServerUrl,
       @Value("${tasklist.client.clientId:'tasklist'}") String clientId,
       @Value("${tasklist.client.clientSecret}") String clientSecret,
@@ -58,7 +58,6 @@ public class JWTAuthentication implements Authentication {
         .build();
   }
 
-  @Override
   public Boolean authenticate(TaskListRestClient taskListClient) throws TaskListException {
 
     try {

@@ -3,7 +3,7 @@ package io.camunda.tasklist.rest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.camunda.tasklist.rest.auth.Authentication;
+import io.camunda.tasklist.rest.auth.TaskListJWTAuthentication;
 import io.camunda.tasklist.rest.exception.TaskListException;
 import io.camunda.tasklist.rest.exception.TaskListRestException;
 import io.camunda.tasklist.rest.json.JsonUtils;
@@ -26,14 +26,14 @@ import java.util.Map;
 @Component
 public class TaskListRestClient implements TaskListRestApi {
 
-  Authentication authentication;
+  TaskListJWTAuthentication authentication;
   AccessTokenResponse accessTokenResponse;
   String taskListBaseUrl;
 
   private final HttpClient httpClient;
 
   public TaskListRestClient(
-      @Autowired Authentication authentication,
+      @Autowired TaskListJWTAuthentication authentication,
       @Value("${tasklist.client.taskListBaseUrl}") String taskListBaseUrl) {
     this.authentication = authentication;
     httpClient = HttpClient.newBuilder()
@@ -44,11 +44,11 @@ public class TaskListRestClient implements TaskListRestApi {
     this.taskListBaseUrl = taskListBaseUrl;
   }
 
-  public Authentication getAuthentication() {
+  public TaskListJWTAuthentication getAuthentication() {
     return authentication;
   }
 
-  public void setAuthentication(Authentication authentication) {
+  public void setAuthentication(TaskListJWTAuthentication authentication) {
     this.authentication = authentication;
   }
 

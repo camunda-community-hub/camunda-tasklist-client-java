@@ -1,7 +1,7 @@
 package io.camunda.tasklist.rest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import io.camunda.tasklist.rest.auth.JWTAuthentication;
+import io.camunda.tasklist.rest.auth.TaskListJWTAuthentication;
 import io.camunda.tasklist.rest.exception.TaskListException;
 import io.camunda.tasklist.rest.exception.TaskListRestException;
 import io.camunda.tasklist.rest.json.JsonUtils;
@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public abstract class TaskListClientTest {
 
   @Autowired
-  JWTAuthentication jwtAuthentication;
+  TaskListJWTAuthentication tasklistJwtAuthentication;
   @Autowired
   TaskListRestClient taskListRestClient;
   @Autowired
@@ -80,7 +80,7 @@ public abstract class TaskListClientTest {
 
   @Test
   void authenticationTest() throws TaskListException {
-    assertTrue(jwtAuthentication.authenticate(taskListRestClient));
+    assertTrue(tasklistJwtAuthentication.authenticate(taskListRestClient));
   }
 
   @Test
