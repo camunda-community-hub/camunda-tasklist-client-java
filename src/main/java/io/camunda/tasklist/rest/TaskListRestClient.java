@@ -4,14 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.tasklist.rest.auth.TaskListJWTAuthentication;
-import io.camunda.tasklist.rest.dto.requests.TaskAssignRequest;
-import io.camunda.tasklist.rest.dto.requests.TaskCompleteRequest;
-import io.camunda.tasklist.rest.dto.requests.TaskSearchRequest;
-import io.camunda.tasklist.rest.dto.requests.VariableInput;
-import io.camunda.tasklist.rest.dto.responses.ErrorResponse;
-import io.camunda.tasklist.rest.dto.responses.FormResponse;
-import io.camunda.tasklist.rest.dto.responses.TaskResponse;
-import io.camunda.tasklist.rest.dto.responses.TaskSearchResponse;
+import io.camunda.tasklist.rest.dto.requests.*;
+import io.camunda.tasklist.rest.dto.responses.*;
 import io.camunda.tasklist.rest.exception.TaskListException;
 import io.camunda.tasklist.rest.exception.TaskListRestException;
 import io.camunda.tasklist.rest.json.JsonUtils;
@@ -221,21 +215,6 @@ public class TaskListRestClient implements TaskListRestApi {
 
   }
 
-  public FormResponse getForm(String processDefinitionKey, String formId) throws TaskListException, TaskListRestException {
-
-    try {
-      String endpoint = taskListBaseUrl +  "/v1/forms/" + formId + "?processDefinitionKey=" + processDefinitionKey;
-      HttpResponse<String> response = get(endpoint);
-
-      // TODO: update JsonUtils if this works
-      JsonUtils<FormResponse> jsonResponse = new JsonUtils<>(FormResponse.class);
-      return jsonResponse.fromJson(response.body());
-
-    } catch (JsonProcessingException e) {
-      throw new TaskListException("Unable to parse FormResponse to json", e);
-    }
-  }
-
   public TaskResponse assignTask(String taskId, TaskAssignRequest request) throws TaskListException, TaskListRestException {
     JsonUtils<TaskAssignRequest> jsonRequest = new JsonUtils<>(TaskAssignRequest.class);
     try {
@@ -260,6 +239,105 @@ public class TaskListRestClient implements TaskListRestApi {
 
     } catch (JsonProcessingException e) {
       throw new TaskListException("Unable to parse TaskSearchRequest to json", e);
+    }
+  }
+
+  public TaskResponse completeTask(String taskId, Map<String, Object> variablesMap) throws TaskListException, TaskListRestException {
+
+    TaskCompleteRequest taskCompleteRequest = new TaskCompleteRequest();
+    taskCompleteRequest.setVariables(convertToVariableInputList(variablesMap));
+
+    JsonUtils<TaskCompleteRequest> jsonRequest = new JsonUtils<>(TaskCompleteRequest.class);
+    try {
+      String body = jsonRequest.toJson(taskCompleteRequest);
+      String endpoint = taskListBaseUrl + "/v1/tasks/"+taskId+"/complete";
+      HttpResponse<String> response = patch(endpoint, body);
+      JsonUtils<TaskResponse> jsonResponse = new JsonUtils<>(TaskResponse.class);
+      return jsonResponse.fromJson(response.body());
+
+    } catch (JsonProcessingException e) {
+      throw new TaskListException("Unable to parse TaskSearchRequest to json", e);
+    }
+  }
+
+  public void saveDraftTaskVariables(String taskId, Map<String, Object> variablesMap) throws TaskListException {
+
+    SaveVariablesRequest saveVariablesRequest = new SaveVariablesRequest();
+    saveVariablesRequest.setVariables(convertToVariableInputList(variablesMap));
+
+    JsonUtils<SaveVariablesRequest> jsonRequest = new JsonUtils<>(SaveVariablesRequest.class);
+    try {
+      String body = jsonRequest.toJson(saveVariablesRequest);
+      String endpoint = taskListBaseUrl + "/v1/tasks/"+taskId+"/variables";
+      HttpResponse<String> response = post(endpoint, body);
+      if(response.statusCode() != 204) {
+        JsonUtils<ErrorResponse> jsonResponse = new JsonUtils<>(ErrorResponse.class);
+        ErrorResponse errorResponse = jsonResponse.fromJson(response.body());
+        throw new TaskListRestException(errorResponse);
+      }
+    } catch (JsonProcessingException | TaskListRestException e) {
+      throw new TaskListException("Unable to parse saveDraftTaskVariables objects to json", e);
+    }
+  }
+
+  public List<VariableSearchResponse> searchTaskVariables(String taskId) throws TaskListException {
+    return searchTaskVariables(taskId, null);
+  }
+  public List<VariableSearchResponse> searchTaskVariables(String taskId, VariablesSearchRequest variablesSearchRequest) throws TaskListException {
+
+    JsonUtils<VariablesSearchRequest> jsonRequest = new JsonUtils<>(VariablesSearchRequest.class);
+    try {
+      String body = "";
+      if(variablesSearchRequest != null) {
+        body = jsonRequest.toJson(variablesSearchRequest);
+      }
+      String endpoint = taskListBaseUrl + "/v1/tasks/"+taskId+"/variables/search";
+      HttpResponse<String> response = post(endpoint, body);
+      if(response.statusCode() == 200) {
+        JsonUtils<List> jsonResponse = new JsonUtils<>(List.class);
+        ObjectMapper objectMapper = jsonRequest.getObjectMapper();
+        JavaType javaType = objectMapper.getTypeFactory().constructParametricType(List.class, VariableSearchResponse.class);
+        return objectMapper.readValue(response.body(), javaType);
+      } else {
+        JsonUtils<ErrorResponse> jsonResponse = new JsonUtils<>(ErrorResponse.class);
+        ErrorResponse errorResponse = jsonResponse.fromJson(response.body());
+        throw new TaskListRestException(errorResponse);
+      }
+    } catch (JsonProcessingException | TaskListRestException e) {
+      throw new TaskListException("Unable to parse searchTaskVariables objects to json", e);
+    }
+  }
+
+  public FormResponse getForm(String processDefinitionKey, String formId) throws TaskListException, TaskListRestException {
+
+    try {
+      String endpoint = taskListBaseUrl +  "/v1/forms/" + formId + "?processDefinitionKey=" + processDefinitionKey;
+      HttpResponse<String> response = get(endpoint);
+
+      // TODO: update JsonUtils if this works
+      JsonUtils<FormResponse> jsonResponse = new JsonUtils<>(FormResponse.class);
+      return jsonResponse.fromJson(response.body());
+
+    } catch (JsonProcessingException e) {
+      throw new TaskListException("Unable to parse FormResponse to json", e);
+    }
+  }
+
+  public VariableResponse getVariable(String variableId) throws TaskListException {
+
+    try {
+      String endpoint = taskListBaseUrl + "/v1/variables/"+variableId;
+      HttpResponse<String> response = get(endpoint);
+      if(response.statusCode() == 200) {
+        JsonUtils<VariableResponse> jsonResponse = new JsonUtils<>(VariableResponse.class);
+        return jsonResponse.fromJson(response.body());
+      } else {
+        JsonUtils<ErrorResponse> jsonResponse = new JsonUtils<>(ErrorResponse.class);
+        ErrorResponse errorResponse = jsonResponse.fromJson(response.body());
+        throw new TaskListRestException(errorResponse);
+      }
+    } catch (JsonProcessingException | TaskListRestException e) {
+      throw new TaskListException("Unable to parse getVariable response to json", e);
     }
   }
 
@@ -291,24 +369,6 @@ public class TaskListRestClient implements TaskListRestApi {
     }
 
     return variableInputList;
-  }
-
-  public TaskResponse completeTask(String taskId, Map<String, Object> variablesMap) throws TaskListException, TaskListRestException {
-
-    TaskCompleteRequest taskCompleteRequest = new TaskCompleteRequest();
-    taskCompleteRequest.setVariables(convertToVariableInputList(variablesMap));
-
-    JsonUtils<TaskCompleteRequest> jsonRequest = new JsonUtils<>(TaskCompleteRequest.class);
-    try {
-      String body = jsonRequest.toJson(taskCompleteRequest);
-      String endpoint = taskListBaseUrl + "/v1/tasks/"+taskId+"/complete";
-      HttpResponse<String> response = patch(endpoint, body);
-      JsonUtils<TaskResponse> jsonResponse = new JsonUtils<>(TaskResponse.class);
-      return jsonResponse.fromJson(response.body());
-
-    } catch (JsonProcessingException e) {
-      throw new TaskListException("Unable to parse TaskSearchRequest to json", e);
-    }
   }
 
 }

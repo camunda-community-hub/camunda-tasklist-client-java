@@ -7,6 +7,7 @@ import io.camunda.tasklist.rest.dto.requests.TaskAssignRequest;
 import io.camunda.tasklist.rest.dto.requests.TaskSearchRequest;
 import io.camunda.tasklist.rest.dto.responses.TaskResponse;
 import io.camunda.tasklist.rest.dto.responses.TaskSearchResponse;
+import io.camunda.tasklist.rest.dto.responses.VariableSearchResponse;
 import io.camunda.tasklist.rest.exception.TaskListException;
 import io.camunda.tasklist.rest.exception.TaskListRestException;
 import io.camunda.tasklist.rest.json.JsonUtils;
@@ -14,14 +15,12 @@ import io.camunda.tasklist.rest.dto.*;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.client.api.response.Topology;
+import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -56,6 +55,9 @@ public abstract class TaskListClientTest {
     taskSearchRequest.setState(TaskState.CREATED);
     taskSearchRequest.setAssigned(false);
     taskSearchRequest.setProcessDefinitionKey(processDefinitionKey);
+    List<String> tenantIds = new ArrayList<>();
+    tenantIds.add("default");
+    taskSearchRequest.setTenantIds(tenantIds);
     return taskListRestClient.searchTasks(taskSearchRequest);
   }
 
@@ -139,7 +141,12 @@ public abstract class TaskListClientTest {
     List<TaskSearchResponse> tasks = findCreatedUnAssignedTasks();
     assertTrue(tasks.size() > 0);
 
-    String taskId = tasks.get(0).getId();
+    TaskSearchResponse task = tasks.get(0);
+    String taskId = task.getId();
+
+    List<VariableSearchResponse> variableSearchResponse = taskListRestClient.searchTaskVariables(taskId);
+    assertNotNull(variableSearchResponse);
+    assertEquals(variableSearchResponse.get(0).getName(), "assignee");
 
     // Assign task
     TaskResponse response = assignTask("junit");
@@ -164,6 +171,8 @@ public abstract class TaskListClientTest {
     response = taskListRestClient.completeTask(taskId, instanceVariables);
     assertNotNull(response);
     assertEquals(response.getTaskState(), TaskState.COMPLETED);
+
+
 
   }
 
