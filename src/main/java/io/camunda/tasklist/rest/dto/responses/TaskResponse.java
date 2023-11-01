@@ -1,4 +1,4 @@
-package io.camunda.tasklist.rest.dto;
+package io.camunda.tasklist.rest.dto.responses;
 
 import java.util.List;
 
@@ -15,6 +15,7 @@ public class TaskResponse {
   String formKey;
   String processDefinitionKey;
   String processInstanceKey;
+  String tenantId;
   String dueDate;
   String followUpDate;
   List<String> candidateGroups;
@@ -141,5 +142,13 @@ public class TaskResponse {
 
   public void setCandidateUsers(List<String> candidateUsers) {
     this.candidateUsers = candidateUsers;
+  }
+
+  public String getTenantId() {
+    return tenantId;
+  }
+
+  public void setTenantId(String tenantId) {
+    this.tenantId = tenantId;
   }
 }

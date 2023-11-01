@@ -1,4 +1,4 @@
-package io.camunda.tasklist.rest.dto;
+package io.camunda.tasklist.rest.dto.responses;
 
 import java.util.List;
 
@@ -13,10 +13,11 @@ public class TaskSearchResponse {
   String assignee;
   String taskState;
   List<String> sortValues;
-  String isFirst;
+  Boolean isFirst;
   String formKey;
   String processDefinitionKey;
   String processInstanceKey;
+  String tenantId;
   String dueDate;
   String followUpDate;
   List<String> candidateGroups;
@@ -97,11 +98,11 @@ public class TaskSearchResponse {
     this.sortValues = sortValues;
   }
 
-  public String getIsFirst() {
+  public Boolean getIsFirst() {
     return isFirst;
   }
 
-  public void setIsFirst(String isFirst) {
+  public void setIsFirst(Boolean isFirst) {
     this.isFirst = isFirst;
   }
 
@@ -159,5 +160,13 @@ public class TaskSearchResponse {
 
   public void setCandidateUsers(List<String> candidateUsers) {
     this.candidateUsers = candidateUsers;
+  }
+
+  public String getTenantId() {
+    return tenantId;
+  }
+
+  public void setTenantId(String tenantId) {
+    this.tenantId = tenantId;
   }
 }

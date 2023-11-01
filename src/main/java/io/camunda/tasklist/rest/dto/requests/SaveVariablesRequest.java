@@ -1,12 +1,12 @@
-package io.camunda.tasklist.rest.dto;
+package io.camunda.tasklist.rest.dto.requests;
 
 import java.util.List;
 
-public class TaskCompleteRequest {
+public class SaveVariablesRequest {
 
   List<VariableInput> variables;
 
-  public TaskCompleteRequest() {
+  public SaveVariablesRequest() {
   }
 
   public List<VariableInput> getVariables() {

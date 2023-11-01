@@ -1,8 +1,12 @@
 package io.camunda.tasklist.rest;
 
+import io.camunda.tasklist.rest.dto.requests.TaskAssignRequest;
+import io.camunda.tasklist.rest.dto.requests.TaskSearchRequest;
+import io.camunda.tasklist.rest.dto.responses.FormResponse;
+import io.camunda.tasklist.rest.dto.responses.TaskResponse;
+import io.camunda.tasklist.rest.dto.responses.TaskSearchResponse;
 import io.camunda.tasklist.rest.exception.TaskListException;
 import io.camunda.tasklist.rest.exception.TaskListRestException;
-import io.camunda.tasklist.rest.dto.*;
 
 import java.util.List;
 import java.util.Map;

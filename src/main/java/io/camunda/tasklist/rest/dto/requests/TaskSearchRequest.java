@@ -1,4 +1,9 @@
-package io.camunda.tasklist.rest.dto;
+package io.camunda.tasklist.rest.dto.requests;
+
+import io.camunda.tasklist.rest.dto.emums.TaskState;
+import io.camunda.tasklist.rest.dto.models.DateFilter;
+import io.camunda.tasklist.rest.dto.models.TaskOrderBy;
+import io.camunda.tasklist.rest.dto.models.TaskVariables;
 
 import java.util.List;
 
@@ -15,7 +20,9 @@ public class TaskSearchRequest {
   Integer pageSize;
   DateFilter followUpDate;
   DateFilter dueDate;
-  List<TaskOrderBy> sort;
+  List<TaskVariables> taskVariables;
+  List<String> tenantIds;
+  List<String> sort;
   List<String> searchAfter;
   List<String> searchAfterOrEqual;
   List<String> searchBefore;
@@ -113,11 +120,11 @@ public class TaskSearchRequest {
     this.dueDate = dueDate;
   }
 
-  public List<TaskOrderBy> getSort() {
+  public List<String> getSort() {
     return sort;
   }
 
-  public void setSort(List<TaskOrderBy> sort) {
+  public void setSort(List<String> sort) {
     this.sort = sort;
   }
 
@@ -151,5 +158,21 @@ public class TaskSearchRequest {
 
   public void setSearchBeforeOrEqual(List<String> searchBeforeOrEqual) {
     this.searchBeforeOrEqual = searchBeforeOrEqual;
+  }
+
+  public List<TaskVariables> getTaskVariables() {
+    return taskVariables;
+  }
+
+  public void setTaskVariables(List<TaskVariables> taskVariables) {
+    this.taskVariables = taskVariables;
+  }
+
+  public List<String> getTenantIds() {
+    return tenantIds;
+  }
+
+  public void setTenantIds(List<String> tenantIds) {
+    this.tenantIds = tenantIds;
   }
 }

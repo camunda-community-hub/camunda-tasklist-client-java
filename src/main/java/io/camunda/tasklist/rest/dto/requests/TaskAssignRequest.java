@@ -1,4 +1,4 @@
-package io.camunda.tasklist.rest.dto;
+package io.camunda.tasklist.rest.dto.requests;
 
 public class TaskAssignRequest {
 

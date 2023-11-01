@@ -1,0 +1,22 @@
+zeebe:
+  client:
+    broker:
+      gatewayAddress: "dave01.gke.c8sm.com:443"
+    security:
+      plaintext: false
+    cloud:
+      client-id: "zeebe"
+      client-secret: "osJmJynkQJ"
+      auth-url: "https://dave01.gke.c8sm.com:443/auth/realms/camunda-platform/protocol/openid-connect/token"
+
+tasklist:
+  client:
+    authorizationUrl: "https://dave01.gke.c8sm.com/auth/realms/camunda-platform/protocol/openid-connect/token"
+    clientId: "tasklist"
+    clientSecret: "ykX9HQH0OO"
+    contentType: "application/x-www-form-urlencoded"
+    taskListBaseUrl: "https://dave01.gke.c8sm.com/tasklist"
+    audience: "tasklist.camunda.io"
+  unit-test:
+    bpmnProcessId: "tasklistRestAPIUnitTestProcess"
+    processDefinitionKey: "2251799814597444"

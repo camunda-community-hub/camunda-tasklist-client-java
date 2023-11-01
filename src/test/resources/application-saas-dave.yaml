@@ -1,0 +1,26 @@
+
+zeebe:
+  client:
+    cloud:
+      cluster-id: "bccd8692-5e2d-4599-b29e-0988bd5a14a4"
+      client-id: "iOHBd9DZPM5HR~Py0_KW81QTLJOOOV2e"
+      client-secret: "DG92urGHR5m0yUE8i7Sdyi9.ijPuoDKW96gwNR-0Oc1Gyl3gPcb6Tx8nOrElhSVj"
+      region: "jfk-1"
+
+tasklist:
+  client:
+    authorizationUrl: "https://login.cloud.camunda.io/oauth/token"
+    clientId: "MrsfLQeCv48qWYECq67NJ.lqN2IqnIMK"
+    clientSecret: "v9ek7xmTXOJoMsb8M2lqlnEWoZHoIMVyIxodFiWFSRAOJKOTDzfP92eGDIX~ErSA"
+    contentType: "application/json"
+    taskListBaseUrl: "https://jfk-1.tasklist.camunda.io/bccd8692-5e2d-4599-b29e-0988bd5a14a4"
+    audience: "tasklist.camunda.io"
+  unit-test:
+    bpmnProcessId: "tasklistRestAPIUnitTestProcess"
+    processDefinitionKey: "2251799814266916"
+
+logging:
+  level:
+    io:
+      camunda:
+        tasklist: DEBUG

@@ -2,6 +2,11 @@ package io.camunda.tasklist.rest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.camunda.tasklist.rest.auth.TaskListJWTAuthentication;
+import io.camunda.tasklist.rest.dto.emums.TaskState;
+import io.camunda.tasklist.rest.dto.requests.TaskAssignRequest;
+import io.camunda.tasklist.rest.dto.requests.TaskSearchRequest;
+import io.camunda.tasklist.rest.dto.responses.TaskResponse;
+import io.camunda.tasklist.rest.dto.responses.TaskSearchResponse;
 import io.camunda.tasklist.rest.exception.TaskListException;
 import io.camunda.tasklist.rest.exception.TaskListRestException;
 import io.camunda.tasklist.rest.json.JsonUtils;
@@ -48,7 +53,7 @@ public abstract class TaskListClientTest {
 
   public List<TaskSearchResponse> findCreatedUnAssignedTasks() throws TaskListException, TaskListRestException {
     TaskSearchRequest taskSearchRequest = new TaskSearchRequest();
-    taskSearchRequest.setState(Constants.TASK_STATE_CREATED);
+    taskSearchRequest.setState(TaskState.CREATED);
     taskSearchRequest.setAssigned(false);
     taskSearchRequest.setProcessDefinitionKey(processDefinitionKey);
     return taskListRestClient.searchTasks(taskSearchRequest);
@@ -56,7 +61,7 @@ public abstract class TaskListClientTest {
 
   public List<TaskSearchResponse> findCreatedAssignedTasks() throws TaskListException, TaskListRestException {
     TaskSearchRequest taskSearchRequest = new TaskSearchRequest();
-    taskSearchRequest.setState(Constants.TASK_STATE_CREATED);
+    taskSearchRequest.setState(TaskState.CREATED);
     taskSearchRequest.setAssigned(true);
     taskSearchRequest.setProcessDefinitionKey(processDefinitionKey);
     return taskListRestClient.searchTasks(taskSearchRequest);
@@ -158,7 +163,7 @@ public abstract class TaskListClientTest {
     instanceVariables.put("timestamp", Calendar.getInstance());
     response = taskListRestClient.completeTask(taskId, instanceVariables);
     assertNotNull(response);
-    assertEquals(response.getTaskState(), Constants.TASK_STATE_COMPLETED);
+    assertEquals(response.getTaskState(), TaskState.COMPLETED);
 
   }
 

@@ -1,10 +1,12 @@
-package io.camunda.tasklist.rest.dto;
+package io.camunda.tasklist.rest.dto.responses;
 
 public class FormResponse {
 
   String id;
+  // Equivalent to processDefinitionId
   String processDefinitionKey;
   String schema;
+  String tenantId;
 
   public FormResponse() {
   }
@@ -31,5 +33,13 @@ public class FormResponse {
 
   public void setSchema(String schema) {
     this.schema = schema;
+  }
+
+  public String getTenantId() {
+    return tenantId;
+  }
+
+  public void setTenantId(String tenantId) {
+    this.tenantId = tenantId;
   }
 }
