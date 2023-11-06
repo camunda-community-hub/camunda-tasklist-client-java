@@ -1,5 +1,5 @@
 package io.camunda.tasklist.dto;
 
 public enum SearchType {
-  BEFORE, AFTER, AFTER_OR_EQUAL
+  BEFORE, BEFORE_OR_EQUAL, AFTER, AFTER_OR_EQUAL
 }

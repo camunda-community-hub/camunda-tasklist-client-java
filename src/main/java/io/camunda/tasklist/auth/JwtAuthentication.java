@@ -2,7 +2,6 @@ package io.camunda.tasklist.auth;
 
 import java.util.Base64;
 
-import com.apollographql.apollo3.api.http.HttpHeader;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,9 +31,9 @@ public abstract class JwtAuthentication implements AuthInterface {
   }
 
   public void setToken(CamundaTaskListClient client, String token) throws TaskListException {
-    client.getApolloClient().getHttpHeaders().clear();
-    client.getApolloClient().getHttpHeaders().add(new HttpHeader("Authorization", "Bearer " + token));
-
+    //client.getApolloClient().getHttpHeaders().clear();
+    //client.getApolloClient().getHttpHeaders().add(new HttpHeader("Authorization", "Bearer " + token));
+	client.setBearerToken(token);
     client.setTokenExpiration(getExpiration(token));
   }
 }

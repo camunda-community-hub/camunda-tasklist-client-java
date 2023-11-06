@@ -10,9 +10,9 @@ public class Task {
 
   private String processName;
 
-  private String processDefinitionId;
+  private String processDefinitionKey;
 
-  private String processInstanceId;
+  private String processInstanceKey;
 
   private String assignee;
 
@@ -126,12 +126,12 @@ public class Task {
     this.formKey = formKey;
   }
 
-  public String getProcessDefinitionId() {
-    return processDefinitionId;
+  public String getProcessDefinitionKey() {
+    return processDefinitionKey;
   }
 
-  public void setProcessDefinitionId(String processDefinitionId) {
-    this.processDefinitionId = processDefinitionId;
+  public void setProcessDefinitionKey(String processDefinitionId) {
+    this.processDefinitionKey = processDefinitionId;
   }
 
   public String getTaskDefinitionId() {
@@ -142,12 +142,12 @@ public class Task {
     this.taskDefinitionId = taskDefinitionId;
   }
 
-  public String getProcessInstanceId() {
-    return processInstanceId;
+  public String getProcessInstanceKey() {
+    return processInstanceKey;
   }
 
-  public void setProcessInstanceId(String processInstanceId) {
-    this.processInstanceId = processInstanceId;
+  public void setProcessInstanceKey(String processInstanceKey) {
+    this.processInstanceKey = processInstanceKey;
   }
 
   public List<String> getCandidateUsers() {

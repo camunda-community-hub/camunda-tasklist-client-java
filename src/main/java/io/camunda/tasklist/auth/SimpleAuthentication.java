@@ -5,8 +5,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
-import com.apollographql.apollo3.api.http.HttpHeader;
-
 import io.camunda.tasklist.CamundaTaskListClient;
 import io.camunda.tasklist.exception.TaskListException;
 
@@ -63,8 +61,9 @@ public class SimpleAuthentication implements AuthInterface {
 
       if (conn.getResponseCode() == HttpURLConnection.HTTP_NO_CONTENT || conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
         String cookie = conn.getHeaderField("Set-Cookie");
-        client.getApolloClient().getHttpHeaders().clear();
-        client.getApolloClient().getHttpHeaders().add(new HttpHeader("Cookie", cookie));
+        client.setAuthCookie(cookie);
+        //client.getApolloClient().getHttpHeaders().clear();
+        //client.getApolloClient().getHttpHeaders().add(new HttpHeader("Cookie", cookie));
       } else {
         throw new TaskListException("Error " + conn.getResponseCode() + " obtaining access token : " + conn.getResponseMessage());
       }

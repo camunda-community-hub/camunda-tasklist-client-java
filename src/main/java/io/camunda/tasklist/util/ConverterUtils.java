@@ -1,36 +1,36 @@
 package io.camunda.tasklist.util;
 
 import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.apollographql.apollo3.api.Optional;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import io.camunda.tasklist.dto.DateFilter;
-import io.camunda.tasklist.dto.Form;
 import io.camunda.tasklist.dto.Task;
 import io.camunda.tasklist.dto.TaskState;
+import io.camunda.tasklist.dto.Variable;
 import io.camunda.tasklist.dto.VariableType;
 import io.camunda.tasklist.exception.TaskListException;
-import io.generated.tasklist.client.type.TaskOrderBy;
-import io.generated.tasklist.client.type.VariableInput;
+import io.camunda.tasklist.generated.model.TaskResponse;
+import io.camunda.tasklist.generated.model.TaskSearchRequest;
+import io.camunda.tasklist.generated.model.TaskSearchResponse;
+import io.camunda.tasklist.generated.model.VariableInputDTO;
+import io.camunda.tasklist.generated.model.VariableSearchResponse;
 
-public class ApolloUtils {
+public class ConverterUtils {
 
   private static ObjectMapper objectMapper = null;
 
-  private ApolloUtils() {
+  private ConverterUtils() {
   }
-
+/*
   public static Optional<String> optional(String value) {
     return value == null ? null : new Optional.Present<String>(value);
   }
@@ -50,56 +50,58 @@ public class ApolloUtils {
   public static Optional<List<TaskOrderBy>> optionalSort(List<TaskOrderBy> value) {
     return value == null ? null : new Optional.Present<List<TaskOrderBy>>(value);
   }
-  
-  public static Optional<io.generated.tasklist.client.type.DateFilter> optional(DateFilter value) {
+  */
+  public static io.camunda.tasklist.generated.model.DateFilter toSearchDateFilter(DateFilter value) {
     if (value == null) return null;
-    io.generated.tasklist.client.type.DateFilter target = new io.generated.tasklist.client.type.DateFilter(value.getFrom()==null ? null : value.getFrom().atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME), value.getTo()==null ? null : value.getTo().atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
-    return new Optional.Present<io.generated.tasklist.client.type.DateFilter>(target);
+    return new io.camunda.tasklist.generated.model.DateFilter().from(value.getFrom()==null ? null : value.getFrom().atOffset(ZoneOffset.UTC)).to(value.getTo()==null ? null : value.getTo().atOffset(ZoneOffset.UTC));
   }
 
-  public static Optional<io.generated.tasklist.client.type.TaskState> optional(TaskState value) {
+  public static TaskSearchRequest.StateEnum toSearchState(TaskState value) {
     return value == null ? null
-        : new Optional.Present<io.generated.tasklist.client.type.TaskState>(io.generated.tasklist.client.type.TaskState.safeValueOf(value.getRawValue()));
+        : TaskSearchRequest.StateEnum.fromValue(value.getRawValue());
   }
 
-  public static io.camunda.tasklist.dto.Variable improveVariable(io.camunda.tasklist.dto.Variable var) throws JsonMappingException, JsonProcessingException {
-    String value = (String) var.getValue();
+  public static Variable improveVariable(VariableSearchResponse var) throws JsonMappingException, JsonProcessingException {
+    Variable result = new Variable();
+    result.setName(var.getName());
+	  String value = (String) var.getValue();
     JsonNode nodeValue = getObjectMapper().readTree(value);
     if (nodeValue.canConvertToLong()) {
-      var.setValue(nodeValue.asLong());
-      var.setType(VariableType.NUMBER);
-      return var;
+    	result.setValue(nodeValue.asLong());
+    	result.setType(VariableType.NUMBER);
+      return result;
     }
     if (nodeValue.isBoolean()) {
-      var.setValue(nodeValue.asBoolean());
-      var.setType(VariableType.BOOLEAN);
-      return var;
+    	result.setValue(nodeValue.asBoolean());
+    	result.setType(VariableType.BOOLEAN);
+      return result;
     }
     if (nodeValue.isTextual()) {
-      var.setValue(nodeValue.textValue());
-      var.setType(VariableType.STRING);
-      return var;
+    	result.setValue(nodeValue.textValue());
+    	result.setType(VariableType.STRING);
+      return result;
     }
     if (nodeValue.isArray()) {
-      var.setValue(getObjectMapper().convertValue(nodeValue, new TypeReference<List<?>>() {
+    	result.setValue(getObjectMapper().convertValue(nodeValue, new TypeReference<List<?>>() {
       }));
-      var.setType(VariableType.LIST);
-      return var;
+    	result.setType(VariableType.LIST);
+      return result;
     }
-    var.setValue(getObjectMapper().convertValue(nodeValue, new TypeReference<Map<String, Object>>() {
+    result.setValue(getObjectMapper().convertValue(nodeValue, new TypeReference<Map<String, Object>>() {
     }));
-    var.setType(VariableType.MAP);
-    return var;
+    result.setType(VariableType.MAP);
+    return result;
 
   }
 
-  public static Task toTask(Object apolloTask) throws TaskListException {
+  public static Task toTask(Object sourceTask, List<VariableSearchResponse> variables) throws TaskListException {
     try {
-      Task task = getObjectMapper().readValue(getObjectMapper().writeValueAsString(apolloTask), Task.class);
+      Task task = getObjectMapper().readValue(getObjectMapper().writeValueAsString(sourceTask), Task.class);
 
-      if (task.getVariables() != null) {
-        for (io.camunda.tasklist.dto.Variable var : task.getVariables()) {
-          improveVariable(var);
+      if (variables != null) {
+    	  task.setVariables(new ArrayList<>());
+        for (VariableSearchResponse var : variables) {
+        	task.getVariables().add(improveVariable(var));
         }
       }
       return task;
@@ -108,20 +110,20 @@ public class ApolloUtils {
     }
   }
 
-  public static List<Task> toTasks(List<?> apolloTasks) throws TaskListException {
+  public static List<Task> toTasks(List<TaskSearchResponse> tasks) throws TaskListException {
     List<Task> result = new ArrayList<>();
-    for (Object apolloTask : apolloTasks) {
-      result.add(toTask(apolloTask));
+    for (TaskSearchResponse task : tasks) {
+      result.add(toTask(task, null));
     }
     return result;
   }
 
-  public static List<VariableInput> toVariableInput(Map<String, Object> variablesMap) throws TaskListException {
+  public static List<VariableInputDTO> toVariableInput(Map<String, Object> variablesMap) throws TaskListException {
     try {
-      List<VariableInput> variables = new ArrayList<>();
+      List<VariableInputDTO> variables = new ArrayList<>();
       for (Map.Entry<String, Object> entry : variablesMap.entrySet()) {
         if (entry.getValue() != null) {
-          variables.add(new VariableInput(entry.getKey(), getObjectMapper().writeValueAsString(entry.getValue())));
+          variables.add(new VariableInputDTO().name(entry.getKey()).value(getObjectMapper().writeValueAsString(entry.getValue())));
         }
       }
       return variables;
@@ -129,7 +131,8 @@ public class ApolloUtils {
       throw new TaskListException(e);
     }
   }
-
+  
+/*
   public static Form toForm(Object apolloTask) throws TaskListException {
     try {
       return getObjectMapper().readValue(getObjectMapper().writeValueAsString(apolloTask), Form.class);
@@ -138,10 +141,11 @@ public class ApolloUtils {
     }
   }
 
+  */
   private static ObjectMapper getObjectMapper() {
     if (objectMapper == null) {
       objectMapper = new ObjectMapper();
-      objectMapper.registerModule(new JavaTimeModule());
+      //objectMapper.registerModule(new JavaTimeModule());
       objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
     return objectMapper;

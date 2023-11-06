@@ -7,8 +7,8 @@ public class TaskSearch {
   private String candidateUser;
   private Boolean Assigned;
   private TaskState state;
-  private String processDefinitionId;
-  private String processInstanceId;
+  private String processDefinitionKey;
+  private String processInstanceKey;
   private String taskDefinitionId;
   private boolean withVariables;
   private DateFilter followUpDate;
@@ -77,21 +77,21 @@ public class TaskSearch {
     this.state = state;
     return this;
   }
-  public String getProcessDefinitionId() {
-    return processDefinitionId;
+  public String getProcessDefinitionKey() {
+    return processDefinitionKey;
   }
 
-  public TaskSearch setProcessDefinitionId(String processDefinitionId) {
-    this.processDefinitionId = processDefinitionId;
+  public TaskSearch setProcessDefinitionKey(String processDefinitionId) {
+    this.processDefinitionKey = processDefinitionId;
     return this;
   }
 
-  public String getProcessInstanceId() {
-    return processInstanceId;
+  public String getProcessInstanceKey() {
+    return processInstanceKey;
   }
 
-  public TaskSearch setProcessInstanceId(String processInstanceId) {
-    this.processInstanceId = processInstanceId;
+  public TaskSearch setProcessInstanceKey(String processInstanceId) {
+    this.processInstanceKey = processInstanceId;
     return this;
   }
 

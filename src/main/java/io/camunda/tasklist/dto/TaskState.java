@@ -13,12 +13,10 @@ public enum TaskState {
     this.rawValue = rawValue;
   }
 
-  @JsonValue
   public String getRawValue() {
     return rawValue;
   }
 
-  @JsonCreator
   public static TaskState fromJson(@JsonProperty("rawValue") String rawValue) {
     return valueOf(rawValue);
   }

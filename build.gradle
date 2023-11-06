@@ -1,5 +1,5 @@
 plugins {
-  id("com.apollographql.apollo3").version("3.2.1")
+  id("org.openapi.generator") version "6.6.0"
   id 'maven-publish'
   id 'java-library'
   id 'signing'
@@ -15,27 +15,52 @@ repositories {
   mavenCentral()
 }
 
+ext {
+    jackson_version = "2.14.1"
+    jakarta_annotation_version = "1.3.5"
+    junit_version = "4.13.2"
+}
 dependencies {
-  def apolloVersion = "3.2.1"  
-  api 'com.fasterxml.jackson.core:jackson-databind:2.13.1'
-  api 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.1'
   
-  api "com.apollographql.apollo3:apollo-runtime:${apolloVersion}"
-  api "com.apollographql.apollo3:apollo-api:${apolloVersion}"
-  api "com.apollographql.apollo3:apollo-ast:${apolloVersion}"
-  api "com.apollographql.apollo3:apollo-rx3-support:${apolloVersion}"
-    
+   api "com.google.code.findbugs:jsr305:3.0.2"
+    api "com.fasterxml.jackson.core:jackson-core:$jackson_version"
+    api "com.fasterxml.jackson.core:jackson-annotations:$jackson_version"
+    api "com.fasterxml.jackson.core:jackson-databind:$jackson_version"
+    api "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jackson_version"
+    api "org.openapitools:jackson-databind-nullable:0.2.1"
+    api "jakarta.annotation:jakarta.annotation-api:$jakarta_annotation_version"
+  
+  
   testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 }
 
 tasks.named('test') {
   useJUnitPlatform()
 }
-
-apollo {
-  generateKotlinModels.set(false)
-  packageName.set("io.generated.tasklist.client")
+def generatedFolder = "$buildDir/generated/openapi"
+sourceSets.main.java.srcDirs += "$generatedFolder/src/main/java"
+openApiGenerate {
+    generatorName = "java"
+    library = "native"
+    inputSpec = "$rootDir/src/main/resources/tasklist-8.3.0.json"
+    outputDir = generatedFolder
+    generateApiTests = false
+    generateModelTests = false
+    generateModelDocumentation = false
+    generateApiDocumentation = false
+    skipValidateSpec  = true
+    apiPackage = "io.camunda.tasklist.generated.api"
+    invokerPackage = "io.camunda.tasklist.generated.invoker"
+    modelPackage = "io.camunda.tasklist.generated.model"
+     configOptions = [
+        disallowAdditionalPropertiesIfNotPresent: "false",
+        dateLibrary: "java8"
+    ]
+    globalProperties = [disallowAdditionalPropertiesIfNotPresent: "false"]
 }
+
+compileJava.dependsOn tasks.named("openApiGenerate")
+
 task sourceJar(type: Jar) {
   outputs.cacheIf { true }
   from sourceSets.main.allJava

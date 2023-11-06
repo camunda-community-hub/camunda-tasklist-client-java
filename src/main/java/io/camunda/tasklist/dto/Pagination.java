@@ -3,9 +3,7 @@ package io.camunda.tasklist.dto;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.generated.tasklist.client.type.Sort;
-import io.generated.tasklist.client.type.TaskOrderBy;
-import io.generated.tasklist.client.type.TaskSortFields;
+import io.camunda.tasklist.generated.model.TaskOrderBy;
 
 public class Pagination {
 
@@ -82,17 +80,23 @@ public class Pagination {
       return this;
     }
 
+    public Builder beforeOrEqual(List<String> search) {
+      this.search = search;
+      this.searchType = SearchType.BEFORE_OR_EQUAL;
+      return this;
+    }
+
     public Builder afterOrEqual(List<String> search) {
       this.search = search;
       this.searchType = SearchType.AFTER_OR_EQUAL;
       return this;
     }
     
-    public Builder sortBy(TaskSortFields field, Sort order) {
+    public Builder sortBy(TaskOrderBy.FieldEnum field, TaskOrderBy.OrderEnum order) {
       if (sort==null) {
         sort = new ArrayList<>();
       }
-      sort.add(new TaskOrderBy(field, order));
+      sort.add(new TaskOrderBy().field(field).order(order));
       return this;
     }
 
