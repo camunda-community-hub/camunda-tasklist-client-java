@@ -4,173 +4,173 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class Task {
-  private String id;
+    private String id;
 
-  private String name;
+    private String name;
 
-  private String processName;
+    private String processName;
 
-  private String processDefinitionKey;
+    private String processDefinitionKey;
 
-  private String processInstanceKey;
+    private String processInstanceKey;
 
-  private String assignee;
+    private String assignee;
 
-  private String creationTime;
+    private String creationTime;
 
-  private TaskState taskState;
+    private TaskState taskState;
 
-  private List<String> candidateUsers;
+    private List<String> candidateUsers;
 
-  private List<String> candidateGroups;
-  
-  private LocalDateTime followUpDate;
-  
-  private LocalDateTime dueDate;
+    private List<String> candidateGroups;
 
-  private String formKey;
-  
-  private String taskDefinitionId;
+    private LocalDateTime followUpDate;
 
-  private List<String> sortValues;
+    private LocalDateTime dueDate;
 
-  private Boolean isFirst;
+    private String formKey;
 
-  private List<Variable> variables;
+    private String taskDefinitionId;
 
-  public String getId() {
-    return id;
-  }
+    private List<String> sortValues;
 
-  public void setId(String id) {
-    this.id = id;
-  }
+    private Boolean isFirst;
 
-  public String getName() {
-    return name;
-  }
+    private List<Variable> variables;
 
-  public void setName(String name) {
-    this.name = name;
-  }
+    public String getId() {
+        return id;
+    }
 
-  public String getProcessName() {
-    return processName;
-  }
+    public void setId(String id) {
+        this.id = id;
+    }
 
-  public void setProcessName(String processName) {
-    this.processName = processName;
-  }
+    public String getName() {
+        return name;
+    }
 
-  public String getAssignee() {
-    return assignee;
-  }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-  public void setAssignee(String assignee) {
-    this.assignee = assignee;
-  }
+    public String getProcessName() {
+        return processName;
+    }
 
-  public String getCreationTime() {
-    return creationTime;
-  }
+    public void setProcessName(String processName) {
+        this.processName = processName;
+    }
 
-  public void setCreationTime(String creationTime) {
-    this.creationTime = creationTime;
-  }
+    public String getAssignee() {
+        return assignee;
+    }
 
-  public TaskState getTaskState() {
-    return taskState;
-  }
+    public void setAssignee(String assignee) {
+        this.assignee = assignee;
+    }
 
-  public void setTaskState(TaskState taskState) {
-    this.taskState = taskState;
-  }
+    public String getCreationTime() {
+        return creationTime;
+    }
 
-  public List<String> getSortValues() {
-    return sortValues;
-  }
+    public void setCreationTime(String creationTime) {
+        this.creationTime = creationTime;
+    }
 
-  public void setSortValues(List<String> sortValues) {
-    this.sortValues = sortValues;
-  }
+    public TaskState getTaskState() {
+        return taskState;
+    }
 
-  public Boolean getIsFirst() {
-    return isFirst;
-  }
+    public void setTaskState(TaskState taskState) {
+        this.taskState = taskState;
+    }
 
-  public void setIsFirst(Boolean isFirst) {
-    this.isFirst = isFirst;
-  }
+    public List<String> getSortValues() {
+        return sortValues;
+    }
 
-  public List<Variable> getVariables() {
-    return variables;
-  }
+    public void setSortValues(List<String> sortValues) {
+        this.sortValues = sortValues;
+    }
 
-  public void setVariables(List<Variable> variables) {
-    this.variables = variables;
-  }
+    public Boolean getIsFirst() {
+        return isFirst;
+    }
 
-  public List<String> getCandidateGroups() {
-    return candidateGroups;
-  }
+    public void setIsFirst(Boolean isFirst) {
+        this.isFirst = isFirst;
+    }
 
-  public void setCandidateGroups(List<String> candidateGroups) {
-    this.candidateGroups = candidateGroups;
-  }
+    public List<Variable> getVariables() {
+        return variables;
+    }
 
-  public String getFormKey() {
-    return formKey;
-  }
+    public void setVariables(List<Variable> variables) {
+        this.variables = variables;
+    }
 
-  public void setFormKey(String formKey) {
-    this.formKey = formKey;
-  }
+    public List<String> getCandidateGroups() {
+        return candidateGroups;
+    }
 
-  public String getProcessDefinitionKey() {
-    return processDefinitionKey;
-  }
+    public void setCandidateGroups(List<String> candidateGroups) {
+        this.candidateGroups = candidateGroups;
+    }
 
-  public void setProcessDefinitionKey(String processDefinitionId) {
-    this.processDefinitionKey = processDefinitionId;
-  }
+    public String getFormKey() {
+        return formKey;
+    }
 
-  public String getTaskDefinitionId() {
-    return taskDefinitionId;
-  }
+    public void setFormKey(String formKey) {
+        this.formKey = formKey;
+    }
 
-  public void setTaskDefinitionId(String taskDefinitionId) {
-    this.taskDefinitionId = taskDefinitionId;
-  }
+    public String getProcessDefinitionKey() {
+        return processDefinitionKey;
+    }
 
-  public String getProcessInstanceKey() {
-    return processInstanceKey;
-  }
+    public void setProcessDefinitionKey(String processDefinitionId) {
+        this.processDefinitionKey = processDefinitionId;
+    }
 
-  public void setProcessInstanceKey(String processInstanceKey) {
-    this.processInstanceKey = processInstanceKey;
-  }
+    public String getTaskDefinitionId() {
+        return taskDefinitionId;
+    }
 
-  public List<String> getCandidateUsers() {
-    return candidateUsers;
-  }
+    public void setTaskDefinitionId(String taskDefinitionId) {
+        this.taskDefinitionId = taskDefinitionId;
+    }
 
-  public void setCandidateUsers(List<String> candidateUsers) {
-    this.candidateUsers = candidateUsers;
-  }
+    public String getProcessInstanceKey() {
+        return processInstanceKey;
+    }
 
-  public LocalDateTime getFollowUpDate() {
-    return followUpDate;
-  }
+    public void setProcessInstanceKey(String processInstanceKey) {
+        this.processInstanceKey = processInstanceKey;
+    }
 
-  public void setFollowUpDate(LocalDateTime followUpDate) {
-    this.followUpDate = followUpDate;
-  }
+    public List<String> getCandidateUsers() {
+        return candidateUsers;
+    }
 
-  public LocalDateTime getDueDate() {
-    return dueDate;
-  }
+    public void setCandidateUsers(List<String> candidateUsers) {
+        this.candidateUsers = candidateUsers;
+    }
 
-  public void setDueDate(LocalDateTime dueDate) {
-    this.dueDate = dueDate;
-  }
+    public LocalDateTime getFollowUpDate() {
+        return followUpDate;
+    }
+
+    public void setFollowUpDate(LocalDateTime followUpDate) {
+        this.followUpDate = followUpDate;
+    }
+
+    public LocalDateTime getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(LocalDateTime dueDate) {
+        this.dueDate = dueDate;
+    }
 }

@@ -5,19 +5,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum TaskState {
-  CREATED("CREATED"), COMPLETED("COMPLETED"), CANCELED("CANCELED");
+    CREATED("CREATED"), COMPLETED("COMPLETED"), CANCELED("CANCELED");
 
-  private String rawValue;
+    private String rawValue;
 
-  TaskState(String rawValue) {
-    this.rawValue = rawValue;
-  }
+    TaskState(String rawValue) {
+        this.rawValue = rawValue;
+    }
 
-  public String getRawValue() {
-    return rawValue;
-  }
+    public String getRawValue() {
+        return rawValue;
+    }
 
-  public static TaskState fromJson(@JsonProperty("rawValue") String rawValue) {
-    return valueOf(rawValue);
-  }
+    public static TaskState fromJson(@JsonProperty("rawValue") String rawValue) {
+        return valueOf(rawValue);
+    }
 }
