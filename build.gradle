@@ -9,7 +9,7 @@ plugins {
 group = 'io.camunda'
 version = '8.3.0'
 
-sourceCompatibility = '8'
+sourceCompatibility = '11'
 
 repositories {
   mavenCentral()
