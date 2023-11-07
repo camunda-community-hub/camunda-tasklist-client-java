@@ -16,7 +16,7 @@ public class Task {
 
     private String assignee;
 
-    private String creationTime;
+    private String creationDate;
 
     private TaskState taskState;
 
@@ -70,12 +70,12 @@ public class Task {
         this.assignee = assignee;
     }
 
-    public String getCreationTime() {
-        return creationTime;
+    public String getCreationDate() {
+        return creationDate;
     }
 
-    public void setCreationTime(String creationTime) {
-        this.creationTime = creationTime;
+    public void setCreationDate(String creationDate) {
+        this.creationDate = creationDate;
     }
 
     public TaskState getTaskState() {

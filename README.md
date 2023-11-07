@@ -93,7 +93,7 @@ You can import it to your maven or gradle project as a dependency
 <dependency>
 	<groupId>io.camunda</groupId>
 	<artifactId>camunda-tasklist-client-java</artifactId>
-	<version>8.3.0</version>
+	<version>8.3.0-patch</version>
 </dependency>
 ```
 # Troubleshooting
