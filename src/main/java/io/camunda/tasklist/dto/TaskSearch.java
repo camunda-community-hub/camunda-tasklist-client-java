@@ -2,123 +2,124 @@ package io.camunda.tasklist.dto;
 
 public class TaskSearch {
 
-  private String group;
-  private String assignee;
-  private String candidateUser;
-  private Boolean Assigned;
-  private TaskState state;
-  private String processDefinitionId;
-  private String processInstanceId;
-  private String taskDefinitionId;
-  private boolean withVariables;
-  private DateFilter followUpDate;
-  private DateFilter dueDate;
-  private Pagination pagination;
-  
-  public String getCandidateUser() {
-    return candidateUser;
-  }
+    private String group;
+    private String assignee;
+    private String candidateUser;
+    private Boolean Assigned;
+    private TaskState state;
+    private String processDefinitionKey;
+    private String processInstanceKey;
+    private String taskDefinitionId;
+    private boolean withVariables;
+    private DateFilter followUpDate;
+    private DateFilter dueDate;
+    private Pagination pagination;
 
-  public TaskSearch setCandidateUser(String candidateUser) {
-    this.candidateUser = candidateUser;
-    return this;
-  }
+    public String getCandidateUser() {
+        return candidateUser;
+    }
 
-  public DateFilter getFollowUpDate() {
-    return followUpDate;
-  }
+    public TaskSearch setCandidateUser(String candidateUser) {
+        this.candidateUser = candidateUser;
+        return this;
+    }
 
-  public TaskSearch setFollowUpDate(DateFilter followUpDate) {
-    this.followUpDate = followUpDate;
-    return this;
-  }
+    public DateFilter getFollowUpDate() {
+        return followUpDate;
+    }
 
-  public DateFilter getDueDate() {
-    return dueDate;
-  }
+    public TaskSearch setFollowUpDate(DateFilter followUpDate) {
+        this.followUpDate = followUpDate;
+        return this;
+    }
 
-  public TaskSearch setDueDate(DateFilter dueDate) {
-    this.dueDate = dueDate;
-    return this;
-  }
+    public DateFilter getDueDate() {
+        return dueDate;
+    }
 
-  public String getGroup() {
-    return group;
-  }
+    public TaskSearch setDueDate(DateFilter dueDate) {
+        this.dueDate = dueDate;
+        return this;
+    }
 
-  public TaskSearch setGroup(String group) {
-    this.group = group;
-    return this;
-  }
+    public String getGroup() {
+        return group;
+    }
 
-  public String getAssignee() {
-    return assignee;
-  }
+    public TaskSearch setGroup(String group) {
+        this.group = group;
+        return this;
+    }
 
-  public TaskSearch setAssignee(String assignee) {
-    this.assignee = assignee;
-    return this;
-  }
+    public String getAssignee() {
+        return assignee;
+    }
 
-  public Boolean getAssigned() {
-    return Assigned;
-  }
+    public TaskSearch setAssignee(String assignee) {
+        this.assignee = assignee;
+        return this;
+    }
 
-  public TaskSearch setAssigned(Boolean assigned) {
-    Assigned = assigned;
-    return this;
-  }
+    public Boolean getAssigned() {
+        return Assigned;
+    }
 
-  public TaskState getState() {
-    return state;
-  }
+    public TaskSearch setAssigned(Boolean assigned) {
+        Assigned = assigned;
+        return this;
+    }
 
-  public TaskSearch setState(TaskState state) {
-    this.state = state;
-    return this;
-  }
-  public String getProcessDefinitionId() {
-    return processDefinitionId;
-  }
+    public TaskState getState() {
+        return state;
+    }
 
-  public TaskSearch setProcessDefinitionId(String processDefinitionId) {
-    this.processDefinitionId = processDefinitionId;
-    return this;
-  }
+    public TaskSearch setState(TaskState state) {
+        this.state = state;
+        return this;
+    }
 
-  public String getProcessInstanceId() {
-    return processInstanceId;
-  }
+    public String getProcessDefinitionKey() {
+        return processDefinitionKey;
+    }
 
-  public TaskSearch setProcessInstanceId(String processInstanceId) {
-    this.processInstanceId = processInstanceId;
-    return this;
-  }
+    public TaskSearch setProcessDefinitionKey(String processDefinitionId) {
+        this.processDefinitionKey = processDefinitionId;
+        return this;
+    }
 
-  public String getTaskDefinitionId() {
-    return taskDefinitionId;
-  }
+    public String getProcessInstanceKey() {
+        return processInstanceKey;
+    }
 
-  public TaskSearch setTaskDefinitionId(String taskDefinitionId) {
-    this.taskDefinitionId = taskDefinitionId;
-    return this;
-  }
+    public TaskSearch setProcessInstanceKey(String processInstanceId) {
+        this.processInstanceKey = processInstanceId;
+        return this;
+    }
 
-  public boolean isWithVariables() {
-    return withVariables;
-  }
+    public String getTaskDefinitionId() {
+        return taskDefinitionId;
+    }
 
-  public TaskSearch setWithVariables(boolean withVariables) {
-    this.withVariables = withVariables;
-    return this;
-  }
+    public TaskSearch setTaskDefinitionId(String taskDefinitionId) {
+        this.taskDefinitionId = taskDefinitionId;
+        return this;
+    }
 
-  public Pagination getPagination() {
-    return pagination;
-  }
+    public boolean isWithVariables() {
+        return withVariables;
+    }
 
-  public TaskSearch setPagination(Pagination pagination) {
-    this.pagination = pagination;
-    return this;
-  }
+    public TaskSearch setWithVariables(boolean withVariables) {
+        this.withVariables = withVariables;
+        return this;
+    }
+
+    public Pagination getPagination() {
+        return pagination;
+    }
+
+    public TaskSearch setPagination(Pagination pagination) {
+        this.pagination = pagination;
+        return this;
+    }
 }

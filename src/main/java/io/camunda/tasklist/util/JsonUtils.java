@@ -7,16 +7,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class JsonUtils {
 
-  private JsonUtils() {
-  }
-
-  private static ObjectMapper mapper;
-
-  public static JsonNode toJsonNode(String json) throws IOException {
-    if (mapper == null) {
-      mapper = new ObjectMapper();
+    private JsonUtils() {
     }
-    return mapper.readTree(json);
-  }
+
+    private static ObjectMapper mapper;
+
+    public static JsonNode toJsonNode(String json) throws IOException {
+        if (mapper == null) {
+            mapper = new ObjectMapper();
+        }
+        return mapper.readTree(json);
+    }
 
 }
