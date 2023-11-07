@@ -1,5 +1,8 @@
 package io.camunda.tasklist.dto;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TaskSearch {
 
     private String group;
@@ -10,6 +13,7 @@ public class TaskSearch {
     private String processDefinitionKey;
     private String processInstanceKey;
     private String taskDefinitionId;
+    private List<String> tenantIds;
     private boolean withVariables;
     private DateFilter followUpDate;
     private DateFilter dueDate;
@@ -102,6 +106,23 @@ public class TaskSearch {
 
     public TaskSearch setTaskDefinitionId(String taskDefinitionId) {
         this.taskDefinitionId = taskDefinitionId;
+        return this;
+    }
+
+    public List<String> getTenantIds() {
+        return tenantIds;
+    }
+
+    public TaskSearch setTenantIds(List<String> tenantIds) {
+        this.tenantIds = tenantIds;
+        return this;
+    }
+    
+    public TaskSearch addTenantId(String tenantId) {
+        if (this.tenantIds==null) {
+            this.tenantIds = new ArrayList<>();
+        }
+        this.tenantIds.add(tenantId);
         return this;
     }
 

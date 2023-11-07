@@ -35,6 +35,8 @@ public class Task {
     private List<String> sortValues;
 
     private Boolean isFirst;
+    
+    private String tenantId;
 
     private List<Variable> variables;
 
@@ -102,14 +104,6 @@ public class Task {
         this.isFirst = isFirst;
     }
 
-    public List<Variable> getVariables() {
-        return variables;
-    }
-
-    public void setVariables(List<Variable> variables) {
-        this.variables = variables;
-    }
-
     public List<String> getCandidateGroups() {
         return candidateGroups;
     }
@@ -172,5 +166,21 @@ public class Task {
 
     public void setDueDate(LocalDateTime dueDate) {
         this.dueDate = dueDate;
+    }
+
+    public String getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(String tenantId) {
+        this.tenantId = tenantId;
+    }
+
+    public List<Variable> getVariables() {
+        return variables;
+    }
+
+    public void setVariables(List<Variable> variables) {
+        this.variables = variables;
     }
 }

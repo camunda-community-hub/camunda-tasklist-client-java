@@ -6,6 +6,8 @@ public class Form {
     private String processDefinitionId;
 
     private String schema;
+    
+    private String tenantId;
 
     public String getId() {
         return id;
@@ -29,5 +31,13 @@ public class Form {
 
     public void setSchema(String schema) {
         this.schema = schema;
+    }
+
+    public String getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(String tenantId) {
+        this.tenantId = tenantId;
     }
 }
