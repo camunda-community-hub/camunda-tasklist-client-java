@@ -1,6 +1,6 @@
 package io.camunda.tasklist.dto;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 public class Task {
@@ -24,9 +24,9 @@ public class Task {
 
     private List<String> candidateGroups;
 
-    private LocalDateTime followUpDate;
+	private OffsetDateTime followUpDate;
 
-    private LocalDateTime dueDate;
+	private OffsetDateTime dueDate;
 
     private String formKey;
 
@@ -35,7 +35,7 @@ public class Task {
     private List<String> sortValues;
 
     private Boolean isFirst;
-    
+
     private String tenantId;
 
     private List<Variable> variables;
@@ -152,19 +152,19 @@ public class Task {
         this.candidateUsers = candidateUsers;
     }
 
-    public LocalDateTime getFollowUpDate() {
+	public OffsetDateTime getFollowUpDate() {
         return followUpDate;
     }
 
-    public void setFollowUpDate(LocalDateTime followUpDate) {
+	public void setFollowUpDate(OffsetDateTime followUpDate) {
         this.followUpDate = followUpDate;
     }
 
-    public LocalDateTime getDueDate() {
+	public OffsetDateTime getDueDate() {
         return dueDate;
     }
 
-    public void setDueDate(LocalDateTime dueDate) {
+	public void setDueDate(OffsetDateTime dueDate) {
         this.dueDate = dueDate;
     }
 

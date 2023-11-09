@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import io.camunda.tasklist.dto.DateFilter;
 import io.camunda.tasklist.dto.Form;
@@ -48,7 +49,7 @@ public class ConverterUtils {
             throws JsonMappingException, JsonProcessingException {
         Variable result = new Variable();
         result.setName(var.getName());
-        String value = (String) var.getValue();
+        String value = var.getValue();
         JsonNode nodeValue = getObjectMapper().readTree(value);
         if (nodeValue.canConvertToLong()) {
             result.setValue(nodeValue.asLong());
@@ -140,7 +141,7 @@ public class ConverterUtils {
     private static ObjectMapper getObjectMapper() {
         if (objectMapper == null) {
             objectMapper = new ObjectMapper();
-            // objectMapper.registerModule(new JavaTimeModule());
+			objectMapper.registerModule(new JavaTimeModule());
             objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         }
         return objectMapper;
