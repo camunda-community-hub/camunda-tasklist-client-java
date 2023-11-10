@@ -147,7 +147,7 @@ public class CamundaTaskListClient {
         try {
             reconnectEventually();
             List<VariableSearchResponse> variables = null;
-            if (!withVariables) {
+            if (withVariables) {
                 variables = taskApi.searchTaskVariables(taskId, new VariablesSearchRequest());
             }
 
