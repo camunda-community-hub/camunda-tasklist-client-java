@@ -26,7 +26,7 @@ dependencies {
   api "com.fasterxml.jackson.core:jackson-annotations:$jackson_version"
   api "com.fasterxml.jackson.core:jackson-databind:$jackson_version"
   api "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jackson_version"
-  api "org.openapitools:jackson-databind-nullable:0.2.1"
+  api "org.openapitools:jackson-databind-nullable:0.2.6"
   api "jakarta.annotation:jakarta.annotation-api:$jakarta_annotation_version"
   
   
