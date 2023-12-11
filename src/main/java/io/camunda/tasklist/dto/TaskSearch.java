@@ -1,7 +1,13 @@
 package io.camunda.tasklist.dto;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import io.camunda.tasklist.exception.TaskListException;
+import io.camunda.tasklist.generated.model.TaskByVariables;
+import io.camunda.tasklist.generated.model.TaskByVariables.OperatorEnum;
+import io.camunda.tasklist.util.JsonUtils;
 
 public class TaskSearch {
 
@@ -13,8 +19,9 @@ public class TaskSearch {
     private String processDefinitionKey;
     private String processInstanceKey;
     private String taskDefinitionId;
+    private List<TaskByVariables> taskVariables;
     private List<String> tenantIds;
-    private boolean withVariables;
+    private Boolean withVariables;
     private DateFilter followUpDate;
     private DateFilter dueDate;
     private Pagination pagination;
@@ -109,6 +116,28 @@ public class TaskSearch {
         return this;
     }
 
+    public List<TaskByVariables> getTaskVariables() {
+        return taskVariables;
+    }
+
+    public TaskSearch setTaskVariables(List<TaskByVariables> taskVariables) {
+        this.taskVariables = taskVariables;
+        return this;
+    }
+    
+    public TaskSearch addVariableFilter(String variableName, Object variableValue) throws TaskListException {      
+        return this.addVariableFilter(new TaskByVariables().name(variableName).value(JsonUtils.toJsonString(variableValue)).operator(OperatorEnum.EQ));
+    }
+    
+    public TaskSearch addVariableFilter(TaskByVariables variableFilter) {
+        if (this.taskVariables==null) {
+            this.taskVariables = new ArrayList<>();
+        }
+        this.taskVariables.add(variableFilter);
+        
+        return this;
+    }
+
     public List<String> getTenantIds() {
         return tenantIds;
     }
@@ -126,8 +155,12 @@ public class TaskSearch {
         return this;
     }
 
-    public boolean isWithVariables() {
+    public Boolean getWithVariables() {
         return withVariables;
+    }
+
+    public boolean isWithVariables() {
+        return withVariables!=null && withVariables;
     }
 
     public TaskSearch setWithVariables(boolean withVariables) {

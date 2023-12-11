@@ -5,6 +5,8 @@ import java.io.IOException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.camunda.tasklist.exception.TaskListException;
+
 public class JsonUtils {
 
     private JsonUtils() {
@@ -18,5 +20,17 @@ public class JsonUtils {
         }
         return mapper.readTree(json);
     }
+
+    public static String toJsonString(Object object) throws TaskListException {
+        if (mapper == null) {
+            mapper = new ObjectMapper();
+        }
+        try {
+            return mapper.writeValueAsString(object);
+        } catch(IOException e) {
+            throw new TaskListException(e);
+        }
+    }
+
 
 }

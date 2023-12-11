@@ -26,6 +26,7 @@ import io.camunda.tasklist.generated.invoker.ApiClient;
 import io.camunda.tasklist.generated.invoker.ApiException;
 import io.camunda.tasklist.generated.invoker.Configuration;
 import io.camunda.tasklist.generated.model.TaskAssignRequest;
+import io.camunda.tasklist.generated.model.TaskByVariables;
 import io.camunda.tasklist.generated.model.TaskCompleteRequest;
 import io.camunda.tasklist.generated.model.TaskSearchRequest;
 import io.camunda.tasklist.generated.model.VariableInputDTO;
@@ -230,26 +231,30 @@ public class CamundaTaskListClient {
     }
 
     public TaskList getTasks(TaskSearch search) throws TaskListException {
+        if (search.getWithVariables()==null) {
+            search.setWithVariables(defaultShouldReturnVariables);
+        }
         return getTasks(search.getCandidateUser(), search.getGroup(), search.getAssigned(), search.getAssignee(),
                 search.getState(), search.getFollowUpDate(), search.getDueDate(), search.getProcessDefinitionKey(),
-                search.getProcessInstanceKey(), search.getTaskDefinitionId(), search.getTenantIds(), search.isWithVariables(),
-                search.getPagination());
+                search.getProcessInstanceKey(), search.getTaskDefinitionId(), search.getTaskVariables(), search.getTenantIds(), 
+                search.isWithVariables(), search.getPagination());
     }
 
     public TaskList getTasks(String group, Boolean assigned, String assigneeId, TaskState state, boolean withVariables,
             Pagination pagination) throws TaskListException {
-        return getTasks(null, group, assigned, assigneeId, state, null, null, null, null, null, null, withVariables,
+        return getTasks(null, group, assigned, assigneeId, state, null, null, null, null, null, null, null, withVariables,
                 pagination);
     }
 
     public TaskList getTasks(String candidateUser, String group, Boolean assigned, String assignee, TaskState state,
             DateFilter followUpDate, DateFilter dueDate, String processDefinitionId, String processInstanceId,
-            String taskDefinitionId, List<String> tenantIds, boolean withVariables, Pagination pagination) throws TaskListException {
+            String taskDefinitionId, List<TaskByVariables> taskVariables, List<String> tenantIds, boolean withVariables, Pagination pagination) throws TaskListException {
 
         TaskSearchRequest search = new TaskSearchRequest().candidateGroup(group).candidateUser(candidateUser)
                 .assignee(assignee).state(ConverterUtils.toSearchState(state))
                 .followUpDate(ConverterUtils.toSearchDateFilter(followUpDate))
                 .dueDate(ConverterUtils.toSearchDateFilter(dueDate)).processDefinitionKey(processDefinitionId)
+                .taskVariables(taskVariables)
                 .processInstanceKey(processInstanceId).taskDefinitionId(taskDefinitionId).tenantIds(tenantIds);
         if (pagination != null) {
             if (pagination.getSearchType() != null && pagination.getSearch() != null

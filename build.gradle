@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'io.camunda'
-version = '8.3.1.2'
+version = '8.3.3'
 
 sourceCompatibility = '11'
 
@@ -43,7 +43,7 @@ sourceSets.main.java.srcDirs += "$generatedFolder/src/main/java"
 openApiGenerate {
   generatorName = "java"
   library = "native"
-  inputSpec = "$rootDir/src/main/resources/tasklist-8.3.1.json"
+  inputSpec = "$rootDir/src/main/resources/tasklist-8.3.3.json"
   outputDir = generatedFolder
   generateApiTests = false
   generateModelTests = false

@@ -22,6 +22,10 @@ CamundaTaskListClient client = new CamundaTaskListClient.Builder().taskListUrl("
 TaskSearch ts = new TaskSearch().setProcessInstanceId("2251799818839086");
 TaskList tasksFromInstance = client.getTasks(ts);
 
+//get tasks from process variables
+ts = new TaskSearch().addVariableFilter("riskLevels", List.of("yellow", "yellow")).addVariableFilter("age", 30);
+TaskList tasksFromVariableSearch = client.getTasks(ts);
+
 //get tasks assigned to demo
 TaskList tasks = client.getAssigneeTasks("demo", TaskState.CREATED, null);
 for(Task task : tasks) {
@@ -93,7 +97,7 @@ You can import it to your maven or gradle project as a dependency
 <dependency>
 	<groupId>io.camunda</groupId>
 	<artifactId>camunda-tasklist-client-java</artifactId>
-	<version>8.3.1.2</version>
+	<version>8.3.3</version>
 </dependency>
 ```
 # Troubleshooting
