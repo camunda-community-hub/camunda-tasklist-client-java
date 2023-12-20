@@ -4,6 +4,7 @@ plugins {
   id 'java-library'
   id 'signing'
   id('io.github.gradle-nexus.publish-plugin') version '1.1.0'
+  id("com.diffplug.spotless") version "6.23.3"
 }
 
 group = 'io.camunda'
@@ -37,6 +38,13 @@ tasks.named('test') {
   useJUnitPlatform()
 }
 
+spotless{
+  java {
+    googleJavaFormat()
+    removeUnusedImports()
+  }
+}
+
 def generatedFolder = "$buildDir/generated/openapi"
 sourceSets.main.java.srcDirs += "$generatedFolder/src/main/java"
 
@@ -58,7 +66,9 @@ openApiGenerate {
   ]
 }
 
-compileJava.dependsOn tasks.named("openApiGenerate")
+spotlessJava.dependsOn tasks.named("openApiGenerate")
+
+compileJava.dependsOn tasks.named("spotlessApply")
 
 task sourceJar(type: Jar) {
   outputs.cacheIf { true }
