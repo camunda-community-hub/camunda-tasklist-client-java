@@ -1,43 +1,43 @@
 package io.camunda.tasklist.dto;
 
 public class Form {
-    private String id;
+  private String id;
 
-    private String processDefinitionId;
+  private String processDefinitionId;
 
-    private String schema;
-    
-    private String tenantId;
+  private String schema;
 
-    public String getId() {
-        return id;
-    }
+  private String tenantId;
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public String getProcessDefinitionId() {
-        return processDefinitionId;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    public void setProcessDefinitionId(String processDefinitionId) {
-        this.processDefinitionId = processDefinitionId;
-    }
+  public String getProcessDefinitionId() {
+    return processDefinitionId;
+  }
 
-    public String getSchema() {
-        return schema;
-    }
+  public void setProcessDefinitionId(String processDefinitionId) {
+    this.processDefinitionId = processDefinitionId;
+  }
 
-    public void setSchema(String schema) {
-        this.schema = schema;
-    }
+  public String getSchema() {
+    return schema;
+  }
 
-    public String getTenantId() {
-        return tenantId;
-    }
+  public void setSchema(String schema) {
+    this.schema = schema;
+  }
 
-    public void setTenantId(String tenantId) {
-        this.tenantId = tenantId;
-    }
+  public String getTenantId() {
+    return tenantId;
+  }
+
+  public void setTenantId(String tenantId) {
+    this.tenantId = tenantId;
+  }
 }
