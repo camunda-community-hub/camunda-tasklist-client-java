@@ -7,7 +7,7 @@ public enum TaskState {
   COMPLETED("COMPLETED"),
   CANCELED("CANCELED");
 
-  private String rawValue;
+  private final String rawValue;
 
   TaskState(String rawValue) {
     this.rawValue = rawValue;

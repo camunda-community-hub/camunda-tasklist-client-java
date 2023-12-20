@@ -7,7 +7,6 @@ import io.camunda.tasklist.util.JsonUtils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -48,11 +47,11 @@ public class SelfManagedAuthentication extends JwtAuthentication {
     return this;
   }
 
-  private String encode(String value) throws UnsupportedEncodingException {
-    return URLEncoder.encode(value, StandardCharsets.UTF_8.toString());
+  private String encode(String value) {
+    return URLEncoder.encode(value, StandardCharsets.UTF_8);
   }
 
-  private String getConnectionString() throws UnsupportedEncodingException {
+  private String getConnectionString() {
     return "grant_type=client_credentials&client_id="
         + encode(clientId)
         + "&client_secret="
@@ -85,7 +84,7 @@ public class SelfManagedAuthentication extends JwtAuthentication {
         try (BufferedReader br =
             new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"))) {
           StringBuilder response = new StringBuilder();
-          String responseLine = null;
+          String responseLine;
           while ((responseLine = br.readLine()) != null) {
             response.append(responseLine.trim());
           }

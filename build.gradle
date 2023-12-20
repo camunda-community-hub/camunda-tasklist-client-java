@@ -41,7 +41,7 @@ tasks.named('test') {
 spotless{
   java {
     googleJavaFormat()
-
+    removeUnusedImports()
   }
 }
 
@@ -66,7 +66,9 @@ openApiGenerate {
   ]
 }
 
-compileJava.dependsOn tasks.named("spotlessApply"),tasks.named("openApiGenerate")
+spotlessJava.dependsOn tasks.named("openApiGenerate")
+
+compileJava.dependsOn tasks.named("spotlessApply")
 
 task sourceJar(type: Jar) {
   outputs.cacheIf { true }

@@ -27,17 +27,16 @@ import io.camunda.tasklist.generated.model.TaskSearchRequest;
 import io.camunda.tasklist.generated.model.VariableInputDTO;
 import io.camunda.tasklist.generated.model.VariablesSearchRequest;
 import io.camunda.tasklist.util.ConverterUtils;
-import java.net.http.HttpRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class CamundaTaskListClient {
+  private static final String CAMUNDA_FORMS_PREFIX = "camunda-forms:bpmn:";
 
   private AuthInterface authentication;
 
@@ -225,8 +224,8 @@ public class CamundaTaskListClient {
 
   public Form getForm(String formId, String processDefinitionId) throws TaskListException {
     try {
-      if (formId.startsWith("camunda-forms:bpmn:")) {
-        formId = formId.substring(19, formId.length());
+      if (formId.startsWith(CAMUNDA_FORMS_PREFIX)) {
+        formId = formId.substring(CAMUNDA_FORMS_PREFIX.length());
       }
       return ConverterUtils.toForm(formApi.getForm(formId, processDefinitionId));
     } catch (ApiException e) {
@@ -466,25 +465,14 @@ public class CamundaTaskListClient {
   }
 
   public void setAuthCookie(String cookie) {
-    this.apiClient.setRequestInterceptor(
-        new Consumer<HttpRequest.Builder>() {
-          @Override
-          public void accept(HttpRequest.Builder builder) {
-            builder.header("cookie", cookie);
-          }
-        });
+    this.apiClient.setRequestInterceptor(builder -> builder.header("cookie", cookie));
     this.taskApi = new TaskApi(this.apiClient);
     this.formApi = new FormApi(this.apiClient);
   }
 
   public void setBearerToken(String token) {
     this.apiClient.setRequestInterceptor(
-        new Consumer<HttpRequest.Builder>() {
-          @Override
-          public void accept(HttpRequest.Builder builder) {
-            builder.header("Authorization", "Bearer " + token);
-          }
-        });
+        builder -> builder.header("Authorization", "Bearer " + token));
     this.taskApi = new TaskApi(this.apiClient);
     this.formApi = new FormApi(this.apiClient);
   }
