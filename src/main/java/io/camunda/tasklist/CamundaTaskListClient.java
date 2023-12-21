@@ -371,7 +371,8 @@ public class CamundaTaskListClient {
             .taskVariables(taskVariables)
             .processInstanceKey(processInstanceId)
             .taskDefinitionId(taskDefinitionId)
-            .tenantIds(tenantIds);
+            .tenantIds(tenantIds)
+            .assigned(assigned);
     if (pagination != null) {
       if (pagination.getSearchType() != null
           && pagination.getSearch() != null
