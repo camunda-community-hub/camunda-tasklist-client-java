@@ -8,7 +8,7 @@ plugins {
 }
 
 group = 'io.camunda'
-version = '8.3.3.2'
+version = '8.3.3.3'
 
 sourceCompatibility = '11'
 
@@ -29,7 +29,7 @@ dependencies {
   api "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jackson_version"
   api "org.openapitools:jackson-databind-nullable:0.2.1"
   api "jakarta.annotation:jakarta.annotation-api:$jakarta_annotation_version"
-  
+  api "io.camunda.spring:java-common:8.3.2-rc4"
   
   testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 }

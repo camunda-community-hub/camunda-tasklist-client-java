@@ -1,9 +1,19 @@
 package io.camunda.tasklist;
 
-import static io.camunda.tasklist.util.ConverterUtils.*;
+import static io.camunda.tasklist.util.ConverterUtils.improveVariable;
+import static io.camunda.tasklist.util.ConverterUtils.toVariable;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import io.camunda.tasklist.auth.AuthInterface;
+
+import io.camunda.common.auth.Product;
 import io.camunda.tasklist.dto.DateFilter;
 import io.camunda.tasklist.dto.Form;
 import io.camunda.tasklist.dto.Pagination;
@@ -27,23 +37,11 @@ import io.camunda.tasklist.generated.model.TaskSearchRequest;
 import io.camunda.tasklist.generated.model.VariableInputDTO;
 import io.camunda.tasklist.generated.model.VariablesSearchRequest;
 import io.camunda.tasklist.util.ConverterUtils;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.stream.Collectors;
+import io.camunda.tasklist.util.JwtUtils;
 
 public class CamundaTaskListClient {
-  private static final String CAMUNDA_FORMS_PREFIX = "camunda-forms:bpmn:";
-
-  private AuthInterface authentication;
-
-  private String taskListUrl;
-
-  private boolean defaultShouldReturnVariables;
-  private boolean defaultShouldLoadTruncatedVariables;
+    
+  private CamundaTaskListClientProperties properties;
 
   private int tokenExpiration;
 
@@ -52,6 +50,17 @@ public class CamundaTaskListClient {
   private TaskApi taskApi;
   private FormApi formApi;
   private VariablesApi variablesApi;
+  
+  protected CamundaTaskListClient(CamundaTaskListClientProperties properties) throws TaskListException {
+      this.properties = properties;
+      this.apiClient.updateBaseUri(properties.taskListUrl);
+
+      this.taskApi = new TaskApi(this.apiClient);
+      this.formApi = new FormApi(this.apiClient);
+      this.variablesApi = new VariablesApi(this.apiClient);
+
+      authenticate();
+  }
 
   public Task unclaim(String taskId) throws TaskListException {
     try {
@@ -97,12 +106,12 @@ public class CamundaTaskListClient {
   public TaskList getTasks(Boolean assigned, TaskState state, Integer pageSize)
       throws TaskListException {
     return getTasks(
-        assigned, state, defaultShouldReturnVariables, new Pagination().setPageSize(pageSize));
+        assigned, state, properties.defaultShouldReturnVariables, new Pagination().setPageSize(pageSize));
   }
 
   public TaskList getTasks(Boolean assigned, TaskState state, Pagination pagination)
       throws TaskListException {
-    return getTasks(assigned, state, defaultShouldReturnVariables, pagination);
+    return getTasks(assigned, state, properties.defaultShouldReturnVariables, pagination);
   }
 
   public TaskList getTasks(
@@ -121,12 +130,12 @@ public class CamundaTaskListClient {
   public TaskList getAssigneeTasks(String assigneeId, TaskState state, Integer pageSize)
       throws TaskListException {
     return getAssigneeTasks(
-        assigneeId, state, defaultShouldReturnVariables, new Pagination().setPageSize(pageSize));
+        assigneeId, state, properties.defaultShouldReturnVariables, new Pagination().setPageSize(pageSize));
   }
 
   public TaskList getAssigneeTasks(String assigneeId, TaskState state, Pagination pagination)
       throws TaskListException {
-    return getAssigneeTasks(assigneeId, state, defaultShouldReturnVariables, pagination);
+    return getAssigneeTasks(assigneeId, state, properties.defaultShouldReturnVariables, pagination);
   }
 
   public TaskList getAssigneeTasks(
@@ -145,12 +154,12 @@ public class CamundaTaskListClient {
   public TaskList getGroupTasks(String group, TaskState state, Integer pageSize)
       throws TaskListException {
     return getGroupTasks(
-        group, state, defaultShouldReturnVariables, new Pagination().setPageSize(pageSize));
+        group, state, properties.defaultShouldReturnVariables, new Pagination().setPageSize(pageSize));
   }
 
   public TaskList getGroupTasks(String group, TaskState state, Pagination pagination)
       throws TaskListException {
-    return getGroupTasks(group, state, defaultShouldReturnVariables, pagination);
+    return getGroupTasks(group, state, properties.defaultShouldReturnVariables, pagination);
   }
 
   public TaskList getGroupTasks(
@@ -167,7 +176,7 @@ public class CamundaTaskListClient {
   }
 
   public Task getTask(String taskId) throws TaskListException {
-    return getTask(taskId, defaultShouldReturnVariables);
+    return getTask(taskId, properties.defaultShouldReturnVariables);
   }
 
   public Task getTask(String taskId, boolean withVariables) throws TaskListException {
@@ -224,8 +233,8 @@ public class CamundaTaskListClient {
 
   public Form getForm(String formId, String processDefinitionId) throws TaskListException {
     try {
-      if (formId.startsWith(CAMUNDA_FORMS_PREFIX)) {
-        formId = formId.substring(CAMUNDA_FORMS_PREFIX.length());
+      if (formId.startsWith(CamundaTaskListClientProperties.CAMUNDA_FORMS_PREFIX)) {
+        formId = formId.substring(CamundaTaskListClientProperties.CAMUNDA_FORMS_PREFIX.length());
       }
       return ConverterUtils.toForm(formApi.getForm(formId, processDefinitionId));
     } catch (ApiException e) {
@@ -298,7 +307,7 @@ public class CamundaTaskListClient {
 
   public TaskList getTasks(TaskSearch search) throws TaskListException {
     if (search.getWithVariables() == null) {
-      search.setWithVariables(defaultShouldReturnVariables);
+      search.setWithVariables(properties.defaultShouldReturnVariables);
     }
     return getTasks(
         search.getCandidateUser(),
@@ -450,10 +459,6 @@ public class CamundaTaskListClient {
     }
   }
 
-  public String getTaskListUrl() {
-    return taskListUrl;
-  }
-
   public void setTokenExpiration(int tokenExpiration) {
     this.tokenExpiration = tokenExpiration;
   }
@@ -461,82 +466,23 @@ public class CamundaTaskListClient {
   private void reconnectEventually() throws TaskListException {
     if (this.tokenExpiration > 0
         && this.tokenExpiration < (System.currentTimeMillis() / 1000 - 3)) {
-      authentication.authenticate(this);
+        authenticate();
     }
   }
 
-  public void setAuthCookie(String cookie) {
-    this.apiClient.setRequestInterceptor(builder -> builder.header("cookie", cookie));
+  public void authenticate() throws TaskListException {
+    Map.Entry<String, String> header = properties.authentication.getTokenHeader(Product.TASKLIST);
+    if (header.getValue().startsWith("Bearer ")) {
+        this.tokenExpiration = JwtUtils.getExpiration(header.getValue().substring(7));
+    }
+    this.apiClient.setRequestInterceptor(builder -> builder.header(header.getKey(), header.getValue()));
     this.taskApi = new TaskApi(this.apiClient);
     this.formApi = new FormApi(this.apiClient);
   }
+  
+  
 
-  public void setBearerToken(String token) {
-    this.apiClient.setRequestInterceptor(
-        builder -> builder.header("Authorization", "Bearer " + token));
-    this.taskApi = new TaskApi(this.apiClient);
-    this.formApi = new FormApi(this.apiClient);
-  }
-
-  public static class Builder {
-
-    private AuthInterface authentication;
-
-    private String taskListUrl;
-
-    private boolean defaultShouldReturnVariables = false;
-    private boolean defaultShouldLoadTruncatedVariables = false;
-
-    public Builder() {}
-
-    public Builder authentication(AuthInterface authentication) {
-      this.authentication = authentication;
-      return this;
-    }
-
-    public Builder taskListUrl(String taskListUrl) {
-      this.taskListUrl = taskListUrl;
-      return this;
-    }
-
-    /**
-     * Default behaviour will be to get variables along with tasks. Default value is false. Can also
-     * be overwritten in the getTasks methods
-     *
-     * @return the builder
-     */
-    public Builder shouldReturnVariables() {
-      this.defaultShouldReturnVariables = true;
-      return this;
-    }
-
-    public Builder shouldLoadTruncatedVariables() {
-      this.defaultShouldLoadTruncatedVariables = true;
-      return this;
-    }
-
-    public CamundaTaskListClient build() throws TaskListException {
-      CamundaTaskListClient client = new CamundaTaskListClient();
-      client.authentication = authentication;
-      client.taskListUrl = taskListUrl;
-      client.defaultShouldReturnVariables = defaultShouldReturnVariables;
-      client.defaultShouldLoadTruncatedVariables = defaultShouldLoadTruncatedVariables;
-
-      client.apiClient.updateBaseUri(formatUrl(taskListUrl));
-
-      client.taskApi = new TaskApi(client.apiClient);
-      client.formApi = new FormApi(client.apiClient);
-      client.variablesApi = new VariablesApi(client.apiClient);
-
-      authentication.authenticate(client);
-      return client;
-    }
-
-    private String formatUrl(String url) {
-      if (url.endsWith("/")) {
-        return url.substring(0, url.length() - 1);
-      }
-      return url;
-    }
+  public static CamundaTaskListClientBuilder builder() {
+      return new CamundaTaskListClientBuilder();
   }
 }

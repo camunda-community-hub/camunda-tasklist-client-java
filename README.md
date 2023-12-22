@@ -8,16 +8,49 @@ This project was intially designed to simplify communication between a java back
 
 :information_source: 8.3+ Relesases of this client are generated against Rest endpoints.
 
+:information_source: **8.3.3.3 changes the way to build authentication and client. Please check the following documentation**
 
-# How to use the client
+## Use the correct authentication
+
+Depending on your setup, you may want to use different authentication mechanisms.
+In case you're using a Camunda Platform without identity enabled, you should use the **SimpleAuthentication**
+
+```java
+  SimpleConfig simpleConf = new SimpleConfig();
+  simpleConf.addProduct(Product.TASKLIST, new SimpleCredential("user", "pwd"));
+  Authentication auth = SimpleAuthentication.builder().simpleConfig(simpleConf).build();
+```
+
+In case you're using a Self Managed Camunda Platform with identity enabled (and Keycloak), you should use the **SelfManagedAuthentication**
+
+```java
+  JwtConfig jwtConfig = new JwtConfig();
+  jwtConfig.addProduct(Product.TASKLIST, new JwtCredential("clientId", "clientSecret"));
+  Authentication auth = SelfManagedAuthentication.builder().jwtConfig(jwtConfig).build();
+```
+
+And finally, if you're using a SaaS environment, just use the **SaaSAuthentication**
+
+```java
+  JwtConfig jwtConfig = new JwtConfig();
+  jwtConfig.addProduct(Product.TASKLIST, new JwtCredential("clientId", "clientSecret"));
+  Authentication auth = SaaSAuthentication.builder().jwtConfig(jwtConfig).build();
+```
+
+## Build your client
 
 Simply build a CamundaTaskListClient that takes an authentication and the tasklist url as parameters.
 
-```java
-SimpleAuthentication sa = new SimpleAuthentication("demo", "demo");
 
-//shouldReturnVariables will change the default behaviour for the client to query variables along with tasks.
-CamundaTaskListClient client = new CamundaTaskListClient.Builder().taskListUrl("http://localhost:8081").shouldReturnVariables().authentication(sa).build();
+```java
+CamundaTaskListClient client = CamundaTaskListClient.builder().taskListUrl("http://localhost:8081").shouldReturnVariables().shouldLoadTruncatedVariables().authentication(auth).build();
+```
+:information_source: **shouldReturnVariables()** will read variables along with tasks. This is not the recommended approach but rather a commodity. In real project implementation, we would recommend to load task variables only when required.
+
+:information_source: **shouldLoadTruncatedVariables()** will execute a second call to read the variable if its value was truncated in the initial search.
+
+## Make some queries
+```java
 //get tasks from a process instance (TaskSearch can take many more parameters)
 TaskSearch ts = new TaskSearch().setProcessInstanceId("2251799818839086");
 TaskList tasksFromInstance = client.getTasks(ts);
@@ -65,31 +98,6 @@ Form form = client.getForm(formId, processDefinitionId);
 String schema = form.getSchema();
 ```
 
-
-
-# Authentication
-You can use the ***SimpleAuthentication*** to connect to a local Camunda TaskList if your setup is "simple": ***without identity and keycloak***.
-
-To connect to the **SaaS** TaskList, you need to use the **SaasAuthentication**. The SaaSAuthentication requires the clientId and clientSecret
-
-```java
-SaasAuthentication sa = new SaasAuthentication("2~nB1MwkUU45FuXXX", "aBRKtreXQF3uD2MYYY");
-CamundaTaskListClient client = new CamundaTaskListClient.Builder().authentication(sa)
-    .taskListUrl("https://bru-2.tasklist.camunda.io/757dbc30-5127-4bed-XXXX-XXXXXXXXXXXX").build();
-
-
-client.getTasks(false, TaskState.CREATED, 50);
-```
-
-To connect to the **Local** TaskList with **Identity & Keycloak**, you need to use the **SelfManagedAuthentication**. The SelfManagedAuthentication requires the clientId and clientSecret. You can also change the Keycloak realm and the keycloakUrl depending on your installation.
-
-```java
-SelfManagedAuthentication sma = new SelfManagedAuthentication().clientId("java").clientSecret("foTPogjlI0hidwbDZcYFWzmU8FOQwLx0").baseUrl("http://localhost:18080").keycloakRealm("camunda-platform");
-CamundaTaskListClient client = new CamundaTaskListClient.Builder().shouldReturnVariables().taskListUrl("http://localhost:8082/").authentication(sma).build();
-       
-client.getTasks(false, TaskState.CREATED, 50);
-```
-
 # use it in your project
 You can import it to your maven or gradle project as a dependency
 
@@ -97,13 +105,11 @@ You can import it to your maven or gradle project as a dependency
 <dependency>
 	<groupId>io.camunda</groupId>
 	<artifactId>camunda-tasklist-client-java</artifactId>
-	<version>8.3.3.2</version>
+	<version>8.3.3.3</version>
 </dependency>
 ```
-# Troubleshooting
-
 
 
 # Note
 A similar library is available for operate there:
-[camunda-operate-client-java](https://github.com/camunda-community-hub/camunda-operate-client-java)
+[java-client-operate](https://github.com/camunda-community-hub/spring-zeebe/tree/main/camunda-sdk-java/java-client-operate)
