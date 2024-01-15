@@ -43,7 +43,7 @@ public class CamundaTaskListClient {
     
   private CamundaTaskListClientProperties properties;
 
-  private int tokenExpiration;
+  private long tokenExpiration;
 
   private ApiClient apiClient = Configuration.getDefaultApiClient();
 
@@ -464,8 +464,9 @@ public class CamundaTaskListClient {
   }
 
   private void reconnectEventually() throws TaskListException {
-    if (this.tokenExpiration > 0
-        && this.tokenExpiration < (System.currentTimeMillis() / 1000 - 3)) {
+    if (this.properties.alwaysReconnect ||
+            (this.tokenExpiration > 0
+        && this.tokenExpiration < (System.currentTimeMillis() - 1000))) {
         authenticate();
     }
   }
@@ -473,7 +474,9 @@ public class CamundaTaskListClient {
   public void authenticate() throws TaskListException {
     Map.Entry<String, String> header = properties.authentication.getTokenHeader(Product.TASKLIST);
     if (header.getValue().startsWith("Bearer ")) {
-        this.tokenExpiration = JwtUtils.getExpiration(header.getValue().substring(7));
+        this.tokenExpiration = JwtUtils.getExpiration(header.getValue().substring(7)) * 1000;
+    } else if (this.properties.cookieExpiration!=null) {
+        this.tokenExpiration = System.currentTimeMillis() + this.properties.cookieExpiration.toMillis();
     }
     this.apiClient.setRequestInterceptor(builder -> builder.header(header.getKey(), header.getValue()));
     this.taskApi = new TaskApi(this.apiClient);

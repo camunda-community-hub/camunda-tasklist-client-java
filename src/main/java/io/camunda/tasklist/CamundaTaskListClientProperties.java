@@ -1,5 +1,7 @@
 package io.camunda.tasklist;
 
+import java.time.Duration;
+
 import io.camunda.common.auth.Authentication;
 
 public class CamundaTaskListClientProperties {
@@ -11,5 +13,6 @@ public class CamundaTaskListClientProperties {
 
     public boolean defaultShouldReturnVariables;
     public boolean defaultShouldLoadTruncatedVariables;
-
+    public boolean alwaysReconnect = false;
+    public Duration cookieExpiration = Duration.ofMinutes(3);
 }
