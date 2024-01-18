@@ -109,7 +109,7 @@ public class ConverterUtils {
           getObjectMapper().readValue(getObjectMapper().writeValueAsString(sourceTask), Task.class);
       if (variables!=null) {
         task.setVariables(variables);
-      } else if (!task.getVariables().isEmpty()) {
+      } else if (task.getVariables()!=null && !task.getVariables().isEmpty()) {
           List<Variable> improvedList = new ArrayList<>();
           for(Variable v : task.getVariables()) {
               improvedList.add(buildVariable(v.getId(), v.getName(), (String) v.getValue()));
