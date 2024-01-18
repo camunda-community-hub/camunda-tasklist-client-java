@@ -1,43 +1,64 @@
 package io.camunda.tasklist.dto;
 
 public class Form {
-  private String id;
+    private String id;
 
-  private String processDefinitionId;
+    private String processDefinitionId;
 
-  private String schema;
+    private String schema;
 
-  private String tenantId;
+    private Long version;
 
-  public String getId() {
-    return id;
-  }
+    private String tenantId;
 
-  public void setId(String id) {
-    this.id = id;
-  }
+    private Boolean isDeleted;
 
-  public String getProcessDefinitionId() {
-    return processDefinitionId;
-  }
+    public String getId() {
+        return id;
+    }
 
-  public void setProcessDefinitionId(String processDefinitionId) {
-    this.processDefinitionId = processDefinitionId;
-  }
+    public void setId(String id) {
+        this.id = id;
+    }
 
-  public String getSchema() {
-    return schema;
-  }
+    public String getProcessDefinitionId() {
+        return processDefinitionId;
+    }
 
-  public void setSchema(String schema) {
-    this.schema = schema;
-  }
+    public void setProcessDefinitionId(String processDefinitionId) {
+        this.processDefinitionId = processDefinitionId;
+    }
 
-  public String getTenantId() {
-    return tenantId;
-  }
+    public String getSchema() {
+        return schema;
+    }
 
-  public void setTenantId(String tenantId) {
-    this.tenantId = tenantId;
-  }
+    public void setSchema(String schema) {
+        this.schema = schema;
+    }
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
+    }
+
+    public String getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(String tenantId) {
+        this.tenantId = tenantId;
+    }
+
+    public Boolean getIsDeleted() {
+        return isDeleted;
+    }
+
+    public void setIsDeleted(Boolean isDeleted) {
+        this.isDeleted = isDeleted;
+    }
+
 }

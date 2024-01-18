@@ -25,7 +25,7 @@ In case you're using a Self Managed Camunda Platform with identity enabled (and 
 
 ```java
   JwtConfig jwtConfig = new JwtConfig();
-  jwtConfig.addProduct(Product.TASKLIST, new JwtCredential("clientId", "clientSecret"));
+  jwtConfig.addProduct(Product.TASKLIST, new JwtCredential("clientId", "clientSecret", null, null));
   Authentication auth = SelfManagedAuthentication.builder().jwtConfig(jwtConfig).build();
 ```
 
@@ -33,7 +33,7 @@ And finally, if you're using a SaaS environment, just use the **SaaSAuthenticati
 
 ```java
   JwtConfig jwtConfig = new JwtConfig();
-  jwtConfig.addProduct(Product.TASKLIST, new JwtCredential("clientId", "clientSecret"));
+  jwtConfig.addProduct(Product.TASKLIST, new JwtCredential("clientId", "clientSecret", "tasklist.camunda.io", "https://login.cloud.camunda.io/oauth/token"));
   Authentication auth = SaaSAuthentication.builder().jwtConfig(jwtConfig).build();
 ```
 
@@ -45,6 +45,8 @@ Simply build a CamundaTaskListClient that takes an authentication and the taskli
 ```java
 CamundaTaskListClient client = CamundaTaskListClient.builder().taskListUrl("http://localhost:8081").shouldReturnVariables().shouldLoadTruncatedVariables().authentication(auth).build();
 ```
+:information_source: Since the SelfManagedAuthentication and the SaaSAuthentication are a bit complex, two helpers have been added to the builder **saaSAuthentication(clientId, clientSecret)** and **selfManagedAuthentication(clientId, clientSecret, keycloakUrl)**
+
 :information_source: **shouldReturnVariables()** will read variables along with tasks. This is not the recommended approach but rather a commodity. In real project implementation, we would recommend to load task variables only when required.
 
 :information_source: **shouldLoadTruncatedVariables()** will execute a second call to read the variable if its value was truncated in the initial search.
@@ -105,7 +107,7 @@ You can import it to your maven or gradle project as a dependency
 <dependency>
 	<groupId>io.camunda</groupId>
 	<artifactId>camunda-tasklist-client-java</artifactId>
-	<version>8.3.3.4</version>
+	<version>8.4.0</version>
 </dependency>
 ```
 

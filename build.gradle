@@ -8,7 +8,7 @@ plugins {
 }
 
 group = 'io.camunda'
-version = '8.3.3.4'
+version = '8.4.0'
 
 sourceCompatibility = '11'
 
@@ -29,7 +29,7 @@ dependencies {
   api "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jackson_version"
   api "org.openapitools:jackson-databind-nullable:0.2.1"
   api "jakarta.annotation:jakarta.annotation-api:$jakarta_annotation_version"
-  api "io.camunda.spring:java-common:8.3.2-rc4"
+  api "io.camunda.spring:java-common:8.4.0"
   
   testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 }
@@ -51,7 +51,7 @@ sourceSets.main.java.srcDirs += "$generatedFolder/src/main/java"
 openApiGenerate {
   generatorName = "java"
   library = "native"
-  inputSpec = "$rootDir/src/main/resources/tasklist-8.3.3.json"
+  inputSpec = "$rootDir/src/main/resources/tasklist-8.4.0.json"
   outputDir = generatedFolder
   generateApiTests = false
   generateModelTests = false

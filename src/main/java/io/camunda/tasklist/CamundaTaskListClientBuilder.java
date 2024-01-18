@@ -3,6 +3,11 @@ package io.camunda.tasklist;
 import java.time.Duration;
 
 import io.camunda.common.auth.Authentication;
+import io.camunda.common.auth.JwtConfig;
+import io.camunda.common.auth.JwtCredential;
+import io.camunda.common.auth.Product;
+import io.camunda.common.auth.SaaSAuthentication;
+import io.camunda.common.auth.SelfManagedAuthentication;
 import io.camunda.tasklist.exception.TaskListException;
 
 public class CamundaTaskListClientBuilder {
@@ -50,6 +55,20 @@ public class CamundaTaskListClientBuilder {
 
     public CamundaTaskListClient build() throws TaskListException {
         return new CamundaTaskListClient(properties);
+    }
+    
+    public CamundaTaskListClientBuilder selfManagedAuthentication(String clientId, String clientSecret, String keycloakUrl) {
+        JwtConfig jwtConfig = new JwtConfig();
+        jwtConfig.addProduct(Product.TASKLIST, new JwtCredential(clientId, clientSecret, null, null));
+        properties.authentication = SelfManagedAuthentication.builder().jwtConfig(jwtConfig).keycloakUrl(keycloakUrl).build();
+        return this;
+    }
+    
+    public CamundaTaskListClientBuilder saaSAuthentication(String clientId, String clientSecret) {
+        JwtConfig jwtConfig = new JwtConfig();
+        jwtConfig.addProduct(Product.TASKLIST, new JwtCredential(clientId, clientSecret, "tasklist.camunda.io", "https://login.cloud.camunda.io/oauth/token"));
+        properties.authentication = SaaSAuthentication.builder().jwtConfig(jwtConfig).build();
+        return this;
     }
 
     private String formatUrl(String url) {

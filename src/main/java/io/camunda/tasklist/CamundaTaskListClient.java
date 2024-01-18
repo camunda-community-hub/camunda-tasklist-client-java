@@ -30,6 +30,7 @@ import io.camunda.tasklist.generated.api.VariablesApi;
 import io.camunda.tasklist.generated.invoker.ApiClient;
 import io.camunda.tasklist.generated.invoker.ApiException;
 import io.camunda.tasklist.generated.invoker.Configuration;
+import io.camunda.tasklist.generated.model.IncludeVariable;
 import io.camunda.tasklist.generated.model.TaskAssignRequest;
 import io.camunda.tasklist.generated.model.TaskByVariables;
 import io.camunda.tasklist.generated.model.TaskCompleteRequest;
@@ -232,11 +233,15 @@ public class CamundaTaskListClient {
   }
 
   public Form getForm(String formId, String processDefinitionId) throws TaskListException {
+      return getForm(formId, processDefinitionId, null);
+  }
+  
+  public Form getForm(String formId, String processDefinitionId, Long version) throws TaskListException {
     try {
       if (formId.startsWith(CamundaTaskListClientProperties.CAMUNDA_FORMS_PREFIX)) {
         formId = formId.substring(CamundaTaskListClientProperties.CAMUNDA_FORMS_PREFIX.length());
       }
-      return ConverterUtils.toForm(formApi.getForm(formId, processDefinitionId));
+      return ConverterUtils.toForm(formApi.getForm(formId, processDefinitionId, version));
     } catch (ApiException e) {
       throw new TaskListException("Error reading form " + formId, e);
     }
@@ -322,6 +327,7 @@ public class CamundaTaskListClient {
         search.getTaskDefinitionId(),
         search.getTaskVariables(),
         search.getTenantIds(),
+        search.getIncludeVariablesAsObj(),
         search.isWithVariables(),
         search.getPagination());
   }
@@ -347,6 +353,7 @@ public class CamundaTaskListClient {
         null,
         null,
         null,
+        null,
         withVariables,
         pagination);
   }
@@ -364,6 +371,7 @@ public class CamundaTaskListClient {
       String taskDefinitionId,
       List<TaskByVariables> taskVariables,
       List<String> tenantIds,
+      List<IncludeVariable> includeVariables,
       boolean withVariables,
       Pagination pagination)
       throws TaskListException {
@@ -381,7 +389,8 @@ public class CamundaTaskListClient {
             .processInstanceKey(processInstanceId)
             .taskDefinitionId(taskDefinitionId)
             .tenantIds(tenantIds)
-            .assigned(assigned);
+            .assigned(assigned)
+            .includeVariables(includeVariables);
     if (pagination != null) {
       if (pagination.getSearchType() != null
           && pagination.getSearch() != null
@@ -421,9 +430,9 @@ public class CamundaTaskListClient {
       throws TaskListException {
     try {
       reconnectEventually();
-
+      
       List<Task> tasks = ConverterUtils.toTasks(taskApi.searchTasks(search));
-      if (withVariables) {
+      if (withVariables && search.getIncludeVariables().isEmpty()) {
         loadVariables(tasks);
       }
       return tasks;
