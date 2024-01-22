@@ -476,6 +476,8 @@ public class CamundaTaskListClient {
     if (this.properties.alwaysReconnect ||
             (this.tokenExpiration > 0
         && this.tokenExpiration < (System.currentTimeMillis() - 1000))) {
+        // reset old Token before a new authentication
+        properties.authentication.resetToken(Product.TASKLIST);
         authenticate();
     }
   }
