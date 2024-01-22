@@ -107,7 +107,7 @@ You can import it to your maven or gradle project as a dependency
 <dependency>
 	<groupId>io.camunda</groupId>
 	<artifactId>camunda-tasklist-client-java</artifactId>
-	<version>8.4.0.1</version>
+	<version>8.4.0.2</version>
 </dependency>
 ```
 
