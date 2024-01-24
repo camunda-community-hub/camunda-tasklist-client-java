@@ -433,7 +433,7 @@ public class CamundaTaskListClient {
 
       List<Task> tasks = ConverterUtils.toTasks(taskApi.searchTasks(search));
       if (withVariables
-    		  && (search.getIncludeVariables() == null || search.getIncludeVariables().isEmpty()) {
+    		  && (search.getIncludeVariables() == null || search.getIncludeVariables().isEmpty())) {
         loadVariables(tasks);
       }
       return tasks;
