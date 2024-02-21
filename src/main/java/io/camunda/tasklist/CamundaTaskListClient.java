@@ -469,7 +469,7 @@ public class CamundaTaskListClient {
     }
   }
 
-  public void setTokenExpiration(int tokenExpiration) {
+  public void setTokenExpiration(long tokenExpiration) {
     this.tokenExpiration = tokenExpiration;
   }
 
@@ -486,7 +486,7 @@ public class CamundaTaskListClient {
   public void authenticate() throws TaskListException {
     Map.Entry<String, String> header = properties.authentication.getTokenHeader(Product.TASKLIST);
     if (header.getValue().startsWith("Bearer ")) {
-        this.tokenExpiration = JwtUtils.getExpiration(header.getValue().substring(7)) * 1000;
+		this.tokenExpiration = JwtUtils.getExpiration(header.getValue().substring(7)) * 1000L;
     } else if (this.properties.cookieExpiration!=null) {
         this.tokenExpiration = System.currentTimeMillis() + this.properties.cookieExpiration.toMillis();
     }
