@@ -86,11 +86,10 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 
 java {
   sourceCompatibility = JavaVersion.VERSION_11
+  withSourcesJar()
+  withJavadocJar()
 }
-artifacts {
-    archives sourcesJar
-    archives javadocJar
-}
+
 nexusPublishing {
   transitionCheckOptions {
     maxRetries.set(100)
