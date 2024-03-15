@@ -1,5 +1,5 @@
 plugins {
-  id("org.openapi.generator") version "6.6.0"
+  id("org.openapi.generator") version "7.4.0"
   id 'maven-publish'
   id 'java-library'
   id 'signing'
@@ -8,7 +8,7 @@ plugins {
 }
 
 group = 'io.camunda'
-version = '8.4.0.6'
+version = '8.4.0.7'
 
 
 repositories {
@@ -73,7 +73,6 @@ task sourcesJar(type: Jar) {
 
 spotlessJava.dependsOn tasks.named("openApiGenerate")
 sourcesJar.dependsOn tasks.named("openApiGenerate")
-
 compileJava.dependsOn tasks.named("spotlessApply")
 
 javadoc {
@@ -87,8 +86,10 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 
 java {
   sourceCompatibility = JavaVersion.VERSION_11
-  withSourcesJar()
-  withJavadocJar()
+}
+artifacts {
+    archives sourcesJar
+    archives javadocJar
 }
 nexusPublishing {
   transitionCheckOptions {
