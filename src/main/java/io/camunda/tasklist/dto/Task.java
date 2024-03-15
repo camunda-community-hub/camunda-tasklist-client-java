@@ -17,6 +17,8 @@ public class Task {
     private String assignee;
 
     private String creationDate;
+    
+    private String completionDate;
 
     private TaskState taskState;
 
@@ -84,6 +86,14 @@ public class Task {
 
     public void setCreationDate(String creationDate) {
         this.creationDate = creationDate;
+    }
+
+    public String getCompletionDate() {
+        return completionDate;
+    }
+
+    public void setCompletionDate(String completionDate) {
+        this.completionDate = completionDate;
     }
 
     public TaskState getTaskState() {

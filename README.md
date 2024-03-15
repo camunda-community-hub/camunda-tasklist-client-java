@@ -18,7 +18,7 @@ In case you're using a Camunda Platform without identity enabled, you should use
 ```java
   SimpleConfig simpleConf = new SimpleConfig();
   simpleConf.addProduct(Product.TASKLIST, new SimpleCredential("user", "pwd"));
-  Authentication auth = SimpleAuthentication.builder().simpleConfig(simpleConf).build();
+  Authentication auth = SimpleAuthentication.builder().simpleUrl("http://tasklistUrl[:port]").simpleConfig(simpleConf).build();
 ```
 
 In case you're using a Self Managed Camunda Platform with identity enabled (and Keycloak), you should use the **SelfManagedAuthentication**
@@ -107,7 +107,7 @@ You can import it to your maven or gradle project as a dependency
 <dependency>
 	<groupId>io.camunda</groupId>
 	<artifactId>camunda-tasklist-client-java</artifactId>
-	<version>8.4.0.2</version>
+	<version>8.4.0.5</version>
 </dependency>
 ```
 

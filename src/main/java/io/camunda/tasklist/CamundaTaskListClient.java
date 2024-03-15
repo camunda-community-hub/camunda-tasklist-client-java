@@ -41,7 +41,7 @@ import io.camunda.tasklist.util.ConverterUtils;
 import io.camunda.tasklist.util.JwtUtils;
 
 public class CamundaTaskListClient {
-    
+
   private CamundaTaskListClientProperties properties;
 
   private long tokenExpiration;
@@ -51,7 +51,7 @@ public class CamundaTaskListClient {
   private TaskApi taskApi;
   private FormApi formApi;
   private VariablesApi variablesApi;
-  
+
   protected CamundaTaskListClient(CamundaTaskListClientProperties properties) throws TaskListException {
       this.properties = properties;
       this.apiClient.updateBaseUri(properties.taskListUrl);
@@ -235,7 +235,7 @@ public class CamundaTaskListClient {
   public Form getForm(String formId, String processDefinitionId) throws TaskListException {
       return getForm(formId, processDefinitionId, null);
   }
-  
+
   public Form getForm(String formId, String processDefinitionId, Long version) throws TaskListException {
     try {
       if (formId.startsWith(CamundaTaskListClientProperties.CAMUNDA_FORMS_PREFIX)) {
@@ -430,9 +430,10 @@ public class CamundaTaskListClient {
       throws TaskListException {
     try {
       reconnectEventually();
-      
+
       List<Task> tasks = ConverterUtils.toTasks(taskApi.searchTasks(search));
-      if (withVariables && search.getIncludeVariables().isEmpty()) {
+      if (withVariables
+    		  && (search.getIncludeVariables() == null || search.getIncludeVariables().isEmpty())) {
         loadVariables(tasks);
       }
       return tasks;
@@ -468,7 +469,7 @@ public class CamundaTaskListClient {
     }
   }
 
-  public void setTokenExpiration(int tokenExpiration) {
+  public void setTokenExpiration(long tokenExpiration) {
     this.tokenExpiration = tokenExpiration;
   }
 
@@ -485,7 +486,7 @@ public class CamundaTaskListClient {
   public void authenticate() throws TaskListException {
     Map.Entry<String, String> header = properties.authentication.getTokenHeader(Product.TASKLIST);
     if (header.getValue().startsWith("Bearer ")) {
-        this.tokenExpiration = JwtUtils.getExpiration(header.getValue().substring(7)) * 1000;
+		this.tokenExpiration = JwtUtils.getExpiration(header.getValue().substring(7)) * 1000L;
     } else if (this.properties.cookieExpiration!=null) {
         this.tokenExpiration = System.currentTimeMillis() + this.properties.cookieExpiration.toMillis();
     }
@@ -493,8 +494,8 @@ public class CamundaTaskListClient {
     this.taskApi = new TaskApi(this.apiClient);
     this.formApi = new FormApi(this.apiClient);
   }
-  
-  
+
+
 
   public static CamundaTaskListClientBuilder builder() {
       return new CamundaTaskListClientBuilder();
