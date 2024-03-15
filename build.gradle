@@ -67,14 +67,14 @@ openApiGenerate {
   ]
 }
 
-/*task sourceJar(type: Jar) {
+task sourcesJar(type: Jar) {
   outputs.cacheIf { true }
   from sourceSets.main.allJava
   archiveClassifier = 'sources'
-}*/
+}
 //tasks.getByName('openApiGenerate').dependsOn(tasks.sourceJar)
 spotlessJava.dependsOn tasks.named("openApiGenerate")
-//sourceJar.dependsOn tasks.named("openApiGenerate")
+sourcesJar.dependsOn tasks.named("openApiGenerate")
 
 compileJava.dependsOn tasks.named("spotlessApply")
 
@@ -89,7 +89,7 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 
 java {
   sourceCompatibility = JavaVersion.VERSION_11
-  //withSourcesJar()
+  withSourcesJar()
   withJavadocJar()
 }
 nexusPublishing {
