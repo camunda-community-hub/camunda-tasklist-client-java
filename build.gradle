@@ -10,7 +10,9 @@ plugins {
 group = 'io.camunda'
 version = '8.4.0.6'
 
-sourceCompatibility = '11'
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+}
 
 repositories {
   mavenCentral()
@@ -48,6 +50,8 @@ spotless{
 def generatedFolder = "$buildDir/generated/openapi"
 sourceSets.main.java.srcDirs += "$generatedFolder/src/main/java"
 
+
+
 openApiGenerate {
   generatorName = "java"
   library = "native"
@@ -66,15 +70,17 @@ openApiGenerate {
   ]
 }
 
-spotlessJava.dependsOn tasks.named("openApiGenerate")
-
-compileJava.dependsOn tasks.named("spotlessApply")
-
-task sourceJar(type: Jar) {
+/*task sourceJar(type: Jar) {
   outputs.cacheIf { true }
   from sourceSets.main.allJava
   archiveClassifier = 'sources'
-}
+}*/
+//tasks.getByName('openApiGenerate').dependsOn(tasks.sourceJar)
+spotlessJava.dependsOn tasks.named("openApiGenerate")
+//sourceJar.dependsOn tasks.named("openApiGenerate")
+
+compileJava.dependsOn tasks.named("spotlessApply")
+
 javadoc {
   exclude '**/generated/**'
 }
@@ -83,10 +89,10 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
   duplicatesStrategy = DuplicatesStrategy.EXCLUDE
   archiveClassifier = 'javadoc'
 }
-java {
+/*java {
   withSourcesJar()
   withJavadocJar()
-}
+}*/
 
 nexusPublishing {
   transitionCheckOptions {
