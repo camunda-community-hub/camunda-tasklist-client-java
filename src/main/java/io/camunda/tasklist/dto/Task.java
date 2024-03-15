@@ -4,223 +4,223 @@ import java.time.OffsetDateTime;
 import java.util.List;
 
 public class Task {
-    private String id;
+  private String id;
 
-    private String name;
+  private String name;
 
-    private String processName;
+  private String processName;
 
-    private String processDefinitionKey;
+  private String processDefinitionKey;
 
-    private String processInstanceKey;
+  private String processInstanceKey;
 
-    private String assignee;
+  private String assignee;
 
-    private String creationDate;
-    
-    private String completionDate;
+  private String creationDate;
 
-    private TaskState taskState;
+  private String completionDate;
 
-    private List<String> candidateUsers;
+  private TaskState taskState;
 
-    private List<String> candidateGroups;
+  private List<String> candidateUsers;
 
-    private OffsetDateTime followUpDate;
+  private List<String> candidateGroups;
 
-    private OffsetDateTime dueDate;
+  private OffsetDateTime followUpDate;
 
-    private String formKey;
+  private OffsetDateTime dueDate;
 
-    private String formId;
+  private String formKey;
 
-    private Long formVersion;
+  private String formId;
 
-    private Boolean isFormEmbedded;
+  private Long formVersion;
 
-    private String taskDefinitionId;
+  private Boolean isFormEmbedded;
 
-    private List<String> sortValues;
+  private String taskDefinitionId;
 
-    private Boolean isFirst;
+  private List<String> sortValues;
 
-    private String tenantId;
+  private Boolean isFirst;
 
-    private List<Variable> variables;
+  private String tenantId;
 
-    public String getId() {
-        return id;
-    }
+  private List<Variable> variables;
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public String getName() {
-        return name;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public String getProcessName() {
-        return processName;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public void setProcessName(String processName) {
-        this.processName = processName;
-    }
+  public String getProcessName() {
+    return processName;
+  }
 
-    public String getAssignee() {
-        return assignee;
-    }
+  public void setProcessName(String processName) {
+    this.processName = processName;
+  }
 
-    public void setAssignee(String assignee) {
-        this.assignee = assignee;
-    }
+  public String getAssignee() {
+    return assignee;
+  }
 
-    public String getCreationDate() {
-        return creationDate;
-    }
+  public void setAssignee(String assignee) {
+    this.assignee = assignee;
+  }
 
-    public void setCreationDate(String creationDate) {
-        this.creationDate = creationDate;
-    }
+  public String getCreationDate() {
+    return creationDate;
+  }
 
-    public String getCompletionDate() {
-        return completionDate;
-    }
+  public void setCreationDate(String creationDate) {
+    this.creationDate = creationDate;
+  }
 
-    public void setCompletionDate(String completionDate) {
-        this.completionDate = completionDate;
-    }
+  public String getCompletionDate() {
+    return completionDate;
+  }
 
-    public TaskState getTaskState() {
-        return taskState;
-    }
+  public void setCompletionDate(String completionDate) {
+    this.completionDate = completionDate;
+  }
 
-    public void setTaskState(TaskState taskState) {
-        this.taskState = taskState;
-    }
+  public TaskState getTaskState() {
+    return taskState;
+  }
 
-    public List<String> getSortValues() {
-        return sortValues;
-    }
-
-    public void setSortValues(List<String> sortValues) {
-        this.sortValues = sortValues;
-    }
-
-    public Boolean getIsFirst() {
-        return isFirst;
-    }
-
-    public void setIsFirst(Boolean isFirst) {
-        this.isFirst = isFirst;
-    }
-
-    public List<String> getCandidateGroups() {
-        return candidateGroups;
-    }
-
-    public void setCandidateGroups(List<String> candidateGroups) {
-        this.candidateGroups = candidateGroups;
-    }
-
-    public String getFormKey() {
-        return formKey;
-    }
-
-    public void setFormKey(String formKey) {
-        this.formKey = formKey;
-    }
-
-    public String getFormId() {
-        return formId;
-    }
-
-    public void setFormId(String formId) {
-        this.formId = formId;
-    }
-
-    public Long getFormVersion() {
-        return formVersion;
-    }
-
-    public void setFormVersion(Long formVersion) {
-        this.formVersion = formVersion;
-    }
-
-    public Boolean getIsFormEmbedded() {
-        return isFormEmbedded;
-    }
-
-    public void setIsFormEmbedded(Boolean isFormEmbedded) {
-        this.isFormEmbedded = isFormEmbedded;
-    }
-
-    public String getProcessDefinitionKey() {
-        return processDefinitionKey;
-    }
-
-    public void setProcessDefinitionKey(String processDefinitionId) {
-        this.processDefinitionKey = processDefinitionId;
-    }
-
-    public String getTaskDefinitionId() {
-        return taskDefinitionId;
-    }
-
-    public void setTaskDefinitionId(String taskDefinitionId) {
-        this.taskDefinitionId = taskDefinitionId;
-    }
-
-    public String getProcessInstanceKey() {
-        return processInstanceKey;
-    }
-
-    public void setProcessInstanceKey(String processInstanceKey) {
-        this.processInstanceKey = processInstanceKey;
-    }
-
-    public List<String> getCandidateUsers() {
-        return candidateUsers;
-    }
-
-    public void setCandidateUsers(List<String> candidateUsers) {
-        this.candidateUsers = candidateUsers;
-    }
-
-    public OffsetDateTime getFollowUpDate() {
-        return followUpDate;
-    }
-
-    public void setFollowUpDate(OffsetDateTime followUpDate) {
-        this.followUpDate = followUpDate;
-    }
-
-    public OffsetDateTime getDueDate() {
-        return dueDate;
-    }
-
-    public void setDueDate(OffsetDateTime dueDate) {
-        this.dueDate = dueDate;
-    }
-
-    public String getTenantId() {
-        return tenantId;
-    }
-
-    public void setTenantId(String tenantId) {
-        this.tenantId = tenantId;
-    }
-
-    public List<Variable> getVariables() {
-        return variables;
-    }
-
-    public void setVariables(List<Variable> variables) {
-        this.variables = variables;
-    }
+  public void setTaskState(TaskState taskState) {
+    this.taskState = taskState;
+  }
+
+  public List<String> getSortValues() {
+    return sortValues;
+  }
+
+  public void setSortValues(List<String> sortValues) {
+    this.sortValues = sortValues;
+  }
+
+  public Boolean getIsFirst() {
+    return isFirst;
+  }
+
+  public void setIsFirst(Boolean isFirst) {
+    this.isFirst = isFirst;
+  }
+
+  public List<String> getCandidateGroups() {
+    return candidateGroups;
+  }
+
+  public void setCandidateGroups(List<String> candidateGroups) {
+    this.candidateGroups = candidateGroups;
+  }
+
+  public String getFormKey() {
+    return formKey;
+  }
+
+  public void setFormKey(String formKey) {
+    this.formKey = formKey;
+  }
+
+  public String getFormId() {
+    return formId;
+  }
+
+  public void setFormId(String formId) {
+    this.formId = formId;
+  }
+
+  public Long getFormVersion() {
+    return formVersion;
+  }
+
+  public void setFormVersion(Long formVersion) {
+    this.formVersion = formVersion;
+  }
+
+  public Boolean getIsFormEmbedded() {
+    return isFormEmbedded;
+  }
+
+  public void setIsFormEmbedded(Boolean isFormEmbedded) {
+    this.isFormEmbedded = isFormEmbedded;
+  }
+
+  public String getProcessDefinitionKey() {
+    return processDefinitionKey;
+  }
+
+  public void setProcessDefinitionKey(String processDefinitionId) {
+    this.processDefinitionKey = processDefinitionId;
+  }
+
+  public String getTaskDefinitionId() {
+    return taskDefinitionId;
+  }
+
+  public void setTaskDefinitionId(String taskDefinitionId) {
+    this.taskDefinitionId = taskDefinitionId;
+  }
+
+  public String getProcessInstanceKey() {
+    return processInstanceKey;
+  }
+
+  public void setProcessInstanceKey(String processInstanceKey) {
+    this.processInstanceKey = processInstanceKey;
+  }
+
+  public List<String> getCandidateUsers() {
+    return candidateUsers;
+  }
+
+  public void setCandidateUsers(List<String> candidateUsers) {
+    this.candidateUsers = candidateUsers;
+  }
+
+  public OffsetDateTime getFollowUpDate() {
+    return followUpDate;
+  }
+
+  public void setFollowUpDate(OffsetDateTime followUpDate) {
+    this.followUpDate = followUpDate;
+  }
+
+  public OffsetDateTime getDueDate() {
+    return dueDate;
+  }
+
+  public void setDueDate(OffsetDateTime dueDate) {
+    this.dueDate = dueDate;
+  }
+
+  public String getTenantId() {
+    return tenantId;
+  }
+
+  public void setTenantId(String tenantId) {
+    this.tenantId = tenantId;
+  }
+
+  public List<Variable> getVariables() {
+    return variables;
+  }
+
+  public void setVariables(List<Variable> variables) {
+    this.variables = variables;
+  }
 }

@@ -47,8 +47,6 @@ spotless{
 def generatedFolder = "$buildDir/generated/openapi"
 sourceSets.main.java.srcDirs += "$generatedFolder/src/main/java"
 
-
-
 openApiGenerate {
   generatorName = "java"
   library = "native"
@@ -72,7 +70,7 @@ task sourcesJar(type: Jar) {
   from sourceSets.main.allJava
   archiveClassifier = 'sources'
 }
-//tasks.getByName('openApiGenerate').dependsOn(tasks.sourceJar)
+
 spotlessJava.dependsOn tasks.named("openApiGenerate")
 sourcesJar.dependsOn tasks.named("openApiGenerate")
 

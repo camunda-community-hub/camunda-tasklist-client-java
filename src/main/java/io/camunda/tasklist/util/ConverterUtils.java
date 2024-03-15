@@ -1,17 +1,11 @@
 package io.camunda.tasklist.util;
 
-import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
 import io.camunda.tasklist.dto.DateFilter;
 import io.camunda.tasklist.dto.Form;
 import io.camunda.tasklist.dto.Task;
@@ -25,6 +19,10 @@ import io.camunda.tasklist.generated.model.TaskSearchResponse;
 import io.camunda.tasklist.generated.model.VariableInputDTO;
 import io.camunda.tasklist.generated.model.VariableResponse;
 import io.camunda.tasklist.generated.model.VariableSearchResponse;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class ConverterUtils {
 
@@ -107,14 +105,14 @@ public class ConverterUtils {
     try {
       Task task =
           getObjectMapper().readValue(getObjectMapper().writeValueAsString(sourceTask), Task.class);
-      if (variables!=null) {
+      if (variables != null) {
         task.setVariables(variables);
-      } else if (task.getVariables()!=null && !task.getVariables().isEmpty()) {
-          List<Variable> improvedList = new ArrayList<>();
-          for(Variable v : task.getVariables()) {
-              improvedList.add(buildVariable(v.getId(), v.getName(), (String) v.getValue()));
-          }
-          task.setVariables(improvedList);
+      } else if (task.getVariables() != null && !task.getVariables().isEmpty()) {
+        List<Variable> improvedList = new ArrayList<>();
+        for (Variable v : task.getVariables()) {
+          improvedList.add(buildVariable(v.getId(), v.getName(), (String) v.getValue()));
+        }
+        task.setVariables(improvedList);
       }
 
       return task;
