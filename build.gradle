@@ -10,9 +10,6 @@ plugins {
 group = 'io.camunda'
 version = '8.4.0.6'
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_11
-}
 
 repositories {
   mavenCentral()
@@ -89,11 +86,12 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
   duplicatesStrategy = DuplicatesStrategy.EXCLUDE
   archiveClassifier = 'javadoc'
 }
-/*java {
-  withSourcesJar()
-  withJavadocJar()
-}*/
 
+java {
+  sourceCompatibility = JavaVersion.VERSION_11
+  //withSourcesJar()
+  withJavadocJar()
+}
 nexusPublishing {
   transitionCheckOptions {
     maxRetries.set(100)
