@@ -9,6 +9,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.camunda.tasklist.dto.DateFilter;
 import io.camunda.tasklist.dto.Form;
 import io.camunda.tasklist.dto.Task;
+import io.camunda.tasklist.dto.TaskSearch;
 import io.camunda.tasklist.dto.TaskState;
 import io.camunda.tasklist.dto.Variable;
 import io.camunda.tasklist.dto.VariableType;
@@ -151,6 +152,16 @@ public class ConverterUtils {
     try {
       return getObjectMapper()
           .readValue(getObjectMapper().writeValueAsString(apolloTask), Form.class);
+    } catch (JsonProcessingException e) {
+      throw new TaskListException(e);
+    }
+  }
+
+  public static TaskSearchRequest toTaskSearchRequest(TaskSearch taskSearch)
+      throws TaskListException {
+    try {
+      return getObjectMapper()
+          .readValue(getObjectMapper().writeValueAsString(taskSearch), TaskSearchRequest.class);
     } catch (JsonProcessingException e) {
       throw new TaskListException(e);
     }

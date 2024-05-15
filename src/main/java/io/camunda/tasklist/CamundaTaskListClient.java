@@ -47,7 +47,7 @@ public class CamundaTaskListClient {
   private final FormApi formApi;
   private final VariablesApi variablesApi;
   private final ZeebeClient zeebeClient;
-  private CamundaTaskListClientProperties properties;
+  private final CamundaTaskListClientProperties properties;
   private long tokenExpiration;
 
   protected CamundaTaskListClient(
@@ -346,24 +346,26 @@ public class CamundaTaskListClient {
     if (search.getWithVariables() == null) {
       search.setWithVariables(properties.defaultShouldReturnVariables);
     }
-    return getTasks(
-        search.getCandidateUser(),
-        search.getCandidateUsers(),
-        search.getGroup(),
-        search.getGroups(),
-        search.getAssigned(),
-        search.getAssignee(),
-        search.getState(),
-        search.getFollowUpDate(),
-        search.getDueDate(),
-        search.getProcessDefinitionKey(),
-        search.getProcessInstanceKey(),
-        search.getTaskDefinitionId(),
-        search.getTaskVariables(),
-        search.getTenantIds(),
-        search.getIncludeVariablesAsObj(),
-        search.isWithVariables(),
-        search.getPagination());
+    Pagination pagination = search.getPagination();
+    TaskSearchRequest request = ConverterUtils.toTaskSearchRequest(search);
+    if (pagination != null) {
+      if (pagination.getSearchType() != null
+          && pagination.getSearch() != null
+          && !pagination.getSearch().isEmpty()) {
+        if (pagination.getSearchType().equals(SearchType.BEFORE)) {
+          request.searchBefore(pagination.getSearch());
+        } else if (pagination.getSearchType().equals(SearchType.BEFORE_OR_EQUAL)) {
+          request.searchBeforeOrEqual(pagination.getSearch());
+        } else if (pagination.getSearchType().equals(SearchType.AFTER)) {
+          request.searchAfter(pagination.getSearch());
+        } else if (pagination.getSearchType().equals(SearchType.AFTER_OR_EQUAL)) {
+          request.searchAfterOrEqual(pagination.getSearch());
+        }
+      }
+      request.pageSize(pagination.getPageSize());
+      request.sort(pagination.getSort());
+    }
+    return new TaskList().setItems(getTasks(request, search.getWithVariables())).setSearch(search);
   }
 
   public TaskList getTasks(
@@ -375,23 +377,13 @@ public class CamundaTaskListClient {
       Pagination pagination)
       throws TaskListException {
     return getTasks(
-        null,
-        null,
-        group,
-        null,
-        assigned,
-        assigneeId,
-        state,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        withVariables,
-        pagination);
+        new TaskSearch()
+            .setGroup(group)
+            .setAssigned(assigned)
+            .setAssignee(assigneeId)
+            .setState(state)
+            .setWithVariables(withVariables)
+            .setPagination(pagination));
   }
 
   public TaskList getTasks(
@@ -413,57 +405,26 @@ public class CamundaTaskListClient {
       boolean withVariables,
       Pagination pagination)
       throws TaskListException {
-
-    TaskSearchRequest search =
-        new TaskSearchRequest()
-            .candidateGroup(group)
-            .candidateGroups(groups)
-            .candidateUsers(candidateUsers)
-            .candidateUser(candidateUser)
-            .assignee(assignee)
-            .state(ConverterUtils.toSearchState(state))
-            .followUpDate(ConverterUtils.toSearchDateFilter(followUpDate))
-            .dueDate(ConverterUtils.toSearchDateFilter(dueDate))
-            .processDefinitionKey(processDefinitionId)
-            .taskVariables(taskVariables)
-            .processInstanceKey(processInstanceId)
-            .taskDefinitionId(taskDefinitionId)
-            .tenantIds(tenantIds)
-            .assigned(assigned)
-            .includeVariables(includeVariables);
-    if (pagination != null) {
-      if (pagination.getSearchType() != null
-          && pagination.getSearch() != null
-          && !pagination.getSearch().isEmpty()) {
-        if (pagination.getSearchType().equals(SearchType.BEFORE)) {
-          search.searchBefore(pagination.getSearch());
-        } else if (pagination.getSearchType().equals(SearchType.BEFORE_OR_EQUAL)) {
-          search.searchBeforeOrEqual(pagination.getSearch());
-        } else if (pagination.getSearchType().equals(SearchType.AFTER)) {
-          search.searchAfter(pagination.getSearch());
-        } else if (pagination.getSearchType().equals(SearchType.AFTER_OR_EQUAL)) {
-          search.searchAfterOrEqual(pagination.getSearch());
-        }
-      }
-      search.pageSize(pagination.getPageSize());
-      search.sort(pagination.getSort());
-    }
-    return new TaskList()
-        .setItems(getTasks(search, withVariables))
-        .setSearch(
-            new TaskSearch()
-                .setCandidateUser(candidateUser)
-                .setAssigned(assigned)
-                .setAssignee(assignee)
-                .setGroup(group)
-                .setProcessDefinitionKey(processDefinitionId)
-                .setProcessInstanceKey(processInstanceId)
-                .setFollowUpDate(followUpDate)
-                .setDueDate(dueDate)
-                .setTaskDefinitionId(taskDefinitionId)
-                .setState(state)
-                .setWithVariables(withVariables)
-                .setPagination(pagination));
+    return getTasks(
+        new TaskSearch()
+            .setCandidateUser(candidateUser)
+            .setCandidateUsers(candidateUsers)
+            .setGroup(group)
+            .setGroups(groups)
+            .setAssigned(assigned)
+            .setAssignee(assignee)
+            .setState(state)
+            .setFollowUpDate(followUpDate)
+            .setDueDate(dueDate)
+            .setProcessDefinitionKey(processDefinitionId)
+            .setProcessInstanceKey(processInstanceId)
+            .setTaskDefinitionId(taskDefinitionId)
+            .setTaskVariables(taskVariables)
+            .setTenantIds(tenantIds)
+            .setIncludeVariables(
+                includeVariables.stream().map(iv -> iv.getName()).collect(Collectors.toList()))
+            .setWithVariables(withVariables)
+            .setPagination(pagination));
   }
 
   public List<Task> getTasks(TaskSearchRequest search, boolean withVariables)

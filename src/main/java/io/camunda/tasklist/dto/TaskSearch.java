@@ -32,20 +32,23 @@ public class TaskSearch {
     return groups;
   }
 
-  public void setGroups(List<String> groups) {
+  public TaskSearch setGroups(List<String> groups) {
     this.groups = groups;
+    return this;
   }
 
   public List<String> getCandidateUsers() {
     return candidateUsers;
   }
 
-  public void setCandidateUsers(List<String> candidateUsers) {
+  public TaskSearch setCandidateUsers(List<String> candidateUsers) {
     this.candidateUsers = candidateUsers;
+    return this;
   }
 
-  public void setWithVariables(Boolean withVariables) {
+  public TaskSearch setWithVariables(Boolean withVariables) {
     this.withVariables = withVariables;
+    return this;
   }
 
   public String getCandidateUser() {
