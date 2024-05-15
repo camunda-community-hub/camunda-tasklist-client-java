@@ -10,6 +10,7 @@ import io.camunda.tasklist.dto.Form;
 import io.camunda.tasklist.dto.Pagination;
 import io.camunda.tasklist.dto.SearchType;
 import io.camunda.tasklist.dto.Task;
+import io.camunda.tasklist.dto.Task.Implementation;
 import io.camunda.tasklist.dto.TaskList;
 import io.camunda.tasklist.dto.TaskSearch;
 import io.camunda.tasklist.dto.TaskState;
@@ -30,6 +31,7 @@ import io.camunda.tasklist.generated.model.VariableInputDTO;
 import io.camunda.tasklist.generated.model.VariablesSearchRequest;
 import io.camunda.tasklist.util.ConverterUtils;
 import io.camunda.tasklist.util.JwtUtils;
+import io.camunda.zeebe.client.ZeebeClient;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,26 +42,28 @@ import java.util.stream.Collectors;
 
 public class CamundaTaskListClient {
 
+  private final ApiClient apiClient = Configuration.getDefaultApiClient();
+  private final TaskApi taskApi;
+  private final FormApi formApi;
+  private final VariablesApi variablesApi;
+  private final ZeebeClient zeebeClient;
   private CamundaTaskListClientProperties properties;
-
   private long tokenExpiration;
 
-  private ApiClient apiClient = Configuration.getDefaultApiClient();
-
-  private TaskApi taskApi;
-  private FormApi formApi;
-  private VariablesApi variablesApi;
-
-  protected CamundaTaskListClient(CamundaTaskListClientProperties properties)
+  protected CamundaTaskListClient(
+      CamundaTaskListClientProperties properties, ZeebeClient zeebeClient)
       throws TaskListException {
     this.properties = properties;
     this.apiClient.updateBaseUri(properties.taskListUrl);
-
     this.taskApi = new TaskApi(this.apiClient);
     this.formApi = new FormApi(this.apiClient);
     this.variablesApi = new VariablesApi(this.apiClient);
-
+    this.zeebeClient = zeebeClient;
     authenticate();
+  }
+
+  public static CamundaTaskListClientBuilder builder() {
+    return new CamundaTaskListClientBuilder();
   }
 
   public Task unclaim(String taskId) throws TaskListException {
@@ -91,13 +95,21 @@ public class CamundaTaskListClient {
     }
   }
 
-  public Task completeTask(String taskId, Map<String, Object> variablesMap)
+  public void completeTask(String taskId, Map<String, Object> variablesMap)
       throws TaskListException {
     try {
-      reconnectEventually();
-      List<VariableInputDTO> variables = ConverterUtils.toVariableInput(variablesMap);
-      return ConverterUtils.toTask(
-          taskApi.completeTask(taskId, new TaskCompleteRequest().variables(variables)), null);
+      Task task = getTask(taskId);
+      if (task.getImplementation().equals(Implementation.JOB_WORKER)) {
+        reconnectEventually();
+        List<VariableInputDTO> variables = ConverterUtils.toVariableInput(variablesMap);
+        taskApi.completeTask(taskId, new TaskCompleteRequest().variables(variables));
+      } else if (task.getImplementation().equals(Implementation.ZEEBE_USER_TASK)) {
+        zeebeClient
+            .newUserTaskCompleteCommand(Long.parseLong(taskId))
+            .variables(variablesMap)
+            .send()
+            .join();
+      }
     } catch (TaskListException | ApiException e) {
       throw new TaskListException("Error assigning task " + taskId, e);
     }
@@ -182,6 +194,17 @@ public class CamundaTaskListClient {
       String group, TaskState state, boolean withVariables, Pagination pagination)
       throws TaskListException {
     return getTasks(group, null, null, state, withVariables, pagination);
+  }
+
+  public TaskList getGroupsTasks(
+      List<String> groups, TaskState state, boolean withVariables, Pagination pagination)
+      throws TaskListException {
+    TaskSearch taskSearch = new TaskSearch();
+    taskSearch.setGroups(groups);
+    taskSearch.setState(state);
+    taskSearch.setWithVariables(withVariables);
+    taskSearch.setPagination(pagination);
+    return getTasks(taskSearch);
   }
 
   public Task getTask(String taskId) throws TaskListException {
@@ -325,7 +348,9 @@ public class CamundaTaskListClient {
     }
     return getTasks(
         search.getCandidateUser(),
+        search.getCandidateUsers(),
         search.getGroup(),
+        search.getGroups(),
         search.getAssigned(),
         search.getAssignee(),
         search.getState(),
@@ -351,7 +376,9 @@ public class CamundaTaskListClient {
       throws TaskListException {
     return getTasks(
         null,
+        null,
         group,
+        null,
         assigned,
         assigneeId,
         state,
@@ -369,7 +396,9 @@ public class CamundaTaskListClient {
 
   public TaskList getTasks(
       String candidateUser,
+      List<String> candidateUsers,
       String group,
+      List<String> groups,
       Boolean assigned,
       String assignee,
       TaskState state,
@@ -388,6 +417,8 @@ public class CamundaTaskListClient {
     TaskSearchRequest search =
         new TaskSearchRequest()
             .candidateGroup(group)
+            .candidateGroups(groups)
+            .candidateUsers(candidateUsers)
             .candidateUser(candidateUser)
             .assignee(assignee)
             .state(ConverterUtils.toSearchState(state))
@@ -502,11 +533,5 @@ public class CamundaTaskListClient {
     }
     this.apiClient.setRequestInterceptor(
         builder -> builder.header(header.getKey(), header.getValue()));
-    this.taskApi = new TaskApi(this.apiClient);
-    this.formApi = new FormApi(this.apiClient);
-  }
-
-  public static CamundaTaskListClientBuilder builder() {
-    return new CamundaTaskListClientBuilder();
   }
 }

@@ -11,8 +11,10 @@ import java.util.List;
 public class TaskSearch {
 
   private String group;
+  private List<String> groups;
   private String assignee;
   private String candidateUser;
+  private List<String> candidateUsers;
   private Boolean Assigned;
   private TaskState state;
   private String processDefinitionKey;
@@ -25,6 +27,26 @@ public class TaskSearch {
   private DateFilter dueDate;
   private List<String> includeVariables;
   private Pagination pagination;
+
+  public List<String> getGroups() {
+    return groups;
+  }
+
+  public void setGroups(List<String> groups) {
+    this.groups = groups;
+  }
+
+  public List<String> getCandidateUsers() {
+    return candidateUsers;
+  }
+
+  public void setCandidateUsers(List<String> candidateUsers) {
+    this.candidateUsers = candidateUsers;
+  }
+
+  public void setWithVariables(Boolean withVariables) {
+    this.withVariables = withVariables;
+  }
 
   public String getCandidateUser() {
     return candidateUser;

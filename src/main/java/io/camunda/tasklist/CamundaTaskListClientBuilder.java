@@ -6,11 +6,18 @@ import io.camunda.common.auth.JwtCredential;
 import io.camunda.common.auth.Product;
 import io.camunda.common.auth.SaaSAuthentication;
 import io.camunda.common.auth.SelfManagedAuthentication;
+import io.camunda.common.auth.identity.IdentityConfig;
+import io.camunda.common.auth.identity.IdentityContainer;
+import io.camunda.common.json.SdkObjectMapper;
+import io.camunda.identity.sdk.Identity;
+import io.camunda.identity.sdk.IdentityConfiguration;
 import io.camunda.tasklist.exception.TaskListException;
+import io.camunda.zeebe.client.ZeebeClient;
 import java.time.Duration;
 
 public class CamundaTaskListClientBuilder {
   private CamundaTaskListClientProperties properties = new CamundaTaskListClientProperties();
+  private ZeebeClient zeebeClient;
 
   public CamundaTaskListClientBuilder authentication(Authentication authentication) {
     properties.authentication = authentication;
@@ -19,6 +26,11 @@ public class CamundaTaskListClientBuilder {
 
   public CamundaTaskListClientBuilder taskListUrl(String taskListUrl) {
     properties.taskListUrl = formatUrl(taskListUrl);
+    return this;
+  }
+
+  public CamundaTaskListClientBuilder zeebeClient(ZeebeClient zeebeClient) {
+    this.zeebeClient = zeebeClient;
     return this;
   }
 
@@ -52,15 +64,25 @@ public class CamundaTaskListClientBuilder {
   }
 
   public CamundaTaskListClient build() throws TaskListException {
-    return new CamundaTaskListClient(properties);
+    return new CamundaTaskListClient(properties, zeebeClient);
   }
 
   public CamundaTaskListClientBuilder selfManagedAuthentication(
       String clientId, String clientSecret, String keycloakUrl) {
+    IdentityConfig identityConfig = new IdentityConfig();
+    IdentityConfiguration identityConfiguration =
+        new IdentityConfiguration(keycloakUrl, keycloakUrl, clientId, clientSecret, null);
+    Identity identity = new Identity(identityConfiguration);
+    identityConfig.addProduct(
+        Product.TASKLIST, new IdentityContainer(identity, identityConfiguration));
     JwtConfig jwtConfig = new JwtConfig();
-    jwtConfig.addProduct(Product.TASKLIST, new JwtCredential(clientId, clientSecret, null, null));
+    jwtConfig.addProduct(
+        Product.TASKLIST, new JwtCredential(clientId, clientSecret, null, keycloakUrl));
     properties.authentication =
-        SelfManagedAuthentication.builder().jwtConfig(jwtConfig).keycloakUrl(keycloakUrl).build();
+        SelfManagedAuthentication.builder()
+            .withJwtConfig(jwtConfig)
+            .withIdentityConfig(identityConfig)
+            .build();
     return this;
   }
 
@@ -73,7 +95,11 @@ public class CamundaTaskListClientBuilder {
             clientSecret,
             "tasklist.camunda.io",
             "https://login.cloud.camunda.io/oauth/token"));
-    properties.authentication = SaaSAuthentication.builder().jwtConfig(jwtConfig).build();
+    properties.authentication =
+        SaaSAuthentication.builder()
+            .withJwtConfig(jwtConfig)
+            .withJsonMapper(new SdkObjectMapper())
+            .build();
     return this;
   }
 
