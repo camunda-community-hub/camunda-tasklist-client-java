@@ -20,12 +20,12 @@ public class CamundaTaskListClientBuilder {
   private ZeebeClient zeebeClient;
 
   public CamundaTaskListClientBuilder authentication(Authentication authentication) {
-    properties.authentication = authentication;
+    properties.setAuthentication(authentication);
     return this;
   }
 
   public CamundaTaskListClientBuilder taskListUrl(String taskListUrl) {
-    properties.taskListUrl = formatUrl(taskListUrl);
+    properties.setTaskListUrl(formatUrl(taskListUrl));
     return this;
   }
 
@@ -41,17 +41,17 @@ public class CamundaTaskListClientBuilder {
    * @return the builder
    */
   public CamundaTaskListClientBuilder shouldReturnVariables() {
-    properties.defaultShouldReturnVariables = true;
+    properties.setDefaultShouldReturnVariables(true);
     return this;
   }
 
   public CamundaTaskListClientBuilder shouldLoadTruncatedVariables() {
-    properties.defaultShouldLoadTruncatedVariables = true;
+    properties.setDefaultShouldLoadTruncatedVariables(true);
     return this;
   }
 
   public CamundaTaskListClientBuilder alwaysReconnect() {
-    properties.alwaysReconnect = true;
+    properties.setAlwaysReconnect(true);
     return this;
   }
 
@@ -59,7 +59,7 @@ public class CamundaTaskListClientBuilder {
    * Force cookie expiration after some time (default 3mn). Only usefull with SimpleAuthentication
    */
   public CamundaTaskListClientBuilder cookieExpiration(Duration cookieExpiration) {
-    properties.cookieExpiration = cookieExpiration;
+    properties.setCookieExpiration(cookieExpiration);
     return this;
   }
 
@@ -78,11 +78,11 @@ public class CamundaTaskListClientBuilder {
     JwtConfig jwtConfig = new JwtConfig();
     jwtConfig.addProduct(
         Product.TASKLIST, new JwtCredential(clientId, clientSecret, null, keycloakUrl));
-    properties.authentication =
+    properties.setAuthentication(
         SelfManagedAuthentication.builder()
             .withJwtConfig(jwtConfig)
             .withIdentityConfig(identityConfig)
-            .build();
+            .build());
     return this;
   }
 
@@ -95,11 +95,11 @@ public class CamundaTaskListClientBuilder {
             clientSecret,
             "tasklist.camunda.io",
             "https://login.cloud.camunda.io/oauth/token"));
-    properties.authentication =
+    properties.setAuthentication(
         SaaSAuthentication.builder()
             .withJwtConfig(jwtConfig)
             .withJsonMapper(new SdkObjectMapper())
-            .build();
+            .build());
     return this;
   }
 
