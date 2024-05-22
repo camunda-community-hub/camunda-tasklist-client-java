@@ -47,6 +47,31 @@ public class Task {
   private String tenantId;
 
   private List<Variable> variables;
+  private Implementation implementation;
+
+  public Boolean getFormEmbedded() {
+    return isFormEmbedded;
+  }
+
+  public void setFormEmbedded(Boolean formEmbedded) {
+    isFormEmbedded = formEmbedded;
+  }
+
+  public Boolean getFirst() {
+    return isFirst;
+  }
+
+  public void setFirst(Boolean first) {
+    isFirst = first;
+  }
+
+  public Implementation getImplementation() {
+    return implementation;
+  }
+
+  public void setImplementation(Implementation implementation) {
+    this.implementation = implementation;
+  }
 
   public String getId() {
     return id;
@@ -222,5 +247,10 @@ public class Task {
 
   public void setVariables(List<Variable> variables) {
     this.variables = variables;
+  }
+
+  public enum Implementation {
+    JOB_WORKER,
+    ZEEBE_USER_TASK
   }
 }

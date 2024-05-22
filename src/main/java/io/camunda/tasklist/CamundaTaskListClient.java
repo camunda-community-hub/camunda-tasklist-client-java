@@ -10,6 +10,7 @@ import io.camunda.tasklist.dto.Form;
 import io.camunda.tasklist.dto.Pagination;
 import io.camunda.tasklist.dto.SearchType;
 import io.camunda.tasklist.dto.Task;
+import io.camunda.tasklist.dto.Task.Implementation;
 import io.camunda.tasklist.dto.TaskList;
 import io.camunda.tasklist.dto.TaskSearch;
 import io.camunda.tasklist.dto.TaskState;
@@ -30,6 +31,7 @@ import io.camunda.tasklist.generated.model.VariableInputDTO;
 import io.camunda.tasklist.generated.model.VariablesSearchRequest;
 import io.camunda.tasklist.util.ConverterUtils;
 import io.camunda.tasklist.util.JwtUtils;
+import io.camunda.zeebe.client.ZeebeClient;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,26 +42,33 @@ import java.util.stream.Collectors;
 
 public class CamundaTaskListClient {
 
-  private CamundaTaskListClientProperties properties;
-
+  private final ApiClient apiClient = Configuration.getDefaultApiClient();
+  private final TaskApi taskApi;
+  private final FormApi formApi;
+  private final VariablesApi variablesApi;
+  private final ZeebeClient zeebeClient;
+  private final CamundaTaskListClientProperties properties;
   private long tokenExpiration;
 
-  private ApiClient apiClient = Configuration.getDefaultApiClient();
-
-  private TaskApi taskApi;
-  private FormApi formApi;
-  private VariablesApi variablesApi;
-
-  protected CamundaTaskListClient(CamundaTaskListClientProperties properties)
+  protected CamundaTaskListClient(
+      CamundaTaskListClientProperties properties, ZeebeClient zeebeClient)
       throws TaskListException {
+    assert properties != null : "properties must not be null";
+    assert properties.getTaskListUrl() != null : "taskListUrl must not be null";
+    assert properties.getAuthentication() != null : "authentication must not be null";
+    assert !properties.isUseZeebeUserTasks() || zeebeClient != null
+        : "zeebeClient must not be null";
     this.properties = properties;
-    this.apiClient.updateBaseUri(properties.taskListUrl);
-
+    this.apiClient.updateBaseUri(properties.getTaskListUrl());
     this.taskApi = new TaskApi(this.apiClient);
     this.formApi = new FormApi(this.apiClient);
     this.variablesApi = new VariablesApi(this.apiClient);
-
+    this.zeebeClient = zeebeClient;
     authenticate();
+  }
+
+  public static CamundaTaskListClientBuilder builder() {
+    return new CamundaTaskListClientBuilder();
   }
 
   public Task unclaim(String taskId) throws TaskListException {
@@ -91,13 +100,25 @@ public class CamundaTaskListClient {
     }
   }
 
-  public Task completeTask(String taskId, Map<String, Object> variablesMap)
+  public void completeTask(String taskId, Map<String, Object> variablesMap)
       throws TaskListException {
     try {
-      reconnectEventually();
-      List<VariableInputDTO> variables = ConverterUtils.toVariableInput(variablesMap);
-      return ConverterUtils.toTask(
-          taskApi.completeTask(taskId, new TaskCompleteRequest().variables(variables)), null);
+      Task task = getTask(taskId);
+      if (task.getImplementation().equals(Implementation.JOB_WORKER)) {
+        reconnectEventually();
+        List<VariableInputDTO> variables = ConverterUtils.toVariableInput(variablesMap);
+        taskApi.completeTask(taskId, new TaskCompleteRequest().variables(variables));
+      } else if (task.getImplementation().equals(Implementation.ZEEBE_USER_TASK)) {
+        if (zeebeClient == null) {
+          throw new IllegalStateException(
+              "zeebeClient must not be null, please set useZeebeUserTasks to assert this on startup");
+        }
+        zeebeClient
+            .newUserTaskCompleteCommand(Long.parseLong(taskId))
+            .variables(variablesMap)
+            .send()
+            .join();
+      }
     } catch (TaskListException | ApiException e) {
       throw new TaskListException("Error assigning task " + taskId, e);
     }
@@ -106,86 +127,132 @@ public class CamundaTaskListClient {
   public TaskList getTasks(Boolean assigned, TaskState state, Integer pageSize)
       throws TaskListException {
     return getTasks(
-        assigned,
-        state,
-        properties.defaultShouldReturnVariables,
-        new Pagination().setPageSize(pageSize));
+        new TaskSearch()
+            .setAssigned(assigned)
+            .setState(state)
+            .setPagination(createPagination(pageSize)));
   }
 
   public TaskList getTasks(Boolean assigned, TaskState state, Pagination pagination)
       throws TaskListException {
-    return getTasks(assigned, state, properties.defaultShouldReturnVariables, pagination);
+    return getTasks(
+        new TaskSearch().setAssigned(assigned).setState(state).setPagination(pagination));
   }
 
   public TaskList getTasks(
       Boolean assigned, TaskState state, boolean withVariables, Integer pageSize)
       throws TaskListException {
     return getTasks(
-        null, assigned, null, state, withVariables, new Pagination().setPageSize(pageSize));
+        new TaskSearch()
+            .setAssigned(assigned)
+            .setState(state)
+            .setWithVariables(withVariables)
+            .setPagination(createPagination(pageSize)));
+  }
+
+  private Pagination createPagination(Integer pageSize) {
+    return new Pagination().setPageSize(pageSize);
   }
 
   public TaskList getTasks(
       Boolean assigned, TaskState state, boolean withVariables, Pagination pagination)
       throws TaskListException {
-    return getTasks(null, assigned, null, state, withVariables, pagination);
+    return getTasks(
+        new TaskSearch()
+            .setAssigned(assigned)
+            .setState(state)
+            .setWithVariables(withVariables)
+            .setPagination(pagination));
   }
 
   public TaskList getAssigneeTasks(String assigneeId, TaskState state, Integer pageSize)
       throws TaskListException {
-    return getAssigneeTasks(
-        assigneeId,
-        state,
-        properties.defaultShouldReturnVariables,
-        new Pagination().setPageSize(pageSize));
+    return getTasks(
+        new TaskSearch()
+            .setAssignee(assigneeId)
+            .setState(state)
+            .setPagination(createPagination(pageSize)));
   }
 
   public TaskList getAssigneeTasks(String assigneeId, TaskState state, Pagination pagination)
       throws TaskListException {
-    return getAssigneeTasks(assigneeId, state, properties.defaultShouldReturnVariables, pagination);
+    return getTasks(
+        new TaskSearch()
+            .setAssignee(assigneeId)
+            .setState(state)
+            .setWithVariables(properties.isDefaultShouldReturnVariables())
+            .setPagination(pagination));
   }
 
   public TaskList getAssigneeTasks(
       String assigneeId, TaskState state, boolean withVariables, Integer pageSize)
       throws TaskListException {
     return getTasks(
-        null, true, assigneeId, state, withVariables, new Pagination().setPageSize(pageSize));
+        new TaskSearch()
+            .setAssigned(true)
+            .setAssignee(assigneeId)
+            .setState(state)
+            .setWithVariables(withVariables)
+            .setPagination(createPagination(pageSize)));
   }
 
   public TaskList getAssigneeTasks(
       String assigneeId, TaskState state, boolean withVariables, Pagination pagination)
       throws TaskListException {
-    return getTasks(null, true, assigneeId, state, withVariables, pagination);
+    return getTasks(
+        new TaskSearch()
+            .setAssignee(assigneeId)
+            .setState(state)
+            .setWithVariables(withVariables)
+            .setPagination(pagination));
   }
 
   public TaskList getGroupTasks(String group, TaskState state, Integer pageSize)
       throws TaskListException {
-    return getGroupTasks(
-        group,
-        state,
-        properties.defaultShouldReturnVariables,
-        new Pagination().setPageSize(pageSize));
+    return getTasks(
+        new TaskSearch().setGroup(group).setState(state).setPagination(createPagination(pageSize)));
   }
 
   public TaskList getGroupTasks(String group, TaskState state, Pagination pagination)
       throws TaskListException {
-    return getGroupTasks(group, state, properties.defaultShouldReturnVariables, pagination);
+    return getTasks(new TaskSearch().setGroup(group).setState(state).setPagination(pagination));
   }
 
   public TaskList getGroupTasks(
       String group, TaskState state, boolean withVariables, Integer pageSize)
       throws TaskListException {
     return getTasks(
-        group, null, null, state, withVariables, new Pagination().setPageSize(pageSize));
+        new TaskSearch()
+            .setGroup(group)
+            .setState(state)
+            .setWithVariables(withVariables)
+            .setPagination(createPagination(pageSize)));
   }
 
   public TaskList getGroupTasks(
       String group, TaskState state, boolean withVariables, Pagination pagination)
       throws TaskListException {
-    return getTasks(group, null, null, state, withVariables, pagination);
+    return getTasks(
+        new TaskSearch()
+            .setGroup(group)
+            .setState(state)
+            .setWithVariables(withVariables)
+            .setPagination(pagination));
+  }
+
+  public TaskList getGroupsTasks(
+      List<String> groups, TaskState state, boolean withVariables, Pagination pagination)
+      throws TaskListException {
+    return getTasks(
+        new TaskSearch()
+            .setGroups(groups)
+            .setState(state)
+            .setWithVariables(withVariables)
+            .setPagination(pagination));
   }
 
   public Task getTask(String taskId) throws TaskListException {
-    return getTask(taskId, properties.defaultShouldReturnVariables);
+    return getTask(taskId, properties.isDefaultShouldReturnVariables());
   }
 
   public Task getTask(String taskId, boolean withVariables) throws TaskListException {
@@ -204,9 +271,7 @@ public class CamundaTaskListClient {
   }
 
   public List<Variable> getVariables(String taskId) throws TaskListException {
-
     try {
-
       reconnectEventually();
       return taskApi.searchTaskVariables(taskId, new VariablesSearchRequest()).stream()
           .map(
@@ -321,24 +386,28 @@ public class CamundaTaskListClient {
 
   public TaskList getTasks(TaskSearch search) throws TaskListException {
     if (search.getWithVariables() == null) {
-      search.setWithVariables(properties.defaultShouldReturnVariables);
+      search.setWithVariables(properties.isDefaultShouldReturnVariables());
     }
-    return getTasks(
-        search.getCandidateUser(),
-        search.getGroup(),
-        search.getAssigned(),
-        search.getAssignee(),
-        search.getState(),
-        search.getFollowUpDate(),
-        search.getDueDate(),
-        search.getProcessDefinitionKey(),
-        search.getProcessInstanceKey(),
-        search.getTaskDefinitionId(),
-        search.getTaskVariables(),
-        search.getTenantIds(),
-        search.getIncludeVariablesAsObj(),
-        search.isWithVariables(),
-        search.getPagination());
+    Pagination pagination = search.getPagination();
+    TaskSearchRequest request = ConverterUtils.toTaskSearchRequest(search);
+    if (pagination != null) {
+      if (pagination.getSearchType() != null
+          && pagination.getSearch() != null
+          && !pagination.getSearch().isEmpty()) {
+        if (pagination.getSearchType().equals(SearchType.BEFORE)) {
+          request.searchBefore(pagination.getSearch());
+        } else if (pagination.getSearchType().equals(SearchType.BEFORE_OR_EQUAL)) {
+          request.searchBeforeOrEqual(pagination.getSearch());
+        } else if (pagination.getSearchType().equals(SearchType.AFTER)) {
+          request.searchAfter(pagination.getSearch());
+        } else if (pagination.getSearchType().equals(SearchType.AFTER_OR_EQUAL)) {
+          request.searchAfterOrEqual(pagination.getSearch());
+        }
+      }
+      request.pageSize(pagination.getPageSize());
+      request.sort(pagination.getSort());
+    }
+    return new TaskList().setItems(getTasks(request, search.getWithVariables())).setSearch(search);
   }
 
   public TaskList getTasks(
@@ -350,26 +419,20 @@ public class CamundaTaskListClient {
       Pagination pagination)
       throws TaskListException {
     return getTasks(
-        null,
-        group,
-        assigned,
-        assigneeId,
-        state,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        withVariables,
-        pagination);
+        new TaskSearch()
+            .setGroup(group)
+            .setAssigned(assigned)
+            .setAssignee(assigneeId)
+            .setState(state)
+            .setWithVariables(withVariables)
+            .setPagination(pagination));
   }
 
   public TaskList getTasks(
       String candidateUser,
+      List<String> candidateUsers,
       String group,
+      List<String> groups,
       Boolean assigned,
       String assignee,
       TaskState state,
@@ -384,55 +447,28 @@ public class CamundaTaskListClient {
       boolean withVariables,
       Pagination pagination)
       throws TaskListException {
-
-    TaskSearchRequest search =
-        new TaskSearchRequest()
-            .candidateGroup(group)
-            .candidateUser(candidateUser)
-            .assignee(assignee)
-            .state(ConverterUtils.toSearchState(state))
-            .followUpDate(ConverterUtils.toSearchDateFilter(followUpDate))
-            .dueDate(ConverterUtils.toSearchDateFilter(dueDate))
-            .processDefinitionKey(processDefinitionId)
-            .taskVariables(taskVariables)
-            .processInstanceKey(processInstanceId)
-            .taskDefinitionId(taskDefinitionId)
-            .tenantIds(tenantIds)
-            .assigned(assigned)
-            .includeVariables(includeVariables);
-    if (pagination != null) {
-      if (pagination.getSearchType() != null
-          && pagination.getSearch() != null
-          && !pagination.getSearch().isEmpty()) {
-        if (pagination.getSearchType().equals(SearchType.BEFORE)) {
-          search.searchBefore(pagination.getSearch());
-        } else if (pagination.getSearchType().equals(SearchType.BEFORE_OR_EQUAL)) {
-          search.searchBeforeOrEqual(pagination.getSearch());
-        } else if (pagination.getSearchType().equals(SearchType.AFTER)) {
-          search.searchAfter(pagination.getSearch());
-        } else if (pagination.getSearchType().equals(SearchType.AFTER_OR_EQUAL)) {
-          search.searchAfterOrEqual(pagination.getSearch());
-        }
-      }
-      search.pageSize(pagination.getPageSize());
-      search.sort(pagination.getSort());
-    }
-    return new TaskList()
-        .setItems(getTasks(search, withVariables))
-        .setSearch(
-            new TaskSearch()
-                .setCandidateUser(candidateUser)
-                .setAssigned(assigned)
-                .setAssignee(assignee)
-                .setGroup(group)
-                .setProcessDefinitionKey(processDefinitionId)
-                .setProcessInstanceKey(processInstanceId)
-                .setFollowUpDate(followUpDate)
-                .setDueDate(dueDate)
-                .setTaskDefinitionId(taskDefinitionId)
-                .setState(state)
-                .setWithVariables(withVariables)
-                .setPagination(pagination));
+    return getTasks(
+        new TaskSearch()
+            .setCandidateUser(candidateUser)
+            .setCandidateUsers(candidateUsers)
+            .setGroup(group)
+            .setGroups(groups)
+            .setAssigned(assigned)
+            .setAssignee(assignee)
+            .setState(state)
+            .setFollowUpDate(followUpDate)
+            .setDueDate(dueDate)
+            .setProcessDefinitionKey(processDefinitionId)
+            .setProcessInstanceKey(processInstanceId)
+            .setTaskDefinitionId(taskDefinitionId)
+            .setTaskVariables(taskVariables)
+            .setTenantIds(tenantIds)
+            .setIncludeVariables(
+                includeVariables.stream()
+                    .map(IncludeVariable::getName)
+                    .collect(Collectors.toList()))
+            .setWithVariables(withVariables)
+            .setPagination(pagination));
   }
 
   public List<Task> getTasks(TaskSearchRequest search, boolean withVariables)
@@ -483,30 +519,25 @@ public class CamundaTaskListClient {
   }
 
   private void reconnectEventually() throws TaskListException {
-    if (this.properties.alwaysReconnect
+    if (this.properties.isAlwaysReconnect()
         || (this.tokenExpiration > 0
             && this.tokenExpiration < (System.currentTimeMillis() - 1000))) {
       // reset old Token before a new authentication
-      properties.authentication.resetToken(Product.TASKLIST);
+      properties.getAuthentication().resetToken(Product.TASKLIST);
       authenticate();
     }
   }
 
   public void authenticate() throws TaskListException {
-    Map.Entry<String, String> header = properties.authentication.getTokenHeader(Product.TASKLIST);
+    Map.Entry<String, String> header =
+        properties.getAuthentication().getTokenHeader(Product.TASKLIST);
     if (header.getValue().startsWith("Bearer ")) {
       this.tokenExpiration = JwtUtils.getExpiration(header.getValue().substring(7)) * 1000L;
-    } else if (this.properties.cookieExpiration != null) {
+    } else if (this.properties.getCookieExpiration() != null) {
       this.tokenExpiration =
-          System.currentTimeMillis() + this.properties.cookieExpiration.toMillis();
+          System.currentTimeMillis() + this.properties.getCookieExpiration().toMillis();
     }
     this.apiClient.setRequestInterceptor(
         builder -> builder.header(header.getKey(), header.getValue()));
-    this.taskApi = new TaskApi(this.apiClient);
-    this.formApi = new FormApi(this.apiClient);
-  }
-
-  public static CamundaTaskListClientBuilder builder() {
-    return new CamundaTaskListClientBuilder();
   }
 }

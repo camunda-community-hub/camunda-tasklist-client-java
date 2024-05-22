@@ -28,7 +28,8 @@ dependencies {
   api "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jackson_version"
   api "org.openapitools:jackson-databind-nullable:0.2.6"
   api "jakarta.annotation:jakarta.annotation-api:$jakarta_annotation_version"
-  api "io.camunda.spring:java-common:8.4.0"
+  api "io.camunda.spring:java-common:8.5.3"
+  api "io.camunda:zeebe-client-java:8.5.1"
   
   testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.10.2'
 }
@@ -41,6 +42,7 @@ spotless{
   java {
     googleJavaFormat()
     removeUnusedImports()
+    target 'src/*/java/**/*.java'
   }
 }
 
@@ -50,7 +52,7 @@ sourceSets.main.java.srcDirs += "$generatedFolder/src/main/java"
 openApiGenerate {
   generatorName = "java"
   library = "native"
-  inputSpec = "$rootDir/src/main/resources/tasklist-8.4.0.json"
+  inputSpec = "$rootDir/src/main/resources/tasklist-8.5.0.json"
   outputDir = generatedFolder
   generateApiTests = false
   generateModelTests = false
@@ -101,6 +103,13 @@ nexusPublishing {
 	  nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
 	  snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
 	}
+
+  }
+}
+
+repositories {
+  maven {
+    url = "https://artifacts.camunda.com/artifactory/camunda-identity/"
   }
 }
 
