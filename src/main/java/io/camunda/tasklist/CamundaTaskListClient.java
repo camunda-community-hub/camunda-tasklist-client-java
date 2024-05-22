@@ -176,59 +176,79 @@ public class CamundaTaskListClient {
 
   public TaskList getAssigneeTasks(String assigneeId, TaskState state, Pagination pagination)
       throws TaskListException {
-    return getAssigneeTasks(
-        assigneeId, state, properties.isDefaultShouldReturnVariables(), pagination);
+    return getTasks(
+        new TaskSearch()
+            .setAssignee(assigneeId)
+            .setState(state)
+            .setWithVariables(properties.isDefaultShouldReturnVariables())
+            .setPagination(pagination));
   }
 
   public TaskList getAssigneeTasks(
       String assigneeId, TaskState state, boolean withVariables, Integer pageSize)
       throws TaskListException {
     return getTasks(
-        null, true, assigneeId, state, withVariables, new Pagination().setPageSize(pageSize));
+        new TaskSearch()
+            .setAssigned(true)
+            .setAssignee(assigneeId)
+            .setState(state)
+            .setWithVariables(withVariables)
+            .setPagination(createPagination(pageSize)));
   }
 
   public TaskList getAssigneeTasks(
       String assigneeId, TaskState state, boolean withVariables, Pagination pagination)
       throws TaskListException {
-    return getTasks(null, true, assigneeId, state, withVariables, pagination);
+    return getTasks(
+        new TaskSearch()
+            .setAssignee(assigneeId)
+            .setState(state)
+            .setWithVariables(withVariables)
+            .setPagination(pagination));
   }
 
   public TaskList getGroupTasks(String group, TaskState state, Integer pageSize)
       throws TaskListException {
-    return getGroupTasks(
-        group,
-        state,
-        properties.isDefaultShouldReturnVariables(),
-        new Pagination().setPageSize(pageSize));
+    return getTasks(
+        new TaskSearch().setGroup(group).setState(state).setPagination(createPagination(pageSize)));
   }
 
   public TaskList getGroupTasks(String group, TaskState state, Pagination pagination)
       throws TaskListException {
-    return getGroupTasks(group, state, properties.isDefaultShouldReturnVariables(), pagination);
+    return getTasks(new TaskSearch().setGroup(group).setState(state).setPagination(pagination));
   }
 
   public TaskList getGroupTasks(
       String group, TaskState state, boolean withVariables, Integer pageSize)
       throws TaskListException {
     return getTasks(
-        group, null, null, state, withVariables, new Pagination().setPageSize(pageSize));
+        new TaskSearch()
+            .setGroup(group)
+            .setState(state)
+            .setWithVariables(withVariables)
+            .setPagination(createPagination(pageSize)));
   }
 
   public TaskList getGroupTasks(
       String group, TaskState state, boolean withVariables, Pagination pagination)
       throws TaskListException {
-    return getTasks(group, null, null, state, withVariables, pagination);
+    return getTasks(
+        new TaskSearch()
+            .setGroup(group)
+            .setState(state)
+            .setWithVariables(withVariables)
+            .setPagination(pagination));
   }
 
   public TaskList getGroupsTasks(
       List<String> groups, TaskState state, boolean withVariables, Pagination pagination)
       throws TaskListException {
-    TaskSearch taskSearch = new TaskSearch();
-    taskSearch.setGroups(groups);
-    taskSearch.setState(state);
-    taskSearch.setWithVariables(withVariables);
-    taskSearch.setPagination(pagination);
-    return getTasks(taskSearch);
+    return getTasks(
+        new TaskSearch()
+            .setGroups(groups)
+            .setState(state)
+            .setWithVariables(withVariables)
+            .setPagination(pagination));
   }
 
   public Task getTask(String taskId) throws TaskListException {
@@ -251,9 +271,7 @@ public class CamundaTaskListClient {
   }
 
   public List<Variable> getVariables(String taskId) throws TaskListException {
-
     try {
-
       reconnectEventually();
       return taskApi.searchTaskVariables(taskId, new VariablesSearchRequest()).stream()
           .map(
