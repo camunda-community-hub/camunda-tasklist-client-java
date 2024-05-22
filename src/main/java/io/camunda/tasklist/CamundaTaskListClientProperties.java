@@ -11,6 +11,7 @@ public class CamundaTaskListClientProperties {
   private boolean defaultShouldLoadTruncatedVariables;
   private boolean alwaysReconnect = false;
   private Duration cookieExpiration = Duration.ofMinutes(3);
+  private boolean useZeebeUserTasks;
 
   public Authentication getAuthentication() {
     return authentication;
@@ -58,5 +59,13 @@ public class CamundaTaskListClientProperties {
 
   public void setCookieExpiration(Duration cookieExpiration) {
     this.cookieExpiration = cookieExpiration;
+  }
+
+  public boolean isUseZeebeUserTasks() {
+    return useZeebeUserTasks;
+  }
+
+  public void setUseZeebeUserTasks(boolean useZeebeUserTasks) {
+    this.useZeebeUserTasks = useZeebeUserTasks;
   }
 }
