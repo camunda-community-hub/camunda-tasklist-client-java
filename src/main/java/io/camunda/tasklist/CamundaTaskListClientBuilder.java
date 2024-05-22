@@ -63,6 +63,15 @@ public class CamundaTaskListClientBuilder {
     return this;
   }
 
+  /**
+   * Enable when using zeebe user tasks (only relevant for >8.5). Will require presence of a zeebe
+   * client
+   */
+  public CamundaTaskListClientBuilder useZeebeUserTasks() {
+    properties.setUseZeebeUserTasks(true);
+    return this;
+  }
+
   public CamundaTaskListClient build() throws TaskListException {
     return new CamundaTaskListClient(properties, zeebeClient);
   }
