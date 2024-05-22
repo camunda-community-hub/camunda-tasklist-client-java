@@ -53,8 +53,11 @@ public class CamundaTaskListClient {
   protected CamundaTaskListClient(
       CamundaTaskListClientProperties properties, ZeebeClient zeebeClient)
       throws TaskListException {
-    assert zeebeClient != null : "zeebeClient must not be null";
     assert properties != null : "properties must not be null";
+    assert properties.getTaskListUrl() != null : "taskListUrl must not be null";
+    assert properties.getAuthentication() != null : "authentication must not be null";
+    assert !properties.isUseZeebeUserTasks() || zeebeClient != null
+        : "zeebeClient must not be null";
     this.properties = properties;
     this.apiClient.updateBaseUri(properties.getTaskListUrl());
     this.taskApi = new TaskApi(this.apiClient);
@@ -106,6 +109,10 @@ public class CamundaTaskListClient {
         List<VariableInputDTO> variables = ConverterUtils.toVariableInput(variablesMap);
         taskApi.completeTask(taskId, new TaskCompleteRequest().variables(variables));
       } else if (task.getImplementation().equals(Implementation.ZEEBE_USER_TASK)) {
+        if (zeebeClient == null) {
+          throw new IllegalStateException(
+              "zeebeClient must not be null, please set useZeebeUserTasks to assert this on startup");
+        }
         zeebeClient
             .newUserTaskCompleteCommand(Long.parseLong(taskId))
             .variables(variablesMap)
