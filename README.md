@@ -34,7 +34,7 @@ And finally, if you're using a SaaS environment, just use the **SaaSAuthenticati
 ```java
   JwtConfig jwtConfig = new JwtConfig();
   jwtConfig.addProduct(Product.TASKLIST, new JwtCredential("clientId", "clientSecret", "tasklist.camunda.io", "https://login.cloud.camunda.io/oauth/token"));
-  Authentication auth = SaaSAuthentication.builder().jwtConfig(jwtConfig).build();
+  Authentication auth = SaaSAuthentication.builder().withJwtConfig(jwtConfig).build();
 ```
 
 ## Build your client
