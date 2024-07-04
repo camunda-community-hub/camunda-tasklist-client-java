@@ -60,11 +60,13 @@ public class CamundaTaskListClient {
         : "zeebeClient must not be null";
     this.properties = properties;
     this.apiClient.updateBaseUri(properties.getTaskListUrl());
+    this.zeebeClient = zeebeClient;
+
+    authenticate();
     this.taskApi = new TaskApi(this.apiClient);
     this.formApi = new FormApi(this.apiClient);
     this.variablesApi = new VariablesApi(this.apiClient);
-    this.zeebeClient = zeebeClient;
-    authenticate();
+
   }
 
   public static CamundaTaskListClientBuilder builder() {
