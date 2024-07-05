@@ -16,36 +16,44 @@ Depending on your setup, you may want to use different authentication mechanisms
 In case you're using a Camunda Platform without identity enabled, you should use the **SimpleAuthentication**
 
 ```java
-  SimpleConfig simpleConf = new SimpleConfig();
-  simpleConf.addProduct(Product.TASKLIST, new SimpleCredential("user", "pwd"));
-  Authentication auth = SimpleAuthentication.builder().simpleUrl("http://tasklistUrl[:port]").simpleConfig(simpleConf).build();
+SimpleConfig simpleConf = new SimpleConfig();
+simpleConf.addProduct(Product.TASKLIST, new SimpleCredential("user", "pwd", "http://tasklistUrl[:port]"));
+Authentication auth = SimpleAuthentication.builder().withSimpleConfig(simpleConf).build();
+
+CamundaTaskListClient client = CamundaTaskListClient.builder()
+  .taskListUrl("http://tasklistUrl[:port]")
+  .authentication(auth)
+  .cookieExpiration(Duration.ofSeconds(5))
+  .build();
 ```
 
 In case you're using a Self Managed Camunda Platform with identity enabled (and Keycloak), you should use the **SelfManagedAuthentication**
 
 ```java
-  JwtConfig jwtConfig = new JwtConfig();
-  jwtConfig.addProduct(Product.TASKLIST, new JwtCredential("clientId", "clientSecret", null, null));
-  Authentication auth = SelfManagedAuthentication.builder().jwtConfig(jwtConfig).build();
+CamundaTaskListClient client = CamundaTaskListClient.builder()
+  .taskListUrl("https://reg-x.tasklist.camunda.io/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/")
+  .selfManagedAuthentication("clientId", "clientSecret", "keycloakUrl")
+  .build();
 ```
 
 And finally, if you're using a SaaS environment, just use the **SaaSAuthentication**
 
 ```java
-  JwtConfig jwtConfig = new JwtConfig();
-  jwtConfig.addProduct(Product.TASKLIST, new JwtCredential("clientId", "clientSecret", "tasklist.camunda.io", "https://login.cloud.camunda.io/oauth/token"));
-  Authentication auth = SaaSAuthentication.builder().withJwtConfig(jwtConfig).build();
+CamundaTaskListClient client = CamundaTaskListClient.builder()
+  .taskListUrl("https://reg-x.tasklist.camunda.io/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/")
+  .saaSAuthentication("clientId", "clientSecret")
+  .build();
 ```
 
 ## Build your client
 
 Simply build a CamundaTaskListClient that takes an authentication and the tasklist url as parameters.
 
+:information_source: Since the SelfManagedAuthentication and the SaaSAuthentication are a bit complex, two helpers have been added to the builder **saaSAuthentication(clientId, clientSecret)** and **selfManagedAuthentication(clientId, clientSecret, keycloakUrl)** as shown in previous examples. You can also build these SaaSAuthentication and SelfManagedAuthentication yourself, following the code provided in the helpers.
 
 ```java
 CamundaTaskListClient client = CamundaTaskListClient.builder().taskListUrl("http://localhost:8081").shouldReturnVariables().shouldLoadTruncatedVariables().authentication(auth).build();
 ```
-:information_source: Since the SelfManagedAuthentication and the SaaSAuthentication are a bit complex, two helpers have been added to the builder **saaSAuthentication(clientId, clientSecret)** and **selfManagedAuthentication(clientId, clientSecret, keycloakUrl)**
 
 :information_source: **shouldReturnVariables()** will read variables along with tasks. This is not the recommended approach but rather a commodity. In real project implementation, we would recommend to load task variables only when required.
 
@@ -107,7 +115,7 @@ You can import it to your maven or gradle project as a dependency
 <dependency>
 	<groupId>io.camunda</groupId>
 	<artifactId>camunda-tasklist-client-java</artifactId>
-	<version>8.5.0</version>
+	<version>8.5.3</version>
 </dependency>
 ```
 
