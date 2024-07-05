@@ -31,14 +31,6 @@ public class ConverterUtils {
 
   private ConverterUtils() {}
 
-  public static io.camunda.tasklist.generated.model.DateFilter toSearchDateFilter(
-      DateFilter value) {
-    if (value == null) return null;
-    return new io.camunda.tasklist.generated.model.DateFilter()
-        .from(value.getFrom() == null ? null : value.getFrom().atOffset(ZoneOffset.UTC))
-        .to(value.getTo() == null ? null : value.getTo().atOffset(ZoneOffset.UTC));
-  }
-
   public static TaskSearchRequest.StateEnum toSearchState(TaskState value) {
     return value == null ? null : TaskSearchRequest.StateEnum.fromValue(value.getRawValue());
   }

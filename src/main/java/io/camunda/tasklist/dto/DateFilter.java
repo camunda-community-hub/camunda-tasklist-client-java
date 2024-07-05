@@ -1,30 +1,36 @@
 package io.camunda.tasklist.dto;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 
 public class DateFilter {
-  private LocalDateTime from;
+  private OffsetDateTime from;
 
-  private LocalDateTime to;
+  private OffsetDateTime to;
 
-  public DateFilter(LocalDateTime from, LocalDateTime to) {
+  public DateFilter(OffsetDateTime from, OffsetDateTime to) {
     this.from = from;
     this.to = to;
   }
+  public DateFilter(LocalDateTime from, LocalDateTime to) {
+      this.from = from.atZone(ZoneId.systemDefault()).toOffsetDateTime();
+      this.to = to.atZone(ZoneId.systemDefault()).toOffsetDateTime();
+  }
 
-  public LocalDateTime getFrom() {
+  public OffsetDateTime getFrom() {
     return from;
   }
 
-  public void setFrom(LocalDateTime from) {
+  public void setFrom(OffsetDateTime from) {
     this.from = from;
   }
 
-  public LocalDateTime getTo() {
+  public OffsetDateTime getTo() {
     return to;
   }
 
-  public void setTo(LocalDateTime to) {
+  public void setTo(OffsetDateTime to) {
     this.to = to;
   }
 }
