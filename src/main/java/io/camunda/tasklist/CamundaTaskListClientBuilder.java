@@ -80,13 +80,13 @@ public class CamundaTaskListClientBuilder {
       String clientId, String clientSecret, String keycloakUrl) {
     IdentityConfig identityConfig = new IdentityConfig();
     IdentityConfiguration identityConfiguration =
-        new IdentityConfiguration(keycloakUrl, keycloakUrl, clientId, clientSecret, null);
+        new IdentityConfiguration(keycloakUrl, keycloakUrl, clientId, clientSecret, clientId);
     Identity identity = new Identity(identityConfiguration);
     identityConfig.addProduct(
         Product.TASKLIST, new IdentityContainer(identity, identityConfiguration));
     JwtConfig jwtConfig = new JwtConfig();
     jwtConfig.addProduct(
-        Product.TASKLIST, new JwtCredential(clientId, clientSecret, null, keycloakUrl));
+        Product.TASKLIST, new JwtCredential(clientId, clientSecret, clientId, keycloakUrl));
     properties.setAuthentication(
         SelfManagedAuthentication.builder()
             .withJwtConfig(jwtConfig)
