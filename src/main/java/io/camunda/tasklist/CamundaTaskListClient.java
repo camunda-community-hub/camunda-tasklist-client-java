@@ -43,11 +43,11 @@ import java.util.stream.Collectors;
 public class CamundaTaskListClient {
 
   private final ApiClient apiClient = Configuration.getDefaultApiClient();
-  private final TaskApi taskApi;
-  private final FormApi formApi;
-  private final VariablesApi variablesApi;
   private final ZeebeClient zeebeClient;
   private final CamundaTaskListClientProperties properties;
+  private TaskApi taskApi;
+  private FormApi formApi;
+  private VariablesApi variablesApi;
   private long tokenExpiration;
 
   protected CamundaTaskListClient(
@@ -63,10 +63,6 @@ public class CamundaTaskListClient {
     this.zeebeClient = zeebeClient;
 
     authenticate();
-    this.taskApi = new TaskApi(this.apiClient);
-    this.formApi = new FormApi(this.apiClient);
-    this.variablesApi = new VariablesApi(this.apiClient);
-
   }
 
   public static CamundaTaskListClientBuilder builder() {
@@ -541,5 +537,10 @@ public class CamundaTaskListClient {
     }
     this.apiClient.setRequestInterceptor(
         builder -> builder.header(header.getKey(), header.getValue()));
+
+    // refresh apis after authentication
+    this.taskApi = new TaskApi(this.apiClient);
+    this.formApi = new FormApi(this.apiClient);
+    this.variablesApi = new VariablesApi(this.apiClient);
   }
 }
