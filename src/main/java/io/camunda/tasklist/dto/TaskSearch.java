@@ -1,21 +1,21 @@
 package io.camunda.tasklist.dto;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.camunda.tasklist.exception.TaskListException;
 import io.camunda.tasklist.generated.model.IncludeVariable;
 import io.camunda.tasklist.generated.model.TaskByVariables;
 import io.camunda.tasklist.generated.model.TaskByVariables.OperatorEnum;
 import io.camunda.tasklist.util.JsonUtils;
-import java.util.ArrayList;
-import java.util.List;
 
 public class TaskSearch {
-
-  private String group;
-  private List<String> groups;
+  private String candidateGroup;
+  private List<String> candidateGroups;
   private String assignee;
   private String candidateUser;
   private List<String> candidateUsers;
-  private Boolean Assigned;
+  private Boolean assigned;
   private TaskState state;
   private String processDefinitionKey;
   private String processInstanceKey;
@@ -28,12 +28,12 @@ public class TaskSearch {
   private List<String> includeVariables;
   private Pagination pagination;
 
-  public List<String> getGroups() {
-    return groups;
+  public List<String> getCandidateGroups() {
+    return candidateGroups;
   }
 
-  public TaskSearch setGroups(List<String> groups) {
-    this.groups = groups;
+  public TaskSearch setCandidateGroups(List<String> candidateGroups) {
+    this.candidateGroups = candidateGroups;
     return this;
   }
 
@@ -78,12 +78,12 @@ public class TaskSearch {
     return this;
   }
 
-  public String getGroup() {
-    return group;
+  public String getCandidateGroup() {
+    return candidateGroup;
   }
 
-  public TaskSearch setGroup(String group) {
-    this.group = group;
+  public TaskSearch setCandidateGroup(String candidateGroup) {
+    this.candidateGroup = candidateGroup;
     return this;
   }
 
@@ -97,11 +97,11 @@ public class TaskSearch {
   }
 
   public Boolean getAssigned() {
-    return Assigned;
+    return assigned;
   }
 
   public TaskSearch setAssigned(Boolean assigned) {
-    Assigned = assigned;
+     this.assigned = assigned;
     return this;
   }
 

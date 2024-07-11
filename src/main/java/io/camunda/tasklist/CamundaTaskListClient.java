@@ -208,12 +208,12 @@ public class CamundaTaskListClient {
   public TaskList getGroupTasks(String group, TaskState state, Integer pageSize)
       throws TaskListException {
     return getTasks(
-        new TaskSearch().setGroup(group).setState(state).setPagination(createPagination(pageSize)));
+        new TaskSearch().setCandidateGroup(group).setState(state).setPagination(createPagination(pageSize)));
   }
 
   public TaskList getGroupTasks(String group, TaskState state, Pagination pagination)
       throws TaskListException {
-    return getTasks(new TaskSearch().setGroup(group).setState(state).setPagination(pagination));
+    return getTasks(new TaskSearch().setCandidateGroup(group).setState(state).setPagination(pagination));
   }
 
   public TaskList getGroupTasks(
@@ -221,7 +221,7 @@ public class CamundaTaskListClient {
       throws TaskListException {
     return getTasks(
         new TaskSearch()
-            .setGroup(group)
+            .setCandidateGroup(group)
             .setState(state)
             .setWithVariables(withVariables)
             .setPagination(createPagination(pageSize)));
@@ -232,7 +232,7 @@ public class CamundaTaskListClient {
       throws TaskListException {
     return getTasks(
         new TaskSearch()
-            .setGroup(group)
+            .setCandidateGroup(group)
             .setState(state)
             .setWithVariables(withVariables)
             .setPagination(pagination));
@@ -243,7 +243,7 @@ public class CamundaTaskListClient {
       throws TaskListException {
     return getTasks(
         new TaskSearch()
-            .setGroups(groups)
+            .setCandidateGroups(groups)
             .setState(state)
             .setWithVariables(withVariables)
             .setPagination(pagination));
@@ -349,7 +349,7 @@ public class CamundaTaskListClient {
         new TaskSearch()
             .setAssigned(taskList.getSearch().getAssigned())
             .setAssignee(taskList.getSearch().getAssignee())
-            .setGroup(taskList.getSearch().getGroup())
+            .setCandidateGroup(taskList.getSearch().getCandidateGroup())
             .setState(taskList.getSearch().getState())
             .setWithVariables(taskList.getSearch().isWithVariables())
             .setPagination(getSearchPagination(taskList, direction));
@@ -418,7 +418,7 @@ public class CamundaTaskListClient {
       throws TaskListException {
     return getTasks(
         new TaskSearch()
-            .setGroup(group)
+            .setCandidateGroup(group)
             .setAssigned(assigned)
             .setAssignee(assigneeId)
             .setState(state)
@@ -449,8 +449,8 @@ public class CamundaTaskListClient {
         new TaskSearch()
             .setCandidateUser(candidateUser)
             .setCandidateUsers(candidateUsers)
-            .setGroup(group)
-            .setGroups(groups)
+            .setCandidateGroup(group)
+            .setCandidateGroups(groups)
             .setAssigned(assigned)
             .setAssignee(assignee)
             .setState(state)
