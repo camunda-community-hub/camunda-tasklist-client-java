@@ -23,6 +23,7 @@ import io.camunda.tasklist.generated.invoker.ApiClient;
 import io.camunda.tasklist.generated.invoker.ApiException;
 import io.camunda.tasklist.generated.invoker.Configuration;
 import io.camunda.tasklist.generated.model.IncludeVariable;
+import io.camunda.tasklist.generated.model.SaveVariablesRequest;
 import io.camunda.tasklist.generated.model.TaskAssignRequest;
 import io.camunda.tasklist.generated.model.TaskByVariables;
 import io.camunda.tasklist.generated.model.TaskCompleteRequest;
@@ -509,6 +510,18 @@ public class CamundaTaskListClient {
       taskMap.clear();
     } catch (ExecutionException | InterruptedException e) {
       throw new TaskListException("Error loading task variables", e);
+    }
+  }
+
+  public void saveDraftVariables(String taskId, Map<String, Object> variables) throws TaskListException {
+    try {
+      reconnectEventually();
+      List<VariableInputDTO> convertedVariables = ConverterUtils.toVariableInput(variables);
+      SaveVariablesRequest variablesInput = new SaveVariablesRequest();
+      variablesInput.setVariables(convertedVariables);
+      taskApi.saveDraftTaskVariables(taskId, variablesInput);
+    } catch (ApiException e) {
+      throw new TaskListException("Error saving draft variables for task " + taskId, e);
     }
   }
 
