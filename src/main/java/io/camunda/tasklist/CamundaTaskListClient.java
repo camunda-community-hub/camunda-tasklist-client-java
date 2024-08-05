@@ -461,10 +461,7 @@ public class CamundaTaskListClient {
             .setTaskDefinitionId(taskDefinitionId)
             .setTaskVariables(taskVariables)
             .setTenantIds(tenantIds)
-            .setIncludeVariables(
-                includeVariables.stream()
-                    .map(IncludeVariable::getName)
-                    .collect(Collectors.toList()))
+            .setIncludeVariables(includeVariables)
             .setWithVariables(withVariables)
             .setPagination(pagination));
   }

@@ -25,7 +25,7 @@ public class TaskSearch {
   private Boolean withVariables;
   private DateFilter followUpDate;
   private DateFilter dueDate;
-  private List<String> includeVariables;
+  private List<IncludeVariable> includeVariables;
   private Pagination pagination;
 
   public List<String> getCandidateGroups() {
@@ -198,31 +198,28 @@ public class TaskSearch {
     return this;
   }
 
-  public List<String> getIncludeVariables() {
+  public List<IncludeVariable> getIncludeVariables() {
     return includeVariables;
   }
 
-  public TaskSearch setIncludeVariables(List<String> includeVariables) {
+  public TaskSearch setIncludeVariables(List<IncludeVariable> includeVariables) {
     this.includeVariables = includeVariables;
     return this;
   }
-
-  public TaskSearch fetchVariable(String variableName) {
-    if (this.includeVariables == null) {
-      this.includeVariables = new ArrayList<>();
-    }
-    this.includeVariables.add(variableName);
-    return this;
+  
+  public TaskSearch fetchVariable(String variable) {
+      return fetchVariable(variable, true);
   }
 
-  public List<IncludeVariable> getIncludeVariablesAsObj() {
-    List<IncludeVariable> result = new ArrayList<>();
-    if (includeVariables != null) {
-      for (String var : this.includeVariables) {
-        result.add(new IncludeVariable().name(var));
-      }
+  public TaskSearch fetchVariable(String variable, boolean alwaysReturnFullValue) {
+    if (this.includeVariables ==null) {
+        this.includeVariables = new ArrayList<>();
     }
-    return result;
+    IncludeVariable iv = new IncludeVariable();
+    iv.setName(variable);
+    iv.alwaysReturnFullValue(alwaysReturnFullValue);
+    this.includeVariables.add(iv);
+    return this;
   }
 
   public Pagination getPagination() {
