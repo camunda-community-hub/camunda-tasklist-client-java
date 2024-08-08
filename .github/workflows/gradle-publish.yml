@@ -31,7 +31,7 @@ jobs:
     - name: Validate Gradle wrapper
       uses: gradle/wrapper-validation-action@63d15e7a1e697b1de6f3ba0507106f89100c8518
     - name: Build with Gradle
-      uses: gradle/gradle-build-action@585b565652cefbba63202a7f927df0ff99f34001
+      uses: gradle/gradle-build-action@093dfe9d598ec5a42246855d09b49dc76803c005
       with:
         arguments: build --stacktrace
     #- name: Attach artifacts to GitHub Release
