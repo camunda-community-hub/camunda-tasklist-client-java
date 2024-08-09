@@ -5,7 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public enum TaskState {
   CREATED("CREATED"),
   COMPLETED("COMPLETED"),
-  CANCELED("CANCELED");
+  CANCELED("CANCELED"),
+  FAILED("FAILED");
 
   private final String rawValue;
 
