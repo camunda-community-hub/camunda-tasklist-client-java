@@ -121,5 +121,5 @@ You can import it to your maven or gradle project as a dependency
 
 
 # Note
-A similar library is available for operate there:
-[java-client-operate](https://github.com/camunda-community-hub/spring-zeebe/tree/main/camunda-sdk-java/java-client-operate)
+A similar library is available for the Operate API of Camunda Platform here:
+[camunda-operate-client-java](https://github.com/camunda-community-hub/camunda-operate-client-java)
