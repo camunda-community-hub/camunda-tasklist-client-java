@@ -29,7 +29,7 @@ dependencies {
   api "org.openapitools:jackson-databind-nullable:0.2.6"
   api "jakarta.annotation:jakarta.annotation-api:$jakarta_annotation_version"
   api "io.camunda.spring:java-common:8.5.3"
-  api "io.camunda:zeebe-client-java:8.5.8"
+  api "io.camunda:zeebe-client-java:8.6.0"
   
   testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.11.1'
 }
