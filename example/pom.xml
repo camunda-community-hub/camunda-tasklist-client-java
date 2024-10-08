@@ -11,6 +11,9 @@
 
   <artifactId>tasklist-client-example-parent</artifactId>
   <packaging>pom</packaging>
+  <modules>
+    <module>bootstrapping-test</module>
+  </modules>
 
 
 </project>
