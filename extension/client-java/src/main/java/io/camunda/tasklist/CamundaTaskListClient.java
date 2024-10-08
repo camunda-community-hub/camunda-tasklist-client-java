@@ -104,7 +104,8 @@ public class CamundaTaskListClient {
       throws TaskListException {
     try {
       Task task = getTask(taskId);
-      if (task.getImplementation().equals(Implementation.JOB_WORKER)) {
+      if (task.getImplementation() == null
+          || task.getImplementation().equals(Implementation.JOB_WORKER)) {
         List<VariableInputDTO> variables = ConverterUtils.toVariableInput(variablesMap);
         taskApi.completeTask(taskId, new TaskCompleteRequest().variables(variables));
       } else if (task.getImplementation().equals(Implementation.ZEEBE_USER_TASK)) {
