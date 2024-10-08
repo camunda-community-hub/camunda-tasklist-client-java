@@ -1,0 +1,58 @@
+# If this workflow is triggered by a push to either main or release branches then it
+#        deploys a SNAPSHOT
+# If this workflow is triggered by publishing a Release, it
+#        deploys a RELEASE with the selected version
+#        updates the project version by incrementing the patch version
+#        commits the version update change to the repository's branch that triggered the workflow.
+name: Deploy artifacts with Maven
+
+on:
+  push:
+    branches:
+      - main
+      - release/**
+  release:
+    types: [ published ]
+jobs:
+  publish:
+    runs-on: ubuntu-22.04
+    steps:
+
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Java environment
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'adopt'
+          cache: maven
+          gpg-private-key: ${{ secrets.MAVEN_CENTRAL_GPG_SIGNING_KEY_SEC }}
+          gpg-passphrase: MAVEN_CENTRAL_GPG_PASSPHRASE
+
+      - name: Deploy SNAPSHOT / Release
+        uses: camunda-community-hub/community-action-maven-release@v1
+        with:
+          release-version: ${{ github.event.release.tag_name }}
+          maven-url: s01.oss.sonatype.org
+          nexus-usr: ${{ secrets.NEXUS_USR }}
+          nexus-psw: ${{ secrets.NEXUS_PSW }}
+          maven-usr: ${{ secrets.COMMUNITY_HUB_MAVEN_CENTRAL_S01_USR }}
+          maven-psw: ${{ secrets.COMMUNITY_HUB_MAVEN_CENTRAL_S01_PSW }}
+          maven-additional-options: -U
+          maven-gpg-passphrase: ${{ secrets.MAVEN_CENTRAL_GPG_SIGNING_KEY_PASSPHRASE }}
+          maven-auto-release-after-close: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.event.release.target_commitish || github.ref_name }}
+        id: release
+
+      - if: github.event.release
+        name: Attach artifacts to GitHub Release (Release only)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ${{ steps.release.outputs.artifacts_archive_path }}
+          asset_name: ${{ steps.release.outputs.artifacts_archive_path }}
+          asset_content_type: application/zip
