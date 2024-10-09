@@ -88,12 +88,12 @@ tasks = client.afterOrEqual(tasks);
 //get unassigned tasks
 tasks = client.getTasks(false, null, null);
 for(Task task : tasks) {
-	//assign task to paul
-	client.claim(task.getId(), "paul");
+  //assign task to paul
+  client.claim(task.getId(), "paul");
 }
 for(Task task : tasks) {
-	//complete task with variables
-	client.completeTask(task.getId(), Map.of("key", "value"));
+  //complete task with variables
+  client.completeTask(task.getId(), Map.of("key", "value"));
 }
 
 //get a single task
@@ -113,9 +113,9 @@ You can import it to your maven or gradle project as a dependency
 
 ```xml
 <dependency>
-	<groupId>io.camunda</groupId>
-	<artifactId>camunda-tasklist-client-java</artifactId>
-	<version>8.5.3.6</version>
+  <groupId>io.camunda</groupId>
+  <artifactId>camunda-tasklist-client-java</artifactId>
+  <version>8.5.3.6</version>
 </dependency>
 ```
 
