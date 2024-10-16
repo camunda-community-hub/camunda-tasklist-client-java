@@ -6,6 +6,10 @@
   "labels": ["dependencies"],
   "packageRules": [
     {
+      "matchPackagePrefixes": ["io.camunda:tasklist*"],
+      "enabled": false
+    },
+    {
       "matchBaseBranches": ["main"],
       "matchUpdateTypes": ["minor"],
       "automerge": true
