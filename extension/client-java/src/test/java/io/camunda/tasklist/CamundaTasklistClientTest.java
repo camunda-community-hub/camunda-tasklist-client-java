@@ -100,7 +100,7 @@ public class CamundaTasklistClientTest {
     properties.setAuthentication(
         new JwtAuthentication(
             new JwtCredential(
-                "abc", "abc", "tasklist-api", URI.create(BASE_URL + "/token").toURL()),
+                "abc", "abc", "tasklist-api", URI.create(BASE_URL + "/token").toURL(), null),
             new JacksonTokenResponseMapper(new ObjectMapper())));
     CamundaTaskListClient client = new CamundaTaskListClient(properties, null);
     assertNotNull(client);
