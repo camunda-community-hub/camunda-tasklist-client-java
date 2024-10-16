@@ -73,7 +73,7 @@ public class JwtAuthentication implements Authentication {
     formParams.add(new BasicNameValuePair("client_id", jwtCredential.clientId()));
     formParams.add(new BasicNameValuePair("client_secret", jwtCredential.clientSecret()));
     formParams.add(new BasicNameValuePair("audience", jwtCredential.audience()));
-    if (jwtCredential.scope() != null) {
+    if (jwtCredential.scope() != null && !jwtCredential.scope().isEmpty()) {
       formParams.add(new BasicNameValuePair("scope", jwtCredential.scope()));
     }
     httpPost.setEntity(new UrlEncodedFormEntity(formParams));
