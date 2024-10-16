@@ -79,10 +79,16 @@ public class CamundaTaskListClientBuilder {
 
   public CamundaTaskListClientBuilder selfManagedAuthentication(
       String clientId, String clientSecret, String audience, String keycloakUrl) {
+    return selfManagedAuthentication(clientId, clientSecret, "tasklist-api", null, keycloakUrl);
+  }
+
+  public CamundaTaskListClientBuilder selfManagedAuthentication(
+      String clientId, String clientSecret, String audience, String scope, String authUrl) {
     try {
       properties.setAuthentication(
           new JwtAuthentication(
-              new JwtCredential(clientId, clientSecret, audience, URI.create(keycloakUrl).toURL()),
+              new JwtCredential(
+                  clientId, clientSecret, audience, URI.create(authUrl).toURL(), scope),
               new JacksonTokenResponseMapper(new ObjectMapper())));
     } catch (MalformedURLException e) {
       throw new RuntimeException("Error while parsing keycloak url", e);
@@ -98,7 +104,8 @@ public class CamundaTaskListClientBuilder {
                   clientId,
                   clientSecret,
                   "tasklist.camunda.io",
-                  URI.create("https://login.cloud.camunda.io/oauth/token").toURL()),
+                  URI.create("https://login.cloud.camunda.io/oauth/token").toURL(),
+                  null),
               new JacksonTokenResponseMapper(new ObjectMapper())));
     } catch (MalformedURLException e) {
       throw new RuntimeException("Error while parsing token url", e);
