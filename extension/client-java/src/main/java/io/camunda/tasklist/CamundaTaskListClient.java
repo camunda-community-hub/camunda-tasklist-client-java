@@ -46,7 +46,7 @@ public class CamundaTaskListClient {
   private final FormApi formApi;
   private final VariablesApi variablesApi;
 
-  protected CamundaTaskListClient(
+  public CamundaTaskListClient(
       CamundaTaskListClientProperties properties, ZeebeClient zeebeClient) {
     assert properties != null : "properties must not be null";
     assert properties.getTaskListUrl() != null : "taskListUrl must not be null";
@@ -274,11 +274,16 @@ public class CamundaTaskListClient {
   }
 
   public List<Variable> getVariables(String taskId) throws TaskListException {
+    return getVariables(taskId, properties.isDefaultShouldLoadTruncatedVariables());
+  }
+
+  public List<Variable> getVariables(String taskId, boolean loadTruncated)
+      throws TaskListException {
     try {
       return taskApi.searchTaskVariables(taskId, new VariablesSearchRequest()).stream()
           .map(
               vsr -> {
-                if (Boolean.TRUE.equals(vsr.getIsValueTruncated())) {
+                if (loadTruncated && Boolean.TRUE.equals(vsr.getIsValueTruncated())) {
                   try {
                     return getVariable(vsr.getId());
                   } catch (TaskListException e) {
@@ -485,6 +490,10 @@ public class CamundaTaskListClient {
   }
 
   public void loadVariables(List<Task> tasks) throws TaskListException {
+    loadVariables(tasks, properties.isDefaultShouldLoadTruncatedVariables());
+  }
+
+  public void loadVariables(List<Task> tasks, boolean loadTruncated) throws TaskListException {
     try {
       Map<String, Future<List<Variable>>> futures = new HashMap<>();
       Map<String, Task> taskMap = new HashMap<>();
@@ -495,7 +504,7 @@ public class CamundaTaskListClient {
             CompletableFuture.supplyAsync(
                 () -> {
                   try {
-                    return getVariables(task.getId());
+                    return getVariables(task.getId(), loadTruncated);
                   } catch (TaskListException e) {
                     return null;
                   }

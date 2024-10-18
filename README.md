@@ -10,7 +10,106 @@ This project was intially designed to simplify communication between a java back
 
 :information_source: **8.3.3.3 changes the way to build authentication and client. Please check the following documentation**
 
-## Use the correct authentication
+## How to build the client
+
+### Spring Boot
+
+Add the dependency to your project:
+
+```xml
+<dependency>
+  <groupId>io.camunda.spring</groupId>
+  <artifactId>spring-boot-starter-camunda-tasklist</artifactId>
+  <version>${version.tasklist-client}</version>
+</dependency>
+```
+
+Configure a Camunda Tasklist client with simple authentication:
+
+```yaml
+tasklist:
+  client:
+    profile: simple
+```
+
+To adjust the (meaningful) default properties, you can also override them:
+
+```yaml
+tasklist:
+  client:
+    profile: simple
+    enabled: true
+    base-url: http://localhost:8082
+    session-timeout: PT10M
+    username: demo
+    password: demo
+```
+
+
+Configure a Camunda Tasklist client with identity authentication:
+
+```yaml
+tasklist:
+  client:
+    profile: oidc
+    client-id:
+    client-secret:
+    scope: # optional
+```
+
+To adjust the (meaningful) default properties, you can also override them:
+
+```yaml
+tasklist:
+  client:
+    profile: oidc
+    enabled: true
+    base-url: http://localhost:8082
+    auth-url: http://localhost:18080/auth/realms/camunda-platform/protocol/openid-connect/token
+    audience: operate-api
+    client-id:
+    client-secret:
+    scope: # optional
+```
+
+Configure a Camunda Tasklist client for Saas:
+
+```yaml
+tasklist:
+  client:
+    profile: saas
+    region:
+    cluster-id:
+    client-id:
+    client-secret:
+```
+
+```yaml
+tasklist:
+  client:
+    profile: saas
+    enabled: true
+    base-url: https://${tasklist.client.region}.tasklist.camunda.io/${tasklist.client.cluster-id}
+    auth-url: https://login.cloud.camunda.io/oauth/token
+    audience: tasklist.camunda.io
+    region:
+    cluster-id:
+    client-id:
+    client-secret:
+```
+
+Configure defaults that influence the client behaviour:
+
+```yaml
+tasklist:
+  client:
+    defaults:
+      load-truncated-variables: true
+      return-variables: true
+      use-zeebe-user-tasks: true
+```
+
+### Plain Java
 
 Depending on your setup, you may want to use different authentication mechanisms.
 In case you're using a Camunda Platform without identity enabled, you should use the **SimpleAuthentication**
@@ -44,8 +143,6 @@ CamundaTaskListClient client = CamundaTaskListClient.builder()
   .saaSAuthentication("clientId", "clientSecret")
   .build();
 ```
-
-## Build your client
 
 Simply build a CamundaTaskListClient that takes an authentication and the tasklist url as parameters.
 

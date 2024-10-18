@@ -13,6 +13,7 @@
   <modules>
     <module>generated</module>
     <module>client-java</module>
+    <module>spring-boot-starter-camunda-tasklist</module>
   </modules>
 
 </project>
