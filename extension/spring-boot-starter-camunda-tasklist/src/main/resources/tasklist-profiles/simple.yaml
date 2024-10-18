@@ -1,0 +1,8 @@
+tasklist:
+  client:
+    profile: simple
+    enabled: true
+    base-url: http://localhost:8082
+    session-timeout: PT10M
+    username: demo
+    password: demo

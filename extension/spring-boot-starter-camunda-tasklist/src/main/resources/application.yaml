@@ -1,0 +1,6 @@
+tasklist:
+  client:
+    defaults:
+      load-truncated-variables: true
+      return-variables: true
+      use-zeebe-user-tasks: true
