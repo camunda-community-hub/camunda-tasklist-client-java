@@ -1,7 +1,6 @@
 package io.camunda.tasklist;
 
 import io.camunda.tasklist.auth.Authentication;
-import java.time.Duration;
 
 public class CamundaTaskListClientProperties {
   public static final String CAMUNDA_FORMS_PREFIX = "camunda-forms:bpmn:";
@@ -9,9 +8,22 @@ public class CamundaTaskListClientProperties {
   private String taskListUrl;
   private boolean defaultShouldReturnVariables;
   private boolean defaultShouldLoadTruncatedVariables;
-  private boolean alwaysReconnect = false;
-  private Duration cookieExpiration = Duration.ofMinutes(3);
   private boolean useZeebeUserTasks;
+
+  public CamundaTaskListClientProperties() {}
+
+  public CamundaTaskListClientProperties(
+      Authentication authentication,
+      String taskListUrl,
+      boolean defaultShouldReturnVariables,
+      boolean defaultShouldLoadTruncatedVariables,
+      boolean useZeebeUserTasks) {
+    this.authentication = authentication;
+    this.taskListUrl = taskListUrl;
+    this.defaultShouldReturnVariables = defaultShouldReturnVariables;
+    this.defaultShouldLoadTruncatedVariables = defaultShouldLoadTruncatedVariables;
+    this.useZeebeUserTasks = useZeebeUserTasks;
+  }
 
   public Authentication getAuthentication() {
     return authentication;
@@ -43,22 +55,6 @@ public class CamundaTaskListClientProperties {
 
   public void setDefaultShouldLoadTruncatedVariables(boolean defaultShouldLoadTruncatedVariables) {
     this.defaultShouldLoadTruncatedVariables = defaultShouldLoadTruncatedVariables;
-  }
-
-  public boolean isAlwaysReconnect() {
-    return alwaysReconnect;
-  }
-
-  public void setAlwaysReconnect(boolean alwaysReconnect) {
-    this.alwaysReconnect = alwaysReconnect;
-  }
-
-  public Duration getCookieExpiration() {
-    return cookieExpiration;
-  }
-
-  public void setCookieExpiration(Duration cookieExpiration) {
-    this.cookieExpiration = cookieExpiration;
   }
 
   public boolean isUseZeebeUserTasks() {
