@@ -18,7 +18,7 @@ Add the dependency to your project:
 
 ```xml
 <dependency>
-  <groupId>io.camunda.spring</groupId>
+  <groupId>io.camunda</groupId>
   <artifactId>spring-boot-starter-camunda-tasklist</artifactId>
   <version>${version.tasklist-client}</version>
 </dependency>
