@@ -46,16 +46,16 @@ public class CamundaTaskListClientBuilder {
     return this;
   }
 
+  @Deprecated(forRemoval = true)
   public CamundaTaskListClientBuilder alwaysReconnect() {
-    properties.setAlwaysReconnect(true);
     return this;
   }
 
   /**
    * Force cookie expiration after some time (default 3mn). Only usefull with SimpleAuthentication
    */
+  @Deprecated(forRemoval = true)
   public CamundaTaskListClientBuilder cookieExpiration(Duration cookieExpiration) {
-    properties.setCookieExpiration(cookieExpiration);
     return this;
   }
 
