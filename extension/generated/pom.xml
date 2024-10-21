@@ -4,7 +4,7 @@
   <parent>
     <groupId>io.camunda</groupId>
     <artifactId>tasklist-client-parent</artifactId>
-    <version>8.6.4-SNAPSHOT</version>
+    <version>8.6.4</version>
   </parent>
 
   <artifactId>camunda-tasklist-client-generated</artifactId>
