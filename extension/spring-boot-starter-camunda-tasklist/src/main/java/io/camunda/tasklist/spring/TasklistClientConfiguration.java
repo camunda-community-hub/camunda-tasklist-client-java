@@ -52,7 +52,7 @@ public class TasklistClientConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
-  public Authentication authentication() {
+  public Authentication tasklistAuthentication() {
     if (properties.profile() == null) {
       throw new IllegalStateException("'tasklist.client.profile' is required");
     }
