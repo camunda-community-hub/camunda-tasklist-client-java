@@ -354,15 +354,9 @@ public class CamundaTaskListClient {
       throw new TaskListException(
           "Before/After/AfterOrEquals search are only possible if some items are present");
     }
-    TaskSearch newSearch =
-        new TaskSearch()
-            .setAssigned(taskList.getSearch().getAssigned())
-            .setAssignee(taskList.getSearch().getAssignee())
-            .setCandidateGroup(taskList.getSearch().getCandidateGroup())
-            .setState(taskList.getSearch().getState())
-            .setWithVariables(taskList.getSearch().isWithVariables())
-            .setPagination(getSearchPagination(taskList, direction));
 
+    TaskSearch newSearch =
+        taskList.getSearch().clone().setPagination(getSearchPagination(taskList, direction));
     return getTasks(newSearch);
   }
 
