@@ -1,14 +1,16 @@
 package io.camunda.tasklist.dto;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.tasklist.exception.TaskListException;
 import io.camunda.tasklist.generated.model.IncludeVariable;
 import io.camunda.tasklist.generated.model.TaskByVariables;
 import io.camunda.tasklist.generated.model.TaskByVariables.OperatorEnum;
 import io.camunda.tasklist.util.JsonUtils;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TaskSearch {
+public class TaskSearch implements Cloneable {
   private String candidateGroup;
   private List<String> candidateGroups;
   private String assignee;
@@ -228,5 +230,16 @@ public class TaskSearch {
   public TaskSearch setPagination(Pagination pagination) {
     this.pagination = pagination;
     return this;
+  }
+
+  @Override
+  public TaskSearch clone() {
+    try {
+      ObjectMapper objectMapper = new ObjectMapper();
+      byte[] bytes = objectMapper.writeValueAsBytes(this);
+      return objectMapper.readValue(bytes, TaskSearch.class);
+    } catch (IOException e) {
+      throw new RuntimeException("Error while cloning TaskSearch", e);
+    }
   }
 }
