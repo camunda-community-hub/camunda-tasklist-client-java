@@ -17,6 +17,11 @@
       <artifactId>spring-boot-starter</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-configuration-processor</artifactId>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
       <groupId>io.camunda</groupId>
       <artifactId>zeebe-client-java</artifactId>
       <scope>provided</scope>
@@ -88,6 +93,7 @@
               </ignoredUnusedDeclaredDependency>
               <ignoredUnusedDeclaredDependency>org.springframework.boot:spring-boot-starter-test
               </ignoredUnusedDeclaredDependency>
+              <ignoredUnusedDeclaredDependency>org.springframework.boot:spring-boot-configuration-processor</ignoredUnusedDeclaredDependency>
             </ignoredUnusedDeclaredDependencies>
           </configuration>
         </plugin>
