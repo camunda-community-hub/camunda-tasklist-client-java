@@ -30,5 +30,6 @@ public class TasklistClientConfigurationPropertiesProfileOidcTest {
             URI.create(
                     "http://localhost:18080/auth/realms/camunda-platform/protocol/openid-connect/token")
                 .toURL());
+    assertThat(properties.defaults()).isNotNull();
   }
 }
