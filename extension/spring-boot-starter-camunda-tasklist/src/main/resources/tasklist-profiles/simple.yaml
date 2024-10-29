@@ -6,3 +6,7 @@ tasklist:
     session-timeout: PT10M
     username: demo
     password: demo
+    defaults:
+      load-truncated-variables: true
+      return-variables: true
+      use-zeebe-user-tasks: true
