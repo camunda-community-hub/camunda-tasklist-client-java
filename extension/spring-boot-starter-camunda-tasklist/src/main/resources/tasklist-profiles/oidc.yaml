@@ -5,7 +5,3 @@ tasklist:
     base-url: http://localhost:8082
     auth-url: http://localhost:18080/auth/realms/camunda-platform/protocol/openid-connect/token
     audience: tasklist-api
-    defaults:
-      load-truncated-variables: true
-      return-variables: true
-      use-zeebe-user-tasks: true

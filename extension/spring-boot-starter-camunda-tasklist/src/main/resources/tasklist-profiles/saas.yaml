@@ -5,7 +5,3 @@ tasklist:
     base-url: https://${tasklist.client.region}.tasklist.camunda.io/${tasklist.client.cluster-id}
     auth-url: https://login.cloud.camunda.io/oauth/token
     audience: tasklist.camunda.io
-    defaults:
-      load-truncated-variables: true
-      return-variables: true
-      use-zeebe-user-tasks: true
