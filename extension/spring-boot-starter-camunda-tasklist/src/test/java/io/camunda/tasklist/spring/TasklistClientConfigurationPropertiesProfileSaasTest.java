@@ -30,5 +30,6 @@ public class TasklistClientConfigurationPropertiesProfileSaasTest {
     assertThat(properties.enabled()).isEqualTo(true);
     assertThat(properties.authUrl())
         .isEqualTo(URI.create("https://login.cloud.camunda.io/oauth/token").toURL());
+    assertThat(properties.defaults()).isNotNull();
   }
 }

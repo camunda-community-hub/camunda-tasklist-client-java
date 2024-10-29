@@ -22,5 +22,6 @@ public class TasklistClientConfigurationPropertiesProfileSimpleTest {
     assertThat(properties.baseUrl()).isEqualTo(URI.create("http://localhost:8082").toURL());
     assertThat(properties.enabled()).isEqualTo(true);
     assertThat(properties.sessionTimeout()).isEqualTo(Duration.ofMinutes(10));
+    assertThat(properties.defaults()).isNotNull();
   }
 }
