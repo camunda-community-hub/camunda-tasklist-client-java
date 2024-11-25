@@ -31,6 +31,8 @@ import io.camunda.tasklist.generated.model.TaskSearchResponse;
 import io.camunda.tasklist.generated.model.VariableInputDTO;
 import io.camunda.tasklist.generated.model.VariableResponse;
 import io.camunda.tasklist.generated.model.VariableSearchResponse;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +41,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class ConverterUtils {
+  public static String DATE_TIME_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 
   private static ObjectMapper objectMapper = null;
 
@@ -173,8 +176,14 @@ public class ConverterUtils {
             mapper(sourceTask::getProcessDefinitionKey, task::setProcessDefinitionKey),
             mapper(sourceTask::getProcessInstanceKey, task::setProcessInstanceKey),
             mapper(sourceTask::getAssignee, task::setAssignee),
-            mapper(sourceTask::getCreationDate, task::setCreationDate),
-            mapper(sourceTask::getCompletionDate, task::setCompletionDate),
+            mapper(
+                sourceTask::getCreationDate,
+                ConverterUtils::toOffsetDateTime,
+                task::setCreationDate),
+            mapper(
+                sourceTask::getCompletionDate,
+                ConverterUtils::toOffsetDateTime,
+                task::setCompletionDate),
             mapper(sourceTask::getTaskState, ConverterUtils::toTaskState, task::setTaskState),
             mapper(sourceTask::getCandidateUsers, task::setCandidateUsers),
             mapper(sourceTask::getCandidateGroups, task::setCandidateGroups),
@@ -207,6 +216,13 @@ public class ConverterUtils {
     return task;
   }
 
+  private static OffsetDateTime toOffsetDateTime(String dateTime) {
+    if (dateTime == null) {
+      return null;
+    }
+    return OffsetDateTime.parse(dateTime, DateTimeFormatter.ofPattern(DATE_TIME_PATTERN));
+  }
+
   public static Task toTask(TaskResponse sourceTask) {
     return toTask(sourceTask, null);
   }
@@ -223,8 +239,14 @@ public class ConverterUtils {
             mapper(sourceTask::getProcessDefinitionKey, task::setProcessDefinitionKey),
             mapper(sourceTask::getProcessInstanceKey, task::setProcessInstanceKey),
             mapper(sourceTask::getAssignee, task::setAssignee),
-            mapper(sourceTask::getCreationDate, task::setCreationDate),
-            mapper(sourceTask::getCompletionDate, task::setCompletionDate),
+            mapper(
+                sourceTask::getCreationDate,
+                ConverterUtils::toOffsetDateTime,
+                task::setCreationDate),
+            mapper(
+                sourceTask::getCompletionDate,
+                ConverterUtils::toOffsetDateTime,
+                task::setCompletionDate),
             mapper(sourceTask::getTaskState, ConverterUtils::toTaskState, task::setTaskState),
             mapper(sourceTask::getCandidateUsers, task::setCandidateUsers),
             mapper(sourceTask::getCandidateGroups, task::setCandidateGroups),
