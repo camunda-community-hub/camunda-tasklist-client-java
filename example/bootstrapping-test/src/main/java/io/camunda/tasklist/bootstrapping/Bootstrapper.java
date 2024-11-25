@@ -1,6 +1,6 @@
 package io.camunda.tasklist.bootstrapping;
 
-import io.camunda.tasklist.CamundaTaskListClient;
+import io.camunda.tasklist.CamundaTaskListClientV1;
 import io.camunda.tasklist.auth.SimpleAuthentication;
 import io.camunda.tasklist.auth.SimpleCredential;
 import io.camunda.tasklist.exception.TaskListException;
@@ -9,9 +9,9 @@ import java.net.URI;
 import java.time.Duration;
 
 public class Bootstrapper {
-  public CamundaTaskListClient create() {
+  public CamundaTaskListClientV1 create() {
     try {
-      return CamundaTaskListClient.builder()
+      return CamundaTaskListClientV1.builder()
           .taskListUrl("http://localhost:8082")
           .authentication(
               new SimpleAuthentication(

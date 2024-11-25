@@ -38,7 +38,7 @@ public class CamundaTasklistClientTest {
     properties.setTaskListUrl(BASE_URL);
     properties.setAuthentication(new MockAuthentication());
     AssertionError assertionError =
-        assertThrows(AssertionError.class, () -> new CamundaTaskListClient(properties, null));
+        assertThrows(AssertionError.class, () -> new CamundaTaskListClientV1(properties, null));
     assertEquals("zeebeClient must not be null", assertionError.getMessage());
   }
 
@@ -48,7 +48,7 @@ public class CamundaTasklistClientTest {
     properties.setUseZeebeUserTasks(false);
     properties.setTaskListUrl(BASE_URL);
     properties.setAuthentication(new MockAuthentication());
-    CamundaTaskListClient client = new CamundaTaskListClient(properties, null);
+    CamundaTaskListClientV1 client = new CamundaTaskListClientV1(properties, null);
     assertNotNull(client);
   }
 
@@ -70,7 +70,7 @@ public class CamundaTasklistClientTest {
         new SimpleAuthentication(
             new SimpleCredential(
                 "demo", "demo", URI.create(BASE_URL).toURL(), Duration.ofMinutes(10))));
-    CamundaTaskListClient client = new CamundaTaskListClient(properties, null);
+    CamundaTaskListClientV1 client = new CamundaTaskListClientV1(properties, null);
     assertNotNull(client);
     TaskList tasks = client.getTasks(new TaskSearch());
     assertNotNull(tasks);
@@ -102,7 +102,7 @@ public class CamundaTasklistClientTest {
             new JwtCredential(
                 "abc", "abc", "tasklist-api", URI.create(BASE_URL + "/token").toURL(), null),
             new JacksonTokenResponseMapper(new ObjectMapper())));
-    CamundaTaskListClient client = new CamundaTaskListClient(properties, null);
+    CamundaTaskListClientV1 client = new CamundaTaskListClientV1(properties, null);
     assertNotNull(client);
     TaskList tasks = client.getTasks(new TaskSearch());
     assertNotNull(tasks);
