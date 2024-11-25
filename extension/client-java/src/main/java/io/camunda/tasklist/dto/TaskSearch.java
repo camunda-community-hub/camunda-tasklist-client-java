@@ -1,11 +1,8 @@
 package io.camunda.tasklist.dto;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.camunda.tasklist.dto.TaskSearch.TaskByVariables.Operator;
 import io.camunda.tasklist.exception.TaskListException;
-import io.camunda.tasklist.generated.model.IncludeVariable;
-import io.camunda.tasklist.generated.model.TaskByVariables;
-import io.camunda.tasklist.generated.model.TaskByVariables.OperatorEnum;
-import io.camunda.tasklist.util.JsonUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,11 +41,6 @@ public class TaskSearch implements Cloneable {
 
   public TaskSearch setCandidateUsers(List<String> candidateUsers) {
     this.candidateUsers = candidateUsers;
-    return this;
-  }
-
-  public TaskSearch setWithVariables(Boolean withVariables) {
-    this.withVariables = withVariables;
     return this;
   }
 
@@ -153,11 +145,7 @@ public class TaskSearch implements Cloneable {
 
   public TaskSearch addVariableFilter(String variableName, Object variableValue)
       throws TaskListException {
-    return this.addVariableFilter(
-        new TaskByVariables()
-            .name(variableName)
-            .value(JsonUtils.toJsonString(variableValue))
-            .operator(OperatorEnum.EQ));
+    return this.addVariableFilter(new TaskByVariables(variableName, variableValue, Operator.EQ));
   }
 
   public TaskSearch addVariableFilter(TaskByVariables variableFilter) {
@@ -194,6 +182,11 @@ public class TaskSearch implements Cloneable {
     return withVariables != null && withVariables;
   }
 
+  public TaskSearch setWithVariables(Boolean withVariables) {
+    this.withVariables = withVariables;
+    return this;
+  }
+
   public TaskSearch setWithVariables(boolean withVariables) {
     this.withVariables = withVariables;
     return this;
@@ -216,9 +209,7 @@ public class TaskSearch implements Cloneable {
     if (this.includeVariables == null) {
       this.includeVariables = new ArrayList<>();
     }
-    IncludeVariable iv = new IncludeVariable();
-    iv.setName(variable);
-    iv.alwaysReturnFullValue(alwaysReturnFullValue);
+    IncludeVariable iv = new IncludeVariable(variable, alwaysReturnFullValue);
     this.includeVariables.add(iv);
     return this;
   }
@@ -240,6 +231,14 @@ public class TaskSearch implements Cloneable {
       return objectMapper.readValue(bytes, TaskSearch.class);
     } catch (IOException e) {
       throw new RuntimeException("Error while cloning TaskSearch", e);
+    }
+  }
+
+  public record IncludeVariable(String name, boolean alwaysReturnFullValue) {}
+
+  public record TaskByVariables(String name, Object value, Operator operator) {
+    public enum Operator {
+      EQ
     }
   }
 }

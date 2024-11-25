@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.tasklist.CamundaTaskListClient;
 import io.camunda.tasklist.CamundaTasklistClientConfiguration;
 import io.camunda.tasklist.CamundaTasklistClientConfiguration.DefaultProperties;
+import io.camunda.tasklist.CamundaTaskListClientV1;
 import io.camunda.tasklist.auth.Authentication;
 import io.camunda.tasklist.auth.JwtAuthentication;
 import io.camunda.tasklist.auth.JwtCredential;
@@ -36,7 +37,7 @@ public class TasklistClientConfiguration {
   @ConditionalOnMissingBean
   public CamundaTaskListClient camundaTasklistClient(
       CamundaTasklistClientConfiguration configuration) {
-    return new CamundaTaskListClient(configuration);
+    return new CamundaTaskListClientV1(configuration);
   }
 
   @Bean

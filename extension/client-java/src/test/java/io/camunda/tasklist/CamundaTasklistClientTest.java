@@ -47,7 +47,7 @@ public class CamundaTasklistClientTest {
         new CamundaTasklistClientConfiguration(
             new MockAuthentication(), baseUrl(), null, new DefaultProperties(false, false, true));
     IllegalStateException assertionError =
-        assertThrows(IllegalStateException.class, () -> new CamundaTaskListClient(configuration));
+        assertThrows(IllegalStateException.class, () -> new CamundaTaskListClientV1(configuration));
     assertEquals("ZeebeClient is required when using ZeebeUserTasks", assertionError.getMessage());
   }
 
@@ -56,7 +56,7 @@ public class CamundaTasklistClientTest {
     CamundaTasklistClientConfiguration configuration =
         new CamundaTasklistClientConfiguration(
             new MockAuthentication(), baseUrl(), null, new DefaultProperties(false, false, false));
-    CamundaTaskListClient client = new CamundaTaskListClient(configuration);
+    CamundaTaskListClientV1 client = new CamundaTaskListClientV1(configuration);
     assertNotNull(client);
   }
 

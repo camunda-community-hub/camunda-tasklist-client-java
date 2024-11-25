@@ -12,6 +12,6 @@ public class TaskSearchTest {
     TaskSearch clone = taskSearch.clone();
     assertThat(clone).isNotSameAs(taskSearch);
     assertThat(clone.getIncludeVariables()).hasSize(1);
-    assertThat(clone.getIncludeVariables().get(0).getName()).isEqualTo("foo");
+    assertThat(clone.getIncludeVariables().get(0).name()).isEqualTo("foo");
   }
 }
