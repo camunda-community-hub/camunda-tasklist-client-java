@@ -3,6 +3,7 @@ package io.camunda.tasklist.spring;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.tasklist.CamundaTaskListClient;
 import io.camunda.tasklist.CamundaTaskListClientProperties;
+import io.camunda.tasklist.CamundaTaskListClientV1;
 import io.camunda.tasklist.auth.Authentication;
 import io.camunda.tasklist.auth.JwtAuthentication;
 import io.camunda.tasklist.auth.JwtCredential;
@@ -36,7 +37,7 @@ public class TasklistClientConfiguration {
   public CamundaTaskListClient camundaTasklistClient(
       CamundaTaskListClientProperties properties,
       @Autowired(required = false) ZeebeClient zeebeClient) {
-    return new CamundaTaskListClient(properties, zeebeClient);
+    return new CamundaTaskListClientV1(properties, zeebeClient);
   }
 
   @Bean
