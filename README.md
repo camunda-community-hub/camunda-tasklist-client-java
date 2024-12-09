@@ -66,7 +66,7 @@ tasklist:
     enabled: true
     base-url: http://localhost:8082
     auth-url: http://localhost:18080/auth/realms/camunda-platform/protocol/openid-connect/token
-    audience: operate-api
+    audience: tasklist-api
     client-id:
     client-secret:
     scope: # optional
