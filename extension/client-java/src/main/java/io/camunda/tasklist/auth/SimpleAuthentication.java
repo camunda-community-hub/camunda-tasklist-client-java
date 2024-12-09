@@ -9,19 +9,21 @@ import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.NameValuePair;
+import org.apache.hc.core5.http.ProtocolException;
 import org.apache.hc.core5.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SimpleAuthentication implements Authentication {
-  private static final String CSRF_HEADER = "TASKLIST-X-CSRF-TOKEN";
+  private static final Set<String> CSRF_HEADER_CANDIDATES =
+      Set.of("X-CSRF-TOKEN", "TASKLIST-X-CSRF-TOKEN");
   private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private final SimpleCredential simpleCredential;
   private SimpleAuthToken token;
-  private LocalDateTime sessionTimeout;
 
   public SimpleAuthentication(SimpleCredential simpleCredential) {
     this.simpleCredential = simpleCredential;
@@ -39,9 +41,11 @@ public class SimpleAuthentication implements Authentication {
                       "Unable to login, response code " + response.getCode());
                 }
                 String csrfTokenCandidate = null;
-                Header csrfTokenHeader = response.getHeader(CSRF_HEADER);
+                String csrfTokenHeaderName = null;
+                Header csrfTokenHeader = findCsrfTokenHeader(response);
                 if (csrfTokenHeader != null) {
                   csrfTokenCandidate = csrfTokenHeader.getValue();
+                  csrfTokenHeaderName = csrfTokenHeader.getName();
                 }
                 Header[] cookieHeaders = response.getHeaders("Set-Cookie");
                 String sessionCookie = null;
@@ -51,15 +55,22 @@ public class SimpleAuthentication implements Authentication {
                   if (cookieHeader.getValue().startsWith(sessionCookieName)) {
                     sessionCookie = cookieHeader.getValue();
                   }
-                  if (cookieHeader.getValue().startsWith(CSRF_HEADER)) {
-                    csrfCookie = cookieHeader.getValue();
+                  for (String candidate : CSRF_HEADER_CANDIDATES) {
+                    if (cookieHeader.getValue().startsWith(candidate)) {
+                      csrfCookie = cookieHeader.getValue();
+                    }
                   }
                 }
-                return new SimpleAuthToken(sessionCookie, csrfCookie, csrfTokenCandidate);
+                return new SimpleAuthToken(
+                    sessionCookie,
+                    csrfCookie,
+                    csrfTokenCandidate,
+                    csrfTokenHeaderName,
+                    LocalDateTime.now().plus(simpleCredential.sessionTimeout()));
               });
       if (simpleAuthToken.sessionCookie() == null) {
         throw new RuntimeException(
-            "Unable to authenticate due to missing Set-Cookie TASKLIST-SESSION");
+            "Unable to authenticate due to missing Set-Cookie OPERATE-SESSION");
       }
       if (simpleAuthToken.csrfToken() == null) {
         LOG.info("No CSRF token found");
@@ -67,11 +78,22 @@ public class SimpleAuthentication implements Authentication {
       if (simpleAuthToken.csrfCookie() == null) {
         LOG.info("No CSRF cookie found");
       }
-      sessionTimeout = LocalDateTime.now().plus(simpleCredential.sessionTimeout());
       return simpleAuthToken;
     } catch (Exception e) {
       throw new RuntimeException("Unable to authenticate", e);
     }
+  }
+
+  private Header findCsrfTokenHeader(ClassicHttpResponse response) throws ProtocolException {
+    if (token != null) {
+      return response.getHeader(token.csrfTokenHeaderName());
+    }
+    for (String candidate : CSRF_HEADER_CANDIDATES) {
+      if (response.containsHeader(candidate)) {
+        return response.getHeader(candidate);
+      }
+    }
+    return null;
   }
 
   private HttpPost buildRequest(SimpleCredential simpleCredential) {
@@ -85,12 +107,12 @@ public class SimpleAuthentication implements Authentication {
 
   @Override
   public Map<String, String> getTokenHeader() {
-    if (token == null || sessionTimeout.isBefore(LocalDateTime.now())) {
+    if (token == null || token.sessionTimeout().isBefore(LocalDateTime.now())) {
       token = retrieveToken();
     }
     Map<String, String> headers = new HashMap<>();
     if (token.csrfToken() != null) {
-      headers.put(CSRF_HEADER, token.csrfToken());
+      headers.put(token.csrfTokenHeaderName(), token.csrfToken());
     }
     headers.put(
         "Cookie",
@@ -105,5 +127,10 @@ public class SimpleAuthentication implements Authentication {
     token = null;
   }
 
-  private record SimpleAuthToken(String sessionCookie, String csrfCookie, String csrfToken) {}
+  private record SimpleAuthToken(
+      String sessionCookie,
+      String csrfCookie,
+      String csrfToken,
+      String csrfTokenHeaderName,
+      LocalDateTime sessionTimeout) {}
 }
