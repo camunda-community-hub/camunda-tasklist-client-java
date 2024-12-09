@@ -70,7 +70,7 @@ public class SimpleAuthentication implements Authentication {
               });
       if (simpleAuthToken.sessionCookie() == null) {
         throw new RuntimeException(
-            "Unable to authenticate due to missing Set-Cookie OPERATE-SESSION");
+            "Unable to authenticate due to missing Set-Cookie TASKLIST-SESSION");
       }
       if (simpleAuthToken.csrfToken() == null) {
         LOG.info("No CSRF token found");
