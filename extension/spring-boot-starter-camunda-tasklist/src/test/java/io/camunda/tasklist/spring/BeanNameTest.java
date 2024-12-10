@@ -3,7 +3,7 @@ package io.camunda.tasklist.spring;
 import static org.assertj.core.api.Assertions.*;
 
 import io.camunda.tasklist.CamundaTaskListClient;
-import io.camunda.tasklist.CamundaTaskListClientProperties;
+import io.camunda.tasklist.CamundaTasklistClientConfiguration;
 import io.camunda.tasklist.auth.Authentication;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DynamicTest;
@@ -21,7 +21,7 @@ public class BeanNameTest {
     return Stream.of(
             applicationContext.getBeanNamesForType(Authentication.class),
             applicationContext.getBeanNamesForType(CamundaTaskListClient.class),
-            applicationContext.getBeanNamesForType(CamundaTaskListClientProperties.class))
+            applicationContext.getBeanNamesForType(CamundaTasklistClientConfiguration.class))
         .map(s -> DynamicTest.dynamicTest(s[0], () -> testBeanName(s)));
   }
 

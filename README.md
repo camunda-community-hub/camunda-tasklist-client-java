@@ -111,45 +111,93 @@ tasklist:
 
 ### Plain Java
 
-Depending on your setup, you may want to use different authentication mechanisms.
-In case you're using a Camunda Platform without identity enabled, you should use the **SimpleAuthentication**
+Add the dependency to your project:
 
-```java
-SimpleConfig simpleConf = new SimpleConfig();
-simpleConf.addProduct(Product.TASKLIST, new SimpleCredential("user", "pwd", "http://tasklistUrl[:port]"));
-Authentication auth = SimpleAuthentication.builder().withSimpleConfig(simpleConf).build();
-
-CamundaTaskListClient client = CamundaTaskListClient.builder()
-  .taskListUrl("http://tasklistUrl[:port]")
-  .authentication(auth)
-  .cookieExpiration(Duration.ofSeconds(5))
-  .build();
+```xml
+<dependency>
+  <groupId>io.camunda</groupId>
+  <artifactId>camunda-tasklist-client-java</artifactId>
+  <version>${version.tasklist-client}</version>
+</dependency>
 ```
 
-In case you're using a Self Managed Camunda Platform with identity enabled (and Keycloak), you should use the **SelfManagedAuthentication**
+Build a Camunda Tasklist client with simple authentication:
 
 ```java
-CamundaTaskListClient client = CamundaTaskListClient.builder()
-  .taskListUrl("https://reg-x.tasklist.camunda.io/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/")
-  .selfManagedAuthentication("clientId", "clientSecret", "keycloakUrl")
-  .build();
+// properties you need to provide
+String username = "demo";
+String password = "demo";
+URL tasklistUrl = URI
+    .create("http://localhost:8082").toURL();
+boolean returnVariables = false;
+boolean loadTruncatedVariables = false;
+boolean useZeebeUserTasks = true;
+// if you are using zeebe user tasks, you require a zeebe client as well
+ZeebeClient zeebeClient = zeebeClient();
+// bootstrapping
+SimpleCredential credentials =
+    new SimpleCredential(username, password, tasklistUrl, Duration.ofMinutes(10));
+SimpleAuthentication authentication = new SimpleAuthentication(credentials);
+CamundaTasklistClientConfiguration configuration =
+    new CamundaTasklistClientConfiguration(
+        authentication, tasklistUrl, zeebeClient, new DefaultProperties(returnVariables,loadTruncatedVariables,useZeebeUserTasks));
+CamundaTaskListClient client = new CamundaTaskListClient(configuration);
 ```
 
-And finally, if you're using a SaaS environment, just use the **SaaSAuthentication**
+Build a Camunda Tasklist client with identity authentication:
 
 ```java
-CamundaTaskListClient client = CamundaTaskListClient.builder()
-  .taskListUrl("https://reg-x.tasklist.camunda.io/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/")
-  .saaSAuthentication("clientId", "clientSecret")
-  .build();
+// properties you need to provide
+String clientId = "";
+String clientSecret = "";
+String audience = "tasklist-api";
+String scope = ""; // can be omitted if not required
+URL tasklistUrl = URI.create("http://localhost:8082").toURL();
+URL authUrl =
+    URI.create(
+           "http://localhost:18080/auth/realms/camunda-platform/protocol/openid-connect/token")
+       .toURL();
+boolean returnVariables = false;
+boolean loadTruncatedVariables = false;
+boolean useZeebeUserTasks = true;
+// if you are using zeebe user tasks, you require a zeebe client as well
+ZeebeClient zeebeClient = zeebeClient();
+// bootstrapping
+JwtCredential credentials = new JwtCredential(clientId, clientSecret, audience, authUrl, scope);
+ObjectMapper objectMapper = new ObjectMapper();
+TokenResponseMapper tokenResponseMapper = new JacksonTokenResponseMapper(objectMapper);
+JwtAuthentication authentication = new JwtAuthentication(credentials, tokenResponseMapper);
+CamundaTasklistClientConfiguration configuration =
+    new CamundaTasklistClientConfiguration(
+        authentication, tasklistUrl, zeebeClient, new DefaultProperties(returnVariables,loadTruncatedVariables,useZeebeUserTasks));
+CamundaTaskListClient client = new CamundaTaskListClient(configuration);
 ```
 
-Simply build a CamundaTaskListClient that takes an authentication and the tasklist url as parameters.
-
-:information_source: Since the SelfManagedAuthentication and the SaaSAuthentication are a bit complex, two helpers have been added to the builder **saaSAuthentication(clientId, clientSecret)** and **selfManagedAuthentication(clientId, clientSecret, keycloakUrl)** as shown in previous examples. You can also build these SaaSAuthentication and SelfManagedAuthentication yourself, following the code provided in the helpers.
+Build a Camunda Tasklist client for Saas:
 
 ```java
-CamundaTaskListClient client = CamundaTaskListClient.builder().taskListUrl("http://localhost:8081").shouldReturnVariables().shouldLoadTruncatedVariables().authentication(auth).build();
+// properties you need to provide
+String region = "";
+String clusterId = "";
+String clientId = "";
+String clientSecret = "";
+boolean returnVariables = false;
+boolean loadTruncatedVariables = false;
+boolean useZeebeUserTasks = true;
+// if you are using zeebe user tasks, you require a zeebe client as well
+ZeebeClient zeebeClient = zeebeClient();
+// bootstrapping
+URL tasklistUrl = URI.create("https://" + region + ".tasklist.camunda.io/" + clusterId).toURL();
+URL authUrl = URI.create("https://login.cloud.camunda.io/oauth/token").toURL();
+JwtCredential credentials =
+    new JwtCredential(clientId, clientSecret, "tasklist.camunda.io", authUrl, null);
+ObjectMapper objectMapper = new ObjectMapper();
+TokenResponseMapper tokenResponseMapper = new JacksonTokenResponseMapper(objectMapper);
+JwtAuthentication authentication = new JwtAuthentication(credentials, tokenResponseMapper);
+CamundaTasklistClientConfiguration configuration =
+    new CamundaTasklistClientConfiguration(
+        authentication, tasklistUrl, zeebeClient, new DefaultProperties(returnVariables,loadTruncatedVariables,useZeebeUserTasks));
+CamundaTaskListClient client = new CamundaTaskListClient(configuration);
 ```
 
 :information_source: **shouldReturnVariables()** will read variables along with tasks. This is not the recommended approach but rather a commodity. In real project implementation, we would recommend to load task variables only when required.
@@ -204,18 +252,6 @@ String processDefinitionId = task.getProcessDefinitionId();
 Form form = client.getForm(formId, processDefinitionId);
 String schema = form.getSchema();
 ```
-
-# use it in your project
-You can import it to your maven or gradle project as a dependency
-
-```xml
-<dependency>
-  <groupId>io.camunda</groupId>
-  <artifactId>camunda-tasklist-client-java</artifactId>
-  <version>8.5.3.6</version>
-</dependency>
-```
-
 
 # Note
 A similar library is available for the Operate API of Camunda Platform here:

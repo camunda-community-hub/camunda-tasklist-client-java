@@ -2,6 +2,7 @@ package io.camunda.tasklist;
 
 import io.camunda.tasklist.auth.Authentication;
 
+@Deprecated
 public class CamundaTaskListClientProperties {
   public static final String CAMUNDA_FORMS_PREFIX = "camunda-forms:bpmn:";
   private Authentication authentication;

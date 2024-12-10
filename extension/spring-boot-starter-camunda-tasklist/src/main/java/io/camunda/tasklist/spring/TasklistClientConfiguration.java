@@ -2,7 +2,8 @@ package io.camunda.tasklist.spring;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.tasklist.CamundaTaskListClient;
-import io.camunda.tasklist.CamundaTaskListClientProperties;
+import io.camunda.tasklist.CamundaTasklistClientConfiguration;
+import io.camunda.tasklist.CamundaTasklistClientConfiguration.DefaultProperties;
 import io.camunda.tasklist.auth.Authentication;
 import io.camunda.tasklist.auth.JwtAuthentication;
 import io.camunda.tasklist.auth.JwtCredential;
@@ -34,20 +35,22 @@ public class TasklistClientConfiguration {
   @Bean
   @ConditionalOnMissingBean
   public CamundaTaskListClient camundaTasklistClient(
-      CamundaTaskListClientProperties properties,
-      @Autowired(required = false) ZeebeClient zeebeClient) {
-    return new CamundaTaskListClient(properties, zeebeClient);
+      CamundaTasklistClientConfiguration configuration) {
+    return new CamundaTaskListClient(configuration);
   }
 
   @Bean
   @ConditionalOnMissingBean
-  public CamundaTaskListClientProperties taskListClientProperties(Authentication authentication) {
-    return new CamundaTaskListClientProperties(
+  public CamundaTasklistClientConfiguration tasklistClientConfiguration(
+      Authentication authentication, @Autowired(required = false) ZeebeClient zeebeClient) {
+    return new CamundaTasklistClientConfiguration(
         authentication,
-        properties.baseUrl().toString(),
-        properties.defaults().returnVariables(),
-        properties.defaults().loadTruncatedVariables(),
-        properties.defaults().useZeebeUserTasks());
+        properties.baseUrl(),
+        zeebeClient,
+        new DefaultProperties(
+            properties.defaults().returnVariables(),
+            properties.defaults().loadTruncatedVariables(),
+            properties.defaults().useZeebeUserTasks()));
   }
 
   @Bean
