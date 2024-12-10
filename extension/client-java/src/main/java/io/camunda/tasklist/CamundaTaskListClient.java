@@ -4,6 +4,7 @@ import static io.camunda.tasklist.util.ConverterUtils.*;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.camunda.tasklist.CamundaTasklistClientConfiguration.DefaultProperties;
+import io.camunda.tasklist.auth.Authentication;
 import io.camunda.tasklist.dto.DateFilter;
 import io.camunda.tasklist.dto.Form;
 import io.camunda.tasklist.dto.Pagination;
@@ -29,7 +30,6 @@ import io.camunda.tasklist.generated.model.TaskSearchRequest;
 import io.camunda.tasklist.generated.model.VariableInputDTO;
 import io.camunda.tasklist.generated.model.VariablesSearchRequest;
 import io.camunda.tasklist.util.ConverterUtils;
-import io.camunda.tasklist.util.HttpClientFactory;
 import io.camunda.zeebe.client.ZeebeClient;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -43,6 +43,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
 
 public class CamundaTaskListClient {
   private final ZeebeClient zeebeClient;
@@ -72,8 +73,7 @@ public class CamundaTaskListClient {
     }
     this.zeebeClient = configuration.zeebeClient();
     this.defaultProperties = configuration.defaultProperties();
-    CloseableHttpClient httpClient =
-        HttpClientFactory.buildTasklistHttpClient(configuration.authentication());
+    CloseableHttpClient httpClient = buildTasklistHttpClient(configuration.authentication());
     ApiClient apiClient = new ApiClient(httpClient);
     apiClient.setBasePath(configuration.baseUrl().toExternalForm());
     this.taskApi = new TaskApi(apiClient);
@@ -87,6 +87,15 @@ public class CamundaTaskListClient {
     } catch (MalformedURLException e) {
       throw new RuntimeException("Error while creating tasklist url", e);
     }
+  }
+
+  private static CloseableHttpClient buildTasklistHttpClient(Authentication authentication) {
+    return HttpClients.custom()
+        .useSystemProperties()
+        .addRequestInterceptorFirst(
+            (request, entity, context) ->
+                authentication.getTokenHeader().forEach(request::addHeader))
+        .build();
   }
 
   @Deprecated
