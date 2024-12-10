@@ -12,24 +12,21 @@ import io.camunda.tasklist.dto.TaskSearch.IncludeVariable;
 import io.camunda.tasklist.dto.TaskSearch.TaskByVariables;
 import io.camunda.tasklist.dto.TaskState;
 import io.camunda.tasklist.dto.Variable;
-import io.camunda.tasklist.exception.TaskListException;
 import java.util.List;
 import java.util.Map;
 
 public interface CamundaTaskListClient {
-  Task unclaim(String taskId) throws TaskListException;
+  Task unclaim(String taskId);
 
-  default Task claim(String taskId, String assignee) throws TaskListException {
+  default Task claim(String taskId, String assignee) {
     return claim(taskId, assignee, false);
   }
 
-  Task claim(String taskId, String assignee, Boolean allowOverrideAssignment)
-      throws TaskListException;
+  Task claim(String taskId, String assignee, Boolean allowOverrideAssignment);
 
-  void completeTask(String taskId, Map<String, Object> variablesMap) throws TaskListException;
+  void completeTask(String taskId, Map<String, Object> variablesMap);
 
-  default TaskList getTasks(Boolean assigned, TaskState state, Integer pageSize)
-      throws TaskListException {
+  default TaskList getTasks(Boolean assigned, TaskState state, Integer pageSize) {
     return getTasks(
         new TaskSearch()
             .setAssigned(assigned)
@@ -37,15 +34,13 @@ public interface CamundaTaskListClient {
             .setPagination(createPagination(pageSize)));
   }
 
-  default TaskList getTasks(Boolean assigned, TaskState state, Pagination pagination)
-      throws TaskListException {
+  default TaskList getTasks(Boolean assigned, TaskState state, Pagination pagination) {
     return getTasks(
         new TaskSearch().setAssigned(assigned).setState(state).setPagination(pagination));
   }
 
   default TaskList getTasks(
-      Boolean assigned, TaskState state, boolean withVariables, Integer pageSize)
-      throws TaskListException {
+      Boolean assigned, TaskState state, boolean withVariables, Integer pageSize) {
     return getTasks(
         new TaskSearch()
             .setAssigned(assigned)
@@ -55,8 +50,7 @@ public interface CamundaTaskListClient {
   }
 
   default TaskList getTasks(
-      Boolean assigned, TaskState state, boolean withVariables, Pagination pagination)
-      throws TaskListException {
+      Boolean assigned, TaskState state, boolean withVariables, Pagination pagination) {
     return getTasks(
         new TaskSearch()
             .setAssigned(assigned)
@@ -65,8 +59,7 @@ public interface CamundaTaskListClient {
             .setPagination(pagination));
   }
 
-  default TaskList getAssigneeTasks(String assigneeId, TaskState state, Integer pageSize)
-      throws TaskListException {
+  default TaskList getAssigneeTasks(String assigneeId, TaskState state, Integer pageSize) {
     return getTasks(
         new TaskSearch()
             .setAssignee(assigneeId)
@@ -74,15 +67,13 @@ public interface CamundaTaskListClient {
             .setPagination(createPagination(pageSize)));
   }
 
-  default TaskList getAssigneeTasks(String assigneeId, TaskState state, Pagination pagination)
-      throws TaskListException {
+  default TaskList getAssigneeTasks(String assigneeId, TaskState state, Pagination pagination) {
     return getTasks(
         new TaskSearch().setAssignee(assigneeId).setState(state).setPagination(pagination));
   }
 
   default TaskList getAssigneeTasks(
-      String assigneeId, TaskState state, boolean withVariables, Integer pageSize)
-      throws TaskListException {
+      String assigneeId, TaskState state, boolean withVariables, Integer pageSize) {
     return getTasks(
         new TaskSearch()
             .setAssigned(true)
@@ -93,8 +84,7 @@ public interface CamundaTaskListClient {
   }
 
   default TaskList getAssigneeTasks(
-      String assigneeId, TaskState state, boolean withVariables, Pagination pagination)
-      throws TaskListException {
+      String assigneeId, TaskState state, boolean withVariables, Pagination pagination) {
     return getTasks(
         new TaskSearch()
             .setAssignee(assigneeId)
@@ -103,8 +93,7 @@ public interface CamundaTaskListClient {
             .setPagination(pagination));
   }
 
-  default TaskList getGroupTasks(String group, TaskState state, Integer pageSize)
-      throws TaskListException {
+  default TaskList getGroupTasks(String group, TaskState state, Integer pageSize) {
     return getTasks(
         new TaskSearch()
             .setCandidateGroup(group)
@@ -112,15 +101,13 @@ public interface CamundaTaskListClient {
             .setPagination(createPagination(pageSize)));
   }
 
-  default TaskList getGroupTasks(String group, TaskState state, Pagination pagination)
-      throws TaskListException {
+  default TaskList getGroupTasks(String group, TaskState state, Pagination pagination) {
     return getTasks(
         new TaskSearch().setCandidateGroup(group).setState(state).setPagination(pagination));
   }
 
   default TaskList getGroupTasks(
-      String group, TaskState state, boolean withVariables, Integer pageSize)
-      throws TaskListException {
+      String group, TaskState state, boolean withVariables, Integer pageSize) {
     return getTasks(
         new TaskSearch()
             .setCandidateGroup(group)
@@ -130,8 +117,7 @@ public interface CamundaTaskListClient {
   }
 
   default TaskList getGroupTasks(
-      String group, TaskState state, boolean withVariables, Pagination pagination)
-      throws TaskListException {
+      String group, TaskState state, boolean withVariables, Pagination pagination) {
     return getTasks(
         new TaskSearch()
             .setCandidateGroup(group)
@@ -141,8 +127,7 @@ public interface CamundaTaskListClient {
   }
 
   default TaskList getGroupsTasks(
-      List<String> groups, TaskState state, boolean withVariables, Pagination pagination)
-      throws TaskListException {
+      List<String> groups, TaskState state, boolean withVariables, Pagination pagination) {
     return getTasks(
         new TaskSearch()
             .setCandidateGroups(groups)
@@ -151,31 +136,31 @@ public interface CamundaTaskListClient {
             .setPagination(pagination));
   }
 
-  Task getTask(String taskId) throws TaskListException;
+  Task getTask(String taskId);
 
-  Task getTask(String taskId, boolean withVariables) throws TaskListException;
+  Task getTask(String taskId, boolean withVariables);
 
-  List<Variable> getVariables(String taskId) throws TaskListException;
+  List<Variable> getVariables(String taskId);
 
-  List<Variable> getVariables(String taskId, boolean loadTruncated) throws TaskListException;
+  List<Variable> getVariables(String taskId, boolean loadTruncated);
 
-  Variable getVariable(String variableId) throws TaskListException;
+  Variable getVariable(String variableId);
 
-  default Form getForm(String formId, String processDefinitionId) throws TaskListException {
+  default Form getForm(String formId, String processDefinitionId) {
     return getForm(formId, processDefinitionId, null);
   }
 
-  Form getForm(String formId, String processDefinitionId, Long version) throws TaskListException;
+  Form getForm(String formId, String processDefinitionId, Long version);
 
-  TaskList before(TaskList taskList) throws TaskListException;
+  TaskList before(TaskList taskList);
 
-  TaskList beforeOrEquals(TaskList taskList) throws TaskListException;
+  TaskList beforeOrEquals(TaskList taskList);
 
-  TaskList after(TaskList taskList) throws TaskListException;
+  TaskList after(TaskList taskList);
 
-  TaskList afterOrEqual(TaskList taskList) throws TaskListException;
+  TaskList afterOrEqual(TaskList taskList);
 
-  TaskList getTasks(TaskSearch search) throws TaskListException;
+  TaskList getTasks(TaskSearch search);
 
   default TaskList getTasks(
       String group,
@@ -183,8 +168,7 @@ public interface CamundaTaskListClient {
       String assigneeId,
       TaskState state,
       boolean withVariables,
-      Pagination pagination)
-      throws TaskListException {
+      Pagination pagination) {
     return getTasks(
         new TaskSearch()
             .setCandidateGroup(group)
@@ -212,8 +196,7 @@ public interface CamundaTaskListClient {
       List<String> tenantIds,
       List<IncludeVariable> includeVariables,
       boolean withVariables,
-      Pagination pagination)
-      throws TaskListException {
+      Pagination pagination) {
     return getTasks(
         new TaskSearch()
             .setCandidateUser(candidateUser)
@@ -235,9 +218,9 @@ public interface CamundaTaskListClient {
             .setPagination(pagination));
   }
 
-  void loadVariables(List<Task> tasks) throws TaskListException;
+  void loadVariables(List<Task> tasks);
 
-  void loadVariables(List<Task> tasks, boolean loadTruncated) throws TaskListException;
+  void loadVariables(List<Task> tasks, boolean loadTruncated);
 
-  void saveDraftVariables(String taskId, Map<String, Object> variables) throws TaskListException;
+  void saveDraftVariables(String taskId, Map<String, Object> variables);
 }

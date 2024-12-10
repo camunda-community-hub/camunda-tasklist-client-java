@@ -1,6 +1,5 @@
 package io.camunda.tasklist.bootstrapping;
 
-import io.camunda.tasklist.CamundaTaskListClient;
 import io.camunda.tasklist.CamundaTaskListClientV1;
 import io.camunda.tasklist.CamundaTasklistClientConfiguration;
 import io.camunda.tasklist.CamundaTasklistClientConfiguration.DefaultProperties;
@@ -11,7 +10,7 @@ import java.net.URI;
 import java.time.Duration;
 
 public class Bootstrapper {
-  public CamundaTaskListClient create() {
+  public CamundaTaskListClientV1 create() {
     try {
       return new CamundaTaskListClientV1(
           new CamundaTasklistClientConfiguration(

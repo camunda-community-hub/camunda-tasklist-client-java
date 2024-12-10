@@ -80,7 +80,7 @@ public class CamundaTasklistClientTest {
             baseUrl(),
             null,
             new DefaultProperties(false, false, false));
-    CamundaTaskListClient client = new CamundaTaskListClient(configuration);
+    CamundaTaskListClient client = new CamundaTaskListClientV1(configuration);
     assertNotNull(client);
     TaskList tasks = client.getTasks(new TaskSearch());
     assertNotNull(tasks);
@@ -114,7 +114,7 @@ public class CamundaTasklistClientTest {
             baseUrl(),
             null,
             new DefaultProperties(false, false, false));
-    CamundaTaskListClient client = new CamundaTaskListClient(configuration);
+    CamundaTaskListClient client = new CamundaTaskListClientV1(configuration);
     assertNotNull(client);
     TaskList tasks = client.getTasks(new TaskSearch());
     assertNotNull(tasks);

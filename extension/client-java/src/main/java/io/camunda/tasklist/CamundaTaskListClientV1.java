@@ -3,6 +3,8 @@ package io.camunda.tasklist;
 import static io.camunda.tasklist.util.ConverterUtils.*;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import io.camunda.tasklist.CamundaTasklistClientConfiguration.DefaultProperties;
+import io.camunda.tasklist.auth.Authentication;
 import io.camunda.tasklist.dto.Form;
 import io.camunda.tasklist.dto.Pagination;
 import io.camunda.tasklist.dto.SearchType;
@@ -24,8 +26,12 @@ import io.camunda.tasklist.generated.model.TaskSearchRequest;
 import io.camunda.tasklist.generated.model.VariableInputDTO;
 import io.camunda.tasklist.generated.model.VariablesSearchRequest;
 import io.camunda.zeebe.client.ZeebeClient;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
@@ -36,37 +42,59 @@ public class CamundaTaskListClientV1 extends AbstractCamundaTaskListClient {
   private final FormApi formApi;
   private final VariablesApi variablesApi;
 
+  @Deprecated
   public CamundaTaskListClientV1(
       CamundaTaskListClientProperties properties, ZeebeClient zeebeClient) {
-    super(
-        new CamundaTaskListClientDefaultBehaviourProperties(
-            properties.isDefaultShouldReturnVariables(),
-            properties.isDefaultShouldLoadTruncatedVariables()));
-    assert properties.getTaskListUrl() != null : "taskListUrl must not be null";
-    assert properties.getAuthentication() != null : "authentication must not be null";
-    assert !properties.isUseZeebeUserTasks() || zeebeClient != null
-        : "zeebeClient must not be null";
-    CloseableHttpClient httpClient =
-        HttpClients.custom()
-            .useSystemProperties()
-            .addRequestInterceptorFirst(
-                (request, entity, context) ->
-                    properties.getAuthentication().getTokenHeader().forEach(request::addHeader))
-            .build();
+    this(
+        new CamundaTasklistClientConfiguration(
+            Objects.requireNonNull(properties.getAuthentication(), "No authentication provided"),
+            toUrl(properties.getTaskListUrl()),
+            zeebeClient,
+            new DefaultProperties(
+                properties.isDefaultShouldReturnVariables(),
+                properties.isDefaultShouldLoadTruncatedVariables(),
+                properties.isUseZeebeUserTasks())));
+  }
+
+  public CamundaTaskListClientV1(CamundaTasklistClientConfiguration configuration) {
+    super(configuration.defaultProperties());
+    if (configuration.defaultProperties().useZeebeUserTasks()
+        && configuration.zeebeClient() == null) {
+      throw new IllegalStateException("ZeebeClient is required when using ZeebeUserTasks");
+    }
+    this.zeebeClient = configuration.zeebeClient();
+    CloseableHttpClient httpClient = buildTasklistHttpClient(configuration.authentication());
     ApiClient apiClient = new ApiClient(httpClient);
-    apiClient.setBasePath(properties.getTaskListUrl());
+    apiClient.setBasePath(configuration.baseUrl().toExternalForm());
     this.taskApi = new TaskApi(apiClient);
     this.formApi = new FormApi(apiClient);
     this.variablesApi = new VariablesApi(apiClient);
-    this.zeebeClient = zeebeClient;
   }
 
+  private static URL toUrl(String url) {
+    try {
+      return URI.create(url).toURL();
+    } catch (MalformedURLException e) {
+      throw new RuntimeException("Error while creating tasklist url", e);
+    }
+  }
+
+  private static CloseableHttpClient buildTasklistHttpClient(Authentication authentication) {
+    return HttpClients.custom()
+        .useSystemProperties()
+        .addRequestInterceptorFirst(
+            (request, entity, context) ->
+                authentication.getTokenHeader().forEach(request::addHeader))
+        .build();
+  }
+
+  @Deprecated
   public static CamundaTaskListClientBuilder builder() {
     return new CamundaTaskListClientBuilder();
   }
 
   @Override
-  public Task unclaim(String taskId) throws TaskListException {
+  public Task unclaim(String taskId) {
     try {
       return toTask(taskApi.unassignTask(taskId), null);
     } catch (Exception e) {
@@ -75,8 +103,7 @@ public class CamundaTaskListClientV1 extends AbstractCamundaTaskListClient {
   }
 
   @Override
-  public Task claim(String taskId, String assignee, Boolean allowOverrideAssignment)
-      throws TaskListException {
+  public Task claim(String taskId, String assignee, Boolean allowOverrideAssignment) {
     try {
       return toTask(
           taskApi.assignTask(
@@ -91,8 +118,7 @@ public class CamundaTaskListClientV1 extends AbstractCamundaTaskListClient {
   }
 
   @Override
-  public void completeTask(String taskId, Map<String, Object> variablesMap)
-      throws TaskListException {
+  public void completeTask(String taskId, Map<String, Object> variablesMap) {
     try {
       Task task = getTask(taskId);
       if (task.getImplementation() == null
@@ -111,12 +137,12 @@ public class CamundaTaskListClientV1 extends AbstractCamundaTaskListClient {
             .join();
       }
     } catch (TaskListException | ApiException e) {
-      throw new TaskListException("Error assigning task " + taskId, e);
+      throw new TaskListException("Error completing task " + taskId, e);
     }
   }
 
   @Override
-  public Task getTask(String taskId, boolean withVariables) throws TaskListException {
+  public Task getTask(String taskId, boolean withVariables) {
     try {
       List<Variable> variables = null;
       if (withVariables) {
@@ -130,8 +156,7 @@ public class CamundaTaskListClientV1 extends AbstractCamundaTaskListClient {
   }
 
   @Override
-  public List<Variable> getVariables(String taskId, boolean loadTruncated)
-      throws TaskListException {
+  public List<Variable> getVariables(String taskId, boolean loadTruncated) {
     try {
       return taskApi.searchTaskVariables(taskId, new VariablesSearchRequest()).stream()
           .map(
@@ -157,7 +182,7 @@ public class CamundaTaskListClientV1 extends AbstractCamundaTaskListClient {
   }
 
   @Override
-  public Variable getVariable(String variableId) throws TaskListException {
+  public Variable getVariable(String variableId) {
     try {
       return toVariable(variablesApi.getVariableById(variableId));
     } catch (ApiException | JsonProcessingException e) {
@@ -166,11 +191,10 @@ public class CamundaTaskListClientV1 extends AbstractCamundaTaskListClient {
   }
 
   @Override
-  public Form getForm(String formId, String processDefinitionId, Long version)
-      throws TaskListException {
+  public Form getForm(String formId, String processDefinitionId, Long version) {
     try {
-      if (formId.startsWith(CamundaTaskListClientProperties.CAMUNDA_FORMS_PREFIX)) {
-        formId = formId.substring(CamundaTaskListClientProperties.CAMUNDA_FORMS_PREFIX.length());
+      if (formId.startsWith(CamundaTasklistConstants.CAMUNDA_FORMS_PREFIX)) {
+        formId = formId.substring(CamundaTasklistConstants.CAMUNDA_FORMS_PREFIX.length());
       }
       return toForm(formApi.getForm(formId, processDefinitionId, version));
     } catch (ApiException e) {
@@ -179,7 +203,7 @@ public class CamundaTaskListClientV1 extends AbstractCamundaTaskListClient {
   }
 
   @Override
-  protected TaskList getTasksInternal(TaskSearch search) throws TaskListException {
+  protected TaskList getTasksInternal(TaskSearch search) {
     Pagination pagination = search.getPagination();
     TaskSearchRequest request = toTaskSearchRequest(search);
     if (pagination != null) {
@@ -202,8 +226,7 @@ public class CamundaTaskListClientV1 extends AbstractCamundaTaskListClient {
     return new TaskList().setItems(getTasks(request, search.getWithVariables())).setSearch(search);
   }
 
-  private List<Task> getTasks(TaskSearchRequest search, boolean withVariables)
-      throws TaskListException {
+  private List<Task> getTasks(TaskSearchRequest search, boolean withVariables) {
     try {
 
       List<Task> tasks = toTasks(taskApi.searchTasks(search));
@@ -218,8 +241,7 @@ public class CamundaTaskListClientV1 extends AbstractCamundaTaskListClient {
   }
 
   @Override
-  public void saveDraftVariables(String taskId, Map<String, Object> variables)
-      throws TaskListException {
+  public void saveDraftVariables(String taskId, Map<String, Object> variables) {
     try {
       List<VariableInputDTO> convertedVariables = toVariableInput(variables);
       SaveVariablesRequest variablesInput = new SaveVariablesRequest();

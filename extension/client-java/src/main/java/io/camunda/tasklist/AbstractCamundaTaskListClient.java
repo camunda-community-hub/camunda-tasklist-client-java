@@ -1,5 +1,6 @@
 package io.camunda.tasklist;
 
+import io.camunda.tasklist.CamundaTasklistClientConfiguration.DefaultProperties;
 import io.camunda.tasklist.dto.Pagination;
 import io.camunda.tasklist.dto.SearchType;
 import io.camunda.tasklist.dto.Task;
@@ -15,21 +16,20 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 public abstract class AbstractCamundaTaskListClient implements CamundaTaskListClient {
-  private final CamundaTaskListClientDefaultBehaviourProperties defaultBehaviourProperties;
+  private final DefaultProperties defaultProperties;
 
-  public AbstractCamundaTaskListClient(
-      CamundaTaskListClientDefaultBehaviourProperties defaultBehaviourProperties) {
-    this.defaultBehaviourProperties = defaultBehaviourProperties;
+  public AbstractCamundaTaskListClient(DefaultProperties defaultProperties) {
+    this.defaultProperties = defaultProperties;
   }
 
   @Override
   public Task getTask(String taskId) throws TaskListException {
-    return getTask(taskId, defaultBehaviourProperties.defaultShouldReturnVariables());
+    return getTask(taskId, defaultProperties.returnVariables());
   }
 
   @Override
   public List<Variable> getVariables(String taskId) throws TaskListException {
-    return getVariables(taskId, defaultBehaviourProperties.defaultShouldLoadTruncatedVariables());
+    return getVariables(taskId, defaultProperties.loadTruncatedVariables());
   }
 
   @Override
@@ -54,7 +54,7 @@ public abstract class AbstractCamundaTaskListClient implements CamundaTaskListCl
 
   @Override
   public void loadVariables(List<Task> tasks) throws TaskListException {
-    loadVariables(tasks, defaultBehaviourProperties.defaultShouldLoadTruncatedVariables());
+    loadVariables(tasks, defaultProperties.loadTruncatedVariables());
   }
 
   @Override
@@ -88,7 +88,7 @@ public abstract class AbstractCamundaTaskListClient implements CamundaTaskListCl
   @Override
   public TaskList getTasks(TaskSearch search) throws TaskListException {
     if (search.getWithVariables() == null) {
-      search.setWithVariables(defaultBehaviourProperties.defaultShouldReturnVariables());
+      search.setWithVariables(defaultProperties.returnVariables());
     }
     return getTasksInternal(search);
   }
