@@ -11,6 +11,7 @@
   <packaging>pom</packaging>
   <modules>
     <module>bootstrapping-test</module>
+    <module>readme-snippets</module>
   </modules>
 
 

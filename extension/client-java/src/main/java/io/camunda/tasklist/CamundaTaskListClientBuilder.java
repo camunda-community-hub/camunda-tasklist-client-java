@@ -11,6 +11,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.time.Duration;
 
+@Deprecated
 public class CamundaTaskListClientBuilder {
   private CamundaTaskListClientProperties properties = new CamundaTaskListClientProperties();
   private ZeebeClient zeebeClient;
