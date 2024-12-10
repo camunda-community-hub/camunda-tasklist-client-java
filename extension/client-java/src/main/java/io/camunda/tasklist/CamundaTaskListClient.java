@@ -1,9 +1,10 @@
 package io.camunda.tasklist;
 
-import static io.camunda.tasklist.util.ConverterUtils.improveVariable;
-import static io.camunda.tasklist.util.ConverterUtils.toVariable;
+import static io.camunda.tasklist.util.ConverterUtils.*;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import io.camunda.tasklist.CamundaTasklistClientConfiguration.DefaultProperties;
+import io.camunda.tasklist.auth.Authentication;
 import io.camunda.tasklist.dto.DateFilter;
 import io.camunda.tasklist.dto.Form;
 import io.camunda.tasklist.dto.Pagination;
@@ -30,9 +31,13 @@ import io.camunda.tasklist.generated.model.VariableInputDTO;
 import io.camunda.tasklist.generated.model.VariablesSearchRequest;
 import io.camunda.tasklist.util.ConverterUtils;
 import io.camunda.zeebe.client.ZeebeClient;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -42,34 +47,58 @@ import org.apache.hc.client5.http.impl.classic.HttpClients;
 
 public class CamundaTaskListClient {
   private final ZeebeClient zeebeClient;
-  private final CamundaTaskListClientProperties properties;
+  private final DefaultProperties defaultProperties;
   private final TaskApi taskApi;
   private final FormApi formApi;
   private final VariablesApi variablesApi;
 
+  @Deprecated
   public CamundaTaskListClient(
       CamundaTaskListClientProperties properties, ZeebeClient zeebeClient) {
-    assert properties != null : "properties must not be null";
-    assert properties.getTaskListUrl() != null : "taskListUrl must not be null";
-    assert properties.getAuthentication() != null : "authentication must not be null";
-    assert !properties.isUseZeebeUserTasks() || zeebeClient != null
-        : "zeebeClient must not be null";
-    CloseableHttpClient httpClient =
-        HttpClients.custom()
-            .useSystemProperties()
-            .addRequestInterceptorFirst(
-                (request, entity, context) ->
-                    properties.getAuthentication().getTokenHeader().forEach(request::addHeader))
-            .build();
+    this(
+        new CamundaTasklistClientConfiguration(
+            Objects.requireNonNull(properties.getAuthentication(), "No authentication provided"),
+            toUrl(properties.getTaskListUrl()),
+            zeebeClient,
+            new DefaultProperties(
+                properties.isDefaultShouldReturnVariables(),
+                properties.isDefaultShouldLoadTruncatedVariables(),
+                properties.isUseZeebeUserTasks())));
+  }
+
+  public CamundaTaskListClient(CamundaTasklistClientConfiguration configuration) {
+    if (configuration.defaultProperties().useZeebeUserTasks()
+        && configuration.zeebeClient() == null) {
+      throw new IllegalStateException("ZeebeClient is required when using ZeebeUserTasks");
+    }
+    this.zeebeClient = configuration.zeebeClient();
+    this.defaultProperties = configuration.defaultProperties();
+    CloseableHttpClient httpClient = buildTasklistHttpClient(configuration.authentication());
     ApiClient apiClient = new ApiClient(httpClient);
-    apiClient.setBasePath(properties.getTaskListUrl());
+    apiClient.setBasePath(configuration.baseUrl().toExternalForm());
     this.taskApi = new TaskApi(apiClient);
     this.formApi = new FormApi(apiClient);
     this.variablesApi = new VariablesApi(apiClient);
-    this.properties = properties;
-    this.zeebeClient = zeebeClient;
   }
 
+  private static URL toUrl(String url) {
+    try {
+      return URI.create(url).toURL();
+    } catch (MalformedURLException e) {
+      throw new RuntimeException("Error while creating tasklist url", e);
+    }
+  }
+
+  private static CloseableHttpClient buildTasklistHttpClient(Authentication authentication) {
+    return HttpClients.custom()
+        .useSystemProperties()
+        .addRequestInterceptorFirst(
+            (request, entity, context) ->
+                authentication.getTokenHeader().forEach(request::addHeader))
+        .build();
+  }
+
+  @Deprecated
   public static CamundaTaskListClientBuilder builder() {
     return new CamundaTaskListClientBuilder();
   }
@@ -181,7 +210,7 @@ public class CamundaTaskListClient {
         new TaskSearch()
             .setAssignee(assigneeId)
             .setState(state)
-            .setWithVariables(properties.isDefaultShouldReturnVariables())
+            .setWithVariables(defaultProperties.returnVariables())
             .setPagination(pagination));
   }
 
@@ -257,7 +286,7 @@ public class CamundaTaskListClient {
   }
 
   public Task getTask(String taskId) throws TaskListException {
-    return getTask(taskId, properties.isDefaultShouldReturnVariables());
+    return getTask(taskId, defaultProperties.returnVariables());
   }
 
   public Task getTask(String taskId, boolean withVariables) throws TaskListException {
@@ -275,7 +304,7 @@ public class CamundaTaskListClient {
   }
 
   public List<Variable> getVariables(String taskId) throws TaskListException {
-    return getVariables(taskId, properties.isDefaultShouldLoadTruncatedVariables());
+    return getVariables(taskId, defaultProperties.loadTruncatedVariables());
   }
 
   public List<Variable> getVariables(String taskId, boolean loadTruncated)
@@ -319,8 +348,8 @@ public class CamundaTaskListClient {
   public Form getForm(String formId, String processDefinitionId, Long version)
       throws TaskListException {
     try {
-      if (formId.startsWith(CamundaTaskListClientProperties.CAMUNDA_FORMS_PREFIX)) {
-        formId = formId.substring(CamundaTaskListClientProperties.CAMUNDA_FORMS_PREFIX.length());
+      if (formId.startsWith(CamundaTasklistConstants.CAMUNDA_FORMS_PREFIX)) {
+        formId = formId.substring(CamundaTasklistConstants.CAMUNDA_FORMS_PREFIX.length());
       }
       return ConverterUtils.toForm(formApi.getForm(formId, processDefinitionId, version));
     } catch (ApiException e) {
@@ -387,7 +416,7 @@ public class CamundaTaskListClient {
 
   public TaskList getTasks(TaskSearch search) throws TaskListException {
     if (search.getWithVariables() == null) {
-      search.setWithVariables(properties.isDefaultShouldReturnVariables());
+      search.setWithVariables(defaultProperties.returnVariables());
     }
     Pagination pagination = search.getPagination();
     TaskSearchRequest request = ConverterUtils.toTaskSearchRequest(search);
@@ -485,7 +514,7 @@ public class CamundaTaskListClient {
   }
 
   public void loadVariables(List<Task> tasks) throws TaskListException {
-    loadVariables(tasks, properties.isDefaultShouldLoadTruncatedVariables());
+    loadVariables(tasks, defaultProperties.loadTruncatedVariables());
   }
 
   public void loadVariables(List<Task> tasks, boolean loadTruncated) throws TaskListException {

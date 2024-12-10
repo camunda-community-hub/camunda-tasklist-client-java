@@ -15,6 +15,10 @@
      <artifactId>camunda-tasklist-client-java</artifactId>
    </dependency>
    <dependency>
+     <groupId>io.camunda</groupId>
+     <artifactId>zeebe-client-java</artifactId>
+   </dependency>
+   <dependency>
      <groupId>org.junit.jupiter</groupId>
      <artifactId>junit-jupiter-api</artifactId>
      <scope>test</scope>
