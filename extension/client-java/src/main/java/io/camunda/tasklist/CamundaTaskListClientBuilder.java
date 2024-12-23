@@ -9,11 +9,10 @@ import io.camunda.tasklist.exception.TaskListException;
 import io.camunda.zeebe.client.ZeebeClient;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.time.Duration;
 
 @Deprecated
 public class CamundaTaskListClientBuilder {
-  private CamundaTaskListClientProperties properties = new CamundaTaskListClientProperties();
+  private final CamundaTaskListClientProperties properties = new CamundaTaskListClientProperties();
   private ZeebeClient zeebeClient;
 
   public CamundaTaskListClientBuilder authentication(Authentication authentication) {
@@ -47,19 +46,6 @@ public class CamundaTaskListClientBuilder {
     return this;
   }
 
-  @Deprecated(forRemoval = true)
-  public CamundaTaskListClientBuilder alwaysReconnect() {
-    return this;
-  }
-
-  /**
-   * Force cookie expiration after some time (default 3mn). Only usefull with SimpleAuthentication
-   */
-  @Deprecated(forRemoval = true)
-  public CamundaTaskListClientBuilder cookieExpiration(Duration cookieExpiration) {
-    return this;
-  }
-
   /**
    * Enable when using zeebe user tasks (only relevant for >8.5). Will require presence of a zeebe
    * client
@@ -69,8 +55,8 @@ public class CamundaTaskListClientBuilder {
     return this;
   }
 
-  public CamundaTaskListClient build() throws TaskListException {
-    return new CamundaTaskListClient(properties, zeebeClient);
+  public CamundaTaskListClientV1 build() throws TaskListException {
+    return new CamundaTaskListClientV1(properties, zeebeClient);
   }
 
   public CamundaTaskListClientBuilder selfManagedAuthentication(
