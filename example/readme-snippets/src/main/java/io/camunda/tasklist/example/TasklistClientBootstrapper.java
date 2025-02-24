@@ -2,6 +2,7 @@ package io.camunda.tasklist.example;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.tasklist.CamundaTaskListClient;
+import io.camunda.tasklist.CamundaTaskListClientV1;
 import io.camunda.tasklist.CamundaTasklistClientConfiguration;
 import io.camunda.tasklist.CamundaTasklistClientConfiguration.DefaultProperties;
 import io.camunda.tasklist.auth.JwtAuthentication;
@@ -46,7 +47,7 @@ public interface TasklistClientBootstrapper {
               tasklistUrl,
               zeebeClient,
               new DefaultProperties(returnVariables, loadTruncatedVariables, useZeebeUserTasks));
-      CamundaTaskListClient client = new CamundaTaskListClient(configuration);
+      CamundaTaskListClient client = new CamundaTaskListClientV1(configuration);
       return client;
     }
   }
@@ -81,7 +82,7 @@ public interface TasklistClientBootstrapper {
               tasklistUrl,
               zeebeClient,
               new DefaultProperties(returnVariables, loadTruncatedVariables, useZeebeUserTasks));
-      CamundaTaskListClient client = new CamundaTaskListClient(configuration);
+      CamundaTaskListClient client = new CamundaTaskListClientV1(configuration);
       return client;
     }
   }
@@ -114,7 +115,7 @@ public interface TasklistClientBootstrapper {
               tasklistUrl,
               zeebeClient,
               new DefaultProperties(returnVariables, loadTruncatedVariables, useZeebeUserTasks));
-      CamundaTaskListClient client = new CamundaTaskListClient(configuration);
+      CamundaTaskListClient client = new CamundaTaskListClientV1(configuration);
       return client;
     }
   }

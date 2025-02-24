@@ -16,9 +16,9 @@ public class Task {
 
   private String assignee;
 
-  private String creationDate;
+  private OffsetDateTime creationDate;
 
-  private String completionDate;
+  private OffsetDateTime completionDate;
 
   private TaskState taskState;
 
@@ -105,19 +105,19 @@ public class Task {
     this.assignee = assignee;
   }
 
-  public String getCreationDate() {
+  public OffsetDateTime getCreationDate() {
     return creationDate;
   }
 
-  public void setCreationDate(String creationDate) {
+  public void setCreationDate(OffsetDateTime creationDate) {
     this.creationDate = creationDate;
   }
 
-  public String getCompletionDate() {
+  public OffsetDateTime getCompletionDate() {
     return completionDate;
   }
 
-  public void setCompletionDate(String completionDate) {
+  public void setCompletionDate(OffsetDateTime completionDate) {
     this.completionDate = completionDate;
   }
 

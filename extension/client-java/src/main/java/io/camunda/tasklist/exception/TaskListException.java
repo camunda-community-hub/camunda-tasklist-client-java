@@ -1,6 +1,6 @@
 package io.camunda.tasklist.exception;
 
-public class TaskListException extends Exception {
+public class TaskListException extends RuntimeException {
 
   public TaskListException() {
     super();
