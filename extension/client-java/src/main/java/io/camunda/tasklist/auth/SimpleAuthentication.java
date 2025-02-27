@@ -73,10 +73,10 @@ public class SimpleAuthentication implements Authentication {
             "Unable to authenticate due to missing Set-Cookie TASKLIST-SESSION");
       }
       if (simpleAuthToken.csrfToken() == null) {
-        LOG.info("No CSRF token found");
+        LOG.debug("No CSRF token found");
       }
       if (simpleAuthToken.csrfCookie() == null) {
-        LOG.info("No CSRF cookie found");
+        LOG.debug("No CSRF cookie found");
       }
       return simpleAuthToken;
     } catch (Exception e) {
