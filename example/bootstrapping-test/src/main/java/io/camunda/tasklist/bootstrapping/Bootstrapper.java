@@ -1,6 +1,6 @@
 package io.camunda.tasklist.bootstrapping;
 
-import io.camunda.tasklist.CamundaTaskListClient;
+import io.camunda.tasklist.CamundaTaskListClientV1;
 import io.camunda.tasklist.CamundaTasklistClientConfiguration;
 import io.camunda.tasklist.CamundaTasklistClientConfiguration.DefaultProperties;
 import io.camunda.tasklist.auth.SimpleAuthentication;
@@ -10,9 +10,9 @@ import java.net.URI;
 import java.time.Duration;
 
 public class Bootstrapper {
-  public CamundaTaskListClient create() {
+  public CamundaTaskListClientV1 create() {
     try {
-      return new CamundaTaskListClient(
+      return new CamundaTaskListClientV1(
           new CamundaTasklistClientConfiguration(
               new SimpleAuthentication(
                   new SimpleCredential(

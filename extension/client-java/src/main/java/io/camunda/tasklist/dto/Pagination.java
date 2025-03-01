@@ -1,6 +1,5 @@
 package io.camunda.tasklist.dto;
 
-import io.camunda.tasklist.generated.model.TaskOrderBy;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -89,11 +88,11 @@ public class Pagination {
       return this;
     }
 
-    public Builder sortBy(TaskOrderBy.FieldEnum field, TaskOrderBy.OrderEnum order) {
+    public Builder sortBy(TaskOrderBy.Field field, TaskOrderBy.Order order) {
       if (sort == null) {
         sort = new ArrayList<>();
       }
-      sort.add(new TaskOrderBy().field(field).order(order));
+      sort.add(new TaskOrderBy(field, order));
       return this;
     }
 
@@ -103,6 +102,21 @@ public class Pagination {
           .setSearch(search)
           .setSearchType(searchType)
           .setSort(sort);
+    }
+  }
+
+  public record TaskOrderBy(Field field, Order order) {
+    public enum Field {
+      COMPLETION_TIME,
+      CREATION_TIME,
+      FOLLOW_UP_DATE,
+      DUE_DATE,
+      PRIORITY
+    }
+
+    public enum Order {
+      ASC,
+      DESC
     }
   }
 }
