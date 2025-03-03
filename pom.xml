@@ -14,7 +14,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.build.resourceEncoding>${project.build.sourceEncoding}</project.build.resourceEncoding>
-    <version.java>17</version.java>
+    <version.java>21</version.java>
     <java.version>${version.java}</java.version>
     <maven.compiler.release>${java.version}</maven.compiler.release>
 
