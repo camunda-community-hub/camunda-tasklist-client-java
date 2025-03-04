@@ -150,7 +150,7 @@ public class CamundaTaskListClient {
             .join();
       }
     } catch (TaskListException | ApiException e) {
-      throw new TaskListException("Error assigning task " + taskId, e);
+      throw new TaskListException("Error completing task " + taskId, e);
     }
   }
 
