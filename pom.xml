@@ -60,7 +60,7 @@
       <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>zeebe-bom</artifactId>
-        <version>8.6.12</version>
+        <version>8.7.0</version>
         <scope>import</scope>
         <type>pom</type>
       </dependency>
