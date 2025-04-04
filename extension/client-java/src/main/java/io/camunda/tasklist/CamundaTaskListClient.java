@@ -41,6 +41,7 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
@@ -104,11 +105,21 @@ public class CamundaTaskListClient {
   }
 
   public Task unclaim(String taskId) throws TaskListException {
-    try {
-      return ConverterUtils.toTask(taskApi.unassignTask(taskId), null);
-    } catch (TaskListException | ApiException e) {
-      throw new TaskListException("Error unclaiming task " + taskId, e);
-    }
+    Task task = getTask(taskId);
+    return executeForImplementation(
+        task,
+        () -> {
+          try {
+            return ConverterUtils.toTask(taskApi.unassignTask(taskId), null);
+          } catch (TaskListException | ApiException e) {
+            throw new RuntimeException("Error unclaiming task " + taskId, e);
+          }
+        },
+        () -> {
+          zeebeClient.newUserTaskUnassignCommand(Long.parseLong(taskId)).send().join();
+          task.setAssignee(null);
+          return task;
+        });
   }
 
   public Task claim(String taskId, String assignee) throws TaskListException {
@@ -117,40 +128,68 @@ public class CamundaTaskListClient {
 
   public Task claim(String taskId, String assignee, Boolean allowOverrideAssignment)
       throws TaskListException {
-    try {
-      return ConverterUtils.toTask(
-          taskApi.assignTask(
-              taskId,
-              new TaskAssignRequest()
-                  .assignee(assignee)
-                  .allowOverrideAssignment(allowOverrideAssignment)),
-          null);
-    } catch (TaskListException | ApiException e) {
-      throw new TaskListException("Error assigning task " + taskId, e);
-    }
+    Task task = getTask(taskId);
+    return executeForImplementation(
+        task,
+        () -> {
+          try {
+            return ConverterUtils.toTask(
+                taskApi.assignTask(
+                    taskId,
+                    new TaskAssignRequest()
+                        .assignee(assignee)
+                        .allowOverrideAssignment(allowOverrideAssignment)),
+                null);
+          } catch (TaskListException | ApiException e) {
+            throw new RuntimeException("Error while assigning task via tasklist api", e);
+          }
+        },
+        () -> {
+          zeebeClient
+              .newUserTaskAssignCommand(Long.parseLong(taskId))
+              .allowOverride(allowOverrideAssignment)
+              .assignee(assignee)
+              .send()
+              .join();
+          task.setAssignee(assignee);
+          return task;
+        });
   }
 
   public void completeTask(String taskId, Map<String, Object> variablesMap)
       throws TaskListException {
-    try {
-      Task task = getTask(taskId);
-      if (task.getImplementation() == null
-          || task.getImplementation().equals(Implementation.JOB_WORKER)) {
-        List<VariableInputDTO> variables = ConverterUtils.toVariableInput(variablesMap);
-        taskApi.completeTask(taskId, new TaskCompleteRequest().variables(variables));
-      } else if (task.getImplementation().equals(Implementation.ZEEBE_USER_TASK)) {
-        if (zeebeClient == null) {
-          throw new IllegalStateException(
-              "zeebeClient must not be null, please set useZeebeUserTasks to assert this on startup");
-        }
-        zeebeClient
-            .newUserTaskCompleteCommand(Long.parseLong(taskId))
-            .variables(variablesMap)
-            .send()
-            .join();
+    executeForImplementation(
+        getTask(taskId),
+        () -> {
+          try {
+            return taskApi.completeTask(
+                taskId,
+                new TaskCompleteRequest().variables(ConverterUtils.toVariableInput(variablesMap)));
+          } catch (ApiException | TaskListException e) {
+            throw new RuntimeException("Error while completing task via tasklist api", e);
+          }
+        },
+        () ->
+            zeebeClient
+                .newUserTaskCompleteCommand(Long.parseLong(taskId))
+                .variables(variablesMap)
+                .send()
+                .join());
+  }
+
+  private <T> T executeForImplementation(
+      Task task, Supplier<T> jobWorkerAction, Supplier<T> zeebeUserTaskAction) {
+    if (task.getImplementation() == null
+        || task.getImplementation().equals(Implementation.JOB_WORKER)) {
+      return jobWorkerAction.get();
+    } else if (task.getImplementation().equals(Implementation.ZEEBE_USER_TASK)) {
+      if (zeebeClient == null) {
+        throw new IllegalStateException(
+            "zeebeClient must not be null, please set useZeebeUserTasks to assert this on startup");
       }
-    } catch (TaskListException | ApiException e) {
-      throw new TaskListException("Error completing task " + taskId, e);
+      return zeebeUserTaskAction.get();
+    } else {
+      throw new IllegalArgumentException("Unsupported implementation: " + task.getImplementation());
     }
   }
 
@@ -390,28 +429,28 @@ public class CamundaTaskListClient {
   }
 
   private Pagination getSearchPagination(TaskList taskList, SearchType type) {
-    switch (type) {
-      case BEFORE:
-        return new Pagination.Builder()
-            .pageSize(taskList.getSearch().getPagination().getPageSize())
-            .before(taskList.first().getSortValues())
-            .build();
-      case BEFORE_OR_EQUAL:
-        return new Pagination.Builder()
-            .pageSize(taskList.getSearch().getPagination().getPageSize())
-            .beforeOrEqual(taskList.first().getSortValues())
-            .build();
-      case AFTER:
-        return new Pagination.Builder()
-            .pageSize(taskList.getSearch().getPagination().getPageSize())
-            .after(taskList.last().getSortValues())
-            .build();
-      default:
-        return new Pagination.Builder()
-            .pageSize(taskList.getSearch().getPagination().getPageSize())
-            .afterOrEqual(taskList.last().getSortValues())
-            .build();
-    }
+    return switch (type) {
+      case BEFORE ->
+          new Pagination.Builder()
+              .pageSize(taskList.getSearch().getPagination().getPageSize())
+              .before(taskList.first().getSortValues())
+              .build();
+      case BEFORE_OR_EQUAL ->
+          new Pagination.Builder()
+              .pageSize(taskList.getSearch().getPagination().getPageSize())
+              .beforeOrEqual(taskList.first().getSortValues())
+              .build();
+      case AFTER ->
+          new Pagination.Builder()
+              .pageSize(taskList.getSearch().getPagination().getPageSize())
+              .after(taskList.last().getSortValues())
+              .build();
+      default ->
+          new Pagination.Builder()
+              .pageSize(taskList.getSearch().getPagination().getPageSize())
+              .afterOrEqual(taskList.last().getSortValues())
+              .build();
+    };
   }
 
   public TaskList getTasks(TaskSearch search) throws TaskListException {
