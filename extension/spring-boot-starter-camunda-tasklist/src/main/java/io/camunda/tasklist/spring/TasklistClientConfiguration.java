@@ -9,7 +9,7 @@ import io.camunda.tasklist.auth.JwtAuthentication;
 import io.camunda.tasklist.auth.JwtCredential;
 import io.camunda.tasklist.auth.SimpleAuthentication;
 import io.camunda.tasklist.auth.SimpleCredential;
-import io.camunda.tasklist.auth.TokenResponseMapper.JacksonTokenResponseMapper;
+import io.camunda.tasklist.auth.TokenResponseHttpClientResponseHandler;
 import io.camunda.zeebe.client.ZeebeClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -76,7 +76,7 @@ public class TasklistClientConfiguration {
                 properties.audience(),
                 properties.authUrl(),
                 properties.scope()),
-            new JacksonTokenResponseMapper(objectMapper));
+            new TokenResponseHttpClientResponseHandler(objectMapper));
       }
       default -> throw new IllegalStateException("Unsupported profile: " + properties.profile());
     }

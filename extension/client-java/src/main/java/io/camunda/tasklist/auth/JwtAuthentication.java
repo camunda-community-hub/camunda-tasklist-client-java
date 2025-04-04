@@ -1,5 +1,6 @@
 package io.camunda.tasklist.auth;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.URISyntaxException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -10,18 +11,23 @@ import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.core5.http.NameValuePair;
-import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.message.BasicNameValuePair;
+import org.apache.hc.core5.util.Asserts;
 
 public class JwtAuthentication implements Authentication {
   private final JwtCredential jwtCredential;
-  private final TokenResponseMapper tokenResponseMapper;
+  private final TokenResponseHttpClientResponseHandler responseHandler;
   private String token;
   private LocalDateTime timeout;
 
-  public JwtAuthentication(JwtCredential jwtCredential, TokenResponseMapper tokenResponseMapper) {
+  public JwtAuthentication(
+      JwtCredential jwtCredential, TokenResponseHttpClientResponseHandler responseHandler) {
     this.jwtCredential = jwtCredential;
-    this.tokenResponseMapper = tokenResponseMapper;
+    this.responseHandler = responseHandler;
+  }
+
+  public JwtAuthentication(JwtCredential jwtCredential) {
+    this(jwtCredential, new TokenResponseHttpClientResponseHandler(new ObjectMapper()));
   }
 
   @Override
@@ -43,25 +49,12 @@ public class JwtAuthentication implements Authentication {
   private TokenResponse retrieveToken() {
     try (CloseableHttpClient client = HttpClients.createSystem()) {
       HttpPost request = buildRequest();
-      return client.execute(
-          request,
-          response -> {
-            try {
-              return tokenResponseMapper.readToken(EntityUtils.toString(response.getEntity()));
-            } catch (Exception e) {
-              var errorMessage =
-                  String.format(
-                      """
-              Token retrieval failed from: %s
-              Response code: %s
-              Audience: %s
-              """,
-                      jwtCredential.authUrl(), response.getCode(), jwtCredential.audience());
-              throw new RuntimeException(errorMessage, e);
-            }
-          });
+      TokenResponse tokenResponse = client.execute(request, responseHandler);
+      Asserts.notNull(tokenResponse.getAccessToken(), "access_token is null");
+      Asserts.notNull(tokenResponse.getExpiresIn(), "expires_in is null");
+      return tokenResponse;
     } catch (Exception e) {
-      throw new RuntimeException("Authenticating for Tasklist failed due to " + e.getMessage(), e);
+      throw new RuntimeException("Failed to retrieve token for Operate authentication", e);
     }
   }
 
