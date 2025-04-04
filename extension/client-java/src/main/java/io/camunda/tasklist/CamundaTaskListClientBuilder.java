@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.tasklist.auth.Authentication;
 import io.camunda.tasklist.auth.JwtAuthentication;
 import io.camunda.tasklist.auth.JwtCredential;
-import io.camunda.tasklist.auth.TokenResponseMapper.JacksonTokenResponseMapper;
+import io.camunda.tasklist.auth.TokenResponseHttpClientResponseHandler;
 import io.camunda.tasklist.exception.TaskListException;
 import io.camunda.zeebe.client.ZeebeClient;
 import java.net.MalformedURLException;
@@ -90,7 +90,7 @@ public class CamundaTaskListClientBuilder {
           new JwtAuthentication(
               new JwtCredential(
                   clientId, clientSecret, audience, URI.create(authUrl).toURL(), scope),
-              new JacksonTokenResponseMapper(new ObjectMapper())));
+              new TokenResponseHttpClientResponseHandler(new ObjectMapper())));
     } catch (MalformedURLException e) {
       throw new RuntimeException("Error while parsing keycloak url", e);
     }
@@ -107,7 +107,7 @@ public class CamundaTaskListClientBuilder {
                   "tasklist.camunda.io",
                   URI.create("https://login.cloud.camunda.io/oauth/token").toURL(),
                   null),
-              new JacksonTokenResponseMapper(new ObjectMapper())));
+              new TokenResponseHttpClientResponseHandler(new ObjectMapper())));
     } catch (MalformedURLException e) {
       throw new RuntimeException("Error while parsing token url", e);
     }
