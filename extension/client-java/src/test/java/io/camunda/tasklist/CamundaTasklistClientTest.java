@@ -13,7 +13,7 @@ import io.camunda.tasklist.auth.JwtAuthentication;
 import io.camunda.tasklist.auth.JwtCredential;
 import io.camunda.tasklist.auth.SimpleAuthentication;
 import io.camunda.tasklist.auth.SimpleCredential;
-import io.camunda.tasklist.auth.TokenResponseMapper.JacksonTokenResponseMapper;
+import io.camunda.tasklist.auth.TokenResponseHttpClientResponseHandler;
 import io.camunda.tasklist.dto.TaskList;
 import io.camunda.tasklist.dto.TaskSearch;
 import io.camunda.tasklist.exception.TaskListException;
@@ -110,7 +110,7 @@ public class CamundaTasklistClientTest {
             new JwtAuthentication(
                 new JwtCredential(
                     "abc", "abc", "tasklist-api", URI.create(BASE_URL + "/token").toURL(), null),
-                new JacksonTokenResponseMapper(new ObjectMapper())),
+                new TokenResponseHttpClientResponseHandler(new ObjectMapper())),
             baseUrl(),
             null,
             new DefaultProperties(false, false, false));
