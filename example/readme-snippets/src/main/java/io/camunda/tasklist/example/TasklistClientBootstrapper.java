@@ -8,8 +8,7 @@ import io.camunda.tasklist.auth.JwtAuthentication;
 import io.camunda.tasklist.auth.JwtCredential;
 import io.camunda.tasklist.auth.SimpleAuthentication;
 import io.camunda.tasklist.auth.SimpleCredential;
-import io.camunda.tasklist.auth.TokenResponseMapper;
-import io.camunda.tasklist.auth.TokenResponseMapper.JacksonTokenResponseMapper;
+import io.camunda.tasklist.auth.TokenResponseHttpClientResponseHandler;
 import io.camunda.zeebe.client.ZeebeClient;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -73,8 +72,9 @@ public interface TasklistClientBootstrapper {
       JwtCredential credentials =
           new JwtCredential(clientId, clientSecret, audience, authUrl, scope);
       ObjectMapper objectMapper = new ObjectMapper();
-      TokenResponseMapper tokenResponseMapper = new JacksonTokenResponseMapper(objectMapper);
-      JwtAuthentication authentication = new JwtAuthentication(credentials, tokenResponseMapper);
+      TokenResponseHttpClientResponseHandler clientResponseHandler =
+          new TokenResponseHttpClientResponseHandler(objectMapper);
+      JwtAuthentication authentication = new JwtAuthentication(credentials, clientResponseHandler);
       CamundaTasklistClientConfiguration configuration =
           new CamundaTasklistClientConfiguration(
               authentication,
@@ -106,8 +106,9 @@ public interface TasklistClientBootstrapper {
       JwtCredential credentials =
           new JwtCredential(clientId, clientSecret, "tasklist.camunda.io", authUrl, null);
       ObjectMapper objectMapper = new ObjectMapper();
-      TokenResponseMapper tokenResponseMapper = new JacksonTokenResponseMapper(objectMapper);
-      JwtAuthentication authentication = new JwtAuthentication(credentials, tokenResponseMapper);
+      TokenResponseHttpClientResponseHandler clientResponseHandler =
+          new TokenResponseHttpClientResponseHandler(objectMapper);
+      JwtAuthentication authentication = new JwtAuthentication(credentials, clientResponseHandler);
       CamundaTasklistClientConfiguration configuration =
           new CamundaTasklistClientConfiguration(
               authentication,
