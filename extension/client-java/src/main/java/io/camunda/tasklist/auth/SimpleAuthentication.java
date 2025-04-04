@@ -19,7 +19,9 @@ import org.slf4j.LoggerFactory;
 
 public class SimpleAuthentication implements Authentication {
   private static final Set<String> CSRF_HEADER_CANDIDATES =
-      Set.of("X-CSRF-TOKEN", "TASKLIST-X-CSRF-TOKEN");
+      Set.of("X-CSRF-TOKEN", "TASKLIST-X-CSRF-TOKEN", "OPERATE-X-CSRF-TOKEN");
+  private static final Set<String> SESSION_COOKIE_CANDIDATES =
+      Set.of("TASKLIST-SESSION", "OPERATE-SESSION");
   private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private final SimpleCredential simpleCredential;
@@ -50,10 +52,11 @@ public class SimpleAuthentication implements Authentication {
                 Header[] cookieHeaders = response.getHeaders("Set-Cookie");
                 String sessionCookie = null;
                 String csrfCookie = null;
-                String sessionCookieName = "TASKLIST-SESSION";
                 for (Header cookieHeader : cookieHeaders) {
-                  if (cookieHeader.getValue().startsWith(sessionCookieName)) {
-                    sessionCookie = cookieHeader.getValue();
+                  for (String sessionCookieName : SESSION_COOKIE_CANDIDATES) {
+                    if (cookieHeader.getValue().startsWith(sessionCookieName)) {
+                      sessionCookie = cookieHeader.getValue();
+                    }
                   }
                   for (String candidate : CSRF_HEADER_CANDIDATES) {
                     if (cookieHeader.getValue().startsWith(candidate)) {
@@ -70,7 +73,7 @@ public class SimpleAuthentication implements Authentication {
               });
       if (simpleAuthToken.sessionCookie() == null) {
         throw new RuntimeException(
-            "Unable to authenticate due to missing Set-Cookie TASKLIST-SESSION");
+            "Unable to authenticate due to missing Set-Cookie TASKLIST-SESSION or OPERATE-SESSION");
       }
       if (simpleAuthToken.csrfToken() == null) {
         LOG.debug("No CSRF token found");
