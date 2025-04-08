@@ -80,7 +80,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>${project.basedir}/tasklist-8.6.0.json</inputSpec>
+              <inputSpec>${project.basedir}/tasklist-8.7.0.json</inputSpec>
               <generatorName>java</generatorName>
               <skipValidateSpec>true</skipValidateSpec>
               <configOptions>
