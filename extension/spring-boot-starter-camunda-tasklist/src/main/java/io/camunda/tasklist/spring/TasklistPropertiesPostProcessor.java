@@ -22,7 +22,6 @@ public class TasklistPropertiesPostProcessor implements EnvironmentPostProcessor
         return;
       }
       loadProperties("tasklist-profiles/" + determinePropertiesFile(profile), environment);
-      loadProperties("tasklist-profiles/defaults.yaml", environment);
     } catch (Exception e) {
       throw new IllegalStateException("Error while post processing camunda properties", e);
     }
