@@ -3,6 +3,7 @@ package io.camunda.tasklist.spring;
 import java.net.URL;
 import java.time.Duration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
 @ConfigurationProperties("tasklist.client")
 public record TasklistClientConfigurationProperties(
@@ -10,7 +11,7 @@ public record TasklistClientConfigurationProperties(
     Profile profile,
     Boolean enabled,
     URL baseUrl,
-    ClientDefaults defaults,
+    @DefaultValue ClientDefaults defaults,
     // simple auth properties
     String username,
     String password,
@@ -31,5 +32,7 @@ public record TasklistClientConfigurationProperties(
   }
 
   public record ClientDefaults(
-      boolean returnVariables, boolean loadTruncatedVariables, boolean useZeebeUserTasks) {}
+      @DefaultValue("true") boolean returnVariables,
+      @DefaultValue("true") boolean loadTruncatedVariables,
+      @DefaultValue("true") boolean useZeebeUserTasks) {}
 }
