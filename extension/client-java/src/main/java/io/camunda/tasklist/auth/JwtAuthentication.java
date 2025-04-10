@@ -54,7 +54,7 @@ public class JwtAuthentication implements Authentication {
       Asserts.notNull(tokenResponse.getExpiresIn(), "expires_in is null");
       return tokenResponse;
     } catch (Exception e) {
-      throw new RuntimeException("Failed to retrieve token for Operate authentication", e);
+      throw new RuntimeException("Failed to retrieve token for Tasklist authentication", e);
     }
   }
 
