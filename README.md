@@ -219,7 +219,7 @@ CamundaTaskListClient client = new CamundaTaskListClient(configuration);
 ## Make some queries
 ```java
 //get tasks from a process instance (TaskSearch can take many more parameters)
-TaskSearch ts = new TaskSearch().setProcessInstanceId("2251799818839086");
+TaskSearch ts = new TaskSearch().setProcessInstanceKey("2251799818839086");
 TaskList tasksFromInstance = client.getTasks(ts);
 
 //get tasks from process variables
