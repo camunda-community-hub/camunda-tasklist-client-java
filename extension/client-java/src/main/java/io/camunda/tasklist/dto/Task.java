@@ -46,6 +46,8 @@ public class Task {
 
   private String tenantId;
 
+  private Integer priority;
+
   private List<Variable> variables;
   private Implementation implementation;
 
@@ -239,6 +241,14 @@ public class Task {
 
   public void setTenantId(String tenantId) {
     this.tenantId = tenantId;
+  }
+
+  public Integer getPriority() {
+    return priority;
+  }
+
+  public void setPriority(Integer priority) {
+    this.priority = priority;
   }
 
   public List<Variable> getVariables() {
