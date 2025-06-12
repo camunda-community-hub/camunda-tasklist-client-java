@@ -1,14 +1,20 @@
 package io.camunda.tasklist;
 
+import io.camunda.client.CamundaClient;
 import io.camunda.tasklist.auth.Authentication;
-import io.camunda.zeebe.client.ZeebeClient;
 import java.net.URL;
 
 public record CamundaTasklistClientConfiguration(
+    ApiVersion apiVersion,
     Authentication authentication,
     URL baseUrl,
-    ZeebeClient zeebeClient,
+    CamundaClient camundaClient,
     DefaultProperties defaultProperties) {
   public record DefaultProperties(
-      boolean returnVariables, boolean loadTruncatedVariables, boolean useZeebeUserTasks) {}
+      boolean returnVariables, boolean loadTruncatedVariables, boolean useCamundaUserTasks) {}
+
+  public enum ApiVersion {
+    v1,
+    v2
+  }
 }

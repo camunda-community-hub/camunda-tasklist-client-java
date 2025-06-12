@@ -2,6 +2,7 @@ package io.camunda.tasklist.bootstrapping;
 
 import io.camunda.tasklist.CamundaTaskListClient;
 import io.camunda.tasklist.CamundaTasklistClientConfiguration;
+import io.camunda.tasklist.CamundaTasklistClientConfiguration.ApiVersion;
 import io.camunda.tasklist.CamundaTasklistClientConfiguration.DefaultProperties;
 import io.camunda.tasklist.auth.SimpleAuthentication;
 import io.camunda.tasklist.auth.SimpleCredential;
@@ -14,6 +15,7 @@ public class Bootstrapper {
     try {
       return new CamundaTaskListClient(
           new CamundaTasklistClientConfiguration(
+              ApiVersion.v1,
               new SimpleAuthentication(
                   new SimpleCredential(
                       "demo",

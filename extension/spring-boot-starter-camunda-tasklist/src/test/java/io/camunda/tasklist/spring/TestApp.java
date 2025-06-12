@@ -1,6 +1,6 @@
 package io.camunda.tasklist.spring;
 
-import io.camunda.zeebe.client.ZeebeClient;
+import io.camunda.client.CamundaClient;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -12,7 +12,7 @@ public class TestApp {
   }
 
   @Bean
-  public ZeebeClient zeebeClient() {
-    return ZeebeClient.newClient();
+  public CamundaClient camundaClient() {
+    return CamundaClient.newClient();
   }
 }
