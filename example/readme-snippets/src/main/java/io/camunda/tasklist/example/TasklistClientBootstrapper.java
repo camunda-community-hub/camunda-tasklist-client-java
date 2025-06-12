@@ -1,23 +1,24 @@
 package io.camunda.tasklist.example;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.camunda.client.CamundaClient;
 import io.camunda.tasklist.CamundaTaskListClient;
 import io.camunda.tasklist.CamundaTasklistClientConfiguration;
+import io.camunda.tasklist.CamundaTasklistClientConfiguration.ApiVersion;
 import io.camunda.tasklist.CamundaTasklistClientConfiguration.DefaultProperties;
 import io.camunda.tasklist.auth.JwtAuthentication;
 import io.camunda.tasklist.auth.JwtCredential;
 import io.camunda.tasklist.auth.SimpleAuthentication;
 import io.camunda.tasklist.auth.SimpleCredential;
 import io.camunda.tasklist.auth.TokenResponseHttpClientResponseHandler;
-import io.camunda.zeebe.client.ZeebeClient;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.time.Duration;
 
 public interface TasklistClientBootstrapper {
-  static ZeebeClient zeebeClient() {
-    return ZeebeClient.newClientBuilder().build();
+  static CamundaClient camundaClient() {
+    return CamundaClient.newClientBuilder().build();
   }
 
   CamundaTaskListClient createTasklistClient() throws MalformedURLException;
@@ -27,6 +28,7 @@ public interface TasklistClientBootstrapper {
     @Override
     public CamundaTaskListClient createTasklistClient() throws MalformedURLException {
       // properties you need to provide
+      ApiVersion apiVersion = ApiVersion.v1;
       String username = "demo";
       String password = "demo";
       URL tasklistUrl = URI.create("http://localhost:8082").toURL();
@@ -34,16 +36,17 @@ public interface TasklistClientBootstrapper {
       boolean loadTruncatedVariables = false;
       boolean useZeebeUserTasks = true;
       // if you are using zeebe user tasks, you require a zeebe client as well
-      ZeebeClient zeebeClient = zeebeClient();
+      CamundaClient camundaClient = camundaClient();
       // bootstrapping
       SimpleCredential credentials =
           new SimpleCredential(username, password, tasklistUrl, Duration.ofMinutes(10));
       SimpleAuthentication authentication = new SimpleAuthentication(credentials);
       CamundaTasklistClientConfiguration configuration =
           new CamundaTasklistClientConfiguration(
+              apiVersion,
               authentication,
               tasklistUrl,
-              zeebeClient,
+              camundaClient,
               new DefaultProperties(returnVariables, loadTruncatedVariables, useZeebeUserTasks));
       CamundaTaskListClient client = new CamundaTaskListClient(configuration);
       return client;
@@ -54,6 +57,7 @@ public interface TasklistClientBootstrapper {
     @Override
     public CamundaTaskListClient createTasklistClient() throws MalformedURLException {
       // properties you need to provide
+      ApiVersion apiVersion = ApiVersion.v1;
       String clientId = "";
       String clientSecret = "";
       String audience = "tasklist-api";
@@ -67,7 +71,7 @@ public interface TasklistClientBootstrapper {
       boolean loadTruncatedVariables = false;
       boolean useZeebeUserTasks = true;
       // if you are using zeebe user tasks, you require a zeebe client as well
-      ZeebeClient zeebeClient = zeebeClient();
+      CamundaClient camundaClient = camundaClient();
       // bootstrapping
       JwtCredential credentials =
           new JwtCredential(clientId, clientSecret, audience, authUrl, scope);
@@ -77,9 +81,10 @@ public interface TasklistClientBootstrapper {
       JwtAuthentication authentication = new JwtAuthentication(credentials, clientResponseHandler);
       CamundaTasklistClientConfiguration configuration =
           new CamundaTasklistClientConfiguration(
+              apiVersion,
               authentication,
               tasklistUrl,
-              zeebeClient,
+              camundaClient,
               new DefaultProperties(returnVariables, loadTruncatedVariables, useZeebeUserTasks));
       CamundaTaskListClient client = new CamundaTaskListClient(configuration);
       return client;
@@ -90,6 +95,7 @@ public interface TasklistClientBootstrapper {
     @Override
     public CamundaTaskListClient createTasklistClient() throws MalformedURLException {
       // properties you need to provide
+      ApiVersion apiVersion = ApiVersion.v1;
       String region = "";
       String clusterId = "";
       String clientId = "";
@@ -98,7 +104,7 @@ public interface TasklistClientBootstrapper {
       boolean loadTruncatedVariables = false;
       boolean useZeebeUserTasks = true;
       // if you are using zeebe user tasks, you require a zeebe client as well
-      ZeebeClient zeebeClient = zeebeClient();
+      CamundaClient camundaClient = camundaClient();
       // bootstrapping
       URL tasklistUrl =
           URI.create("https://" + region + ".tasklist.camunda.io/" + clusterId).toURL();
@@ -111,9 +117,10 @@ public interface TasklistClientBootstrapper {
       JwtAuthentication authentication = new JwtAuthentication(credentials, clientResponseHandler);
       CamundaTasklistClientConfiguration configuration =
           new CamundaTasklistClientConfiguration(
+              apiVersion,
               authentication,
               tasklistUrl,
-              zeebeClient,
+              camundaClient,
               new DefaultProperties(returnVariables, loadTruncatedVariables, useZeebeUserTasks));
       CamundaTaskListClient client = new CamundaTaskListClient(configuration);
       return client;

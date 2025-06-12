@@ -1,33 +1,58 @@
 package io.camunda.tasklist;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.camunda.client.CamundaClient;
+import io.camunda.tasklist.CamundaTasklistClientConfiguration.ApiVersion;
+import io.camunda.tasklist.CamundaTasklistClientConfiguration.DefaultProperties;
 import io.camunda.tasklist.auth.Authentication;
 import io.camunda.tasklist.auth.JwtAuthentication;
 import io.camunda.tasklist.auth.JwtCredential;
 import io.camunda.tasklist.auth.TokenResponseHttpClientResponseHandler;
 import io.camunda.tasklist.exception.TaskListException;
-import io.camunda.zeebe.client.ZeebeClient;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 import java.time.Duration;
 
 @Deprecated
 public class CamundaTaskListClientBuilder {
-  private CamundaTaskListClientProperties properties = new CamundaTaskListClientProperties();
-  private ZeebeClient zeebeClient;
+  private Authentication authentication;
+  private URL tasklistUrl;
+  private CamundaClient camundaClient;
+  private ApiVersion apiVersion = ApiVersion.v2;
+  private DefaultProperties defaultProperties = new DefaultProperties(false, false, false);
 
   public CamundaTaskListClientBuilder authentication(Authentication authentication) {
-    properties.setAuthentication(authentication);
+    if (authentication != null) {
+      this.authentication = authentication;
+    }
     return this;
   }
 
+  @Deprecated
   public CamundaTaskListClientBuilder taskListUrl(String taskListUrl) {
-    properties.setTaskListUrl(formatUrl(taskListUrl));
+    try {
+      return taskListUrl(URI.create(taskListUrl).toURL());
+    } catch (MalformedURLException e) {
+      throw new RuntimeException("Error while creating url from '" + taskListUrl + "'", e);
+    }
+  }
+
+  public CamundaTaskListClientBuilder taskListUrl(URL taskListUrl) {
+    if (taskListUrl != null) {
+      this.tasklistUrl = taskListUrl;
+    }
     return this;
   }
 
-  public CamundaTaskListClientBuilder zeebeClient(ZeebeClient zeebeClient) {
-    this.zeebeClient = zeebeClient;
+  @Deprecated(forRemoval = true)
+  public CamundaTaskListClientBuilder zeebeClient(CamundaClient camundaClient) {
+    return camundaClient(camundaClient);
+  }
+
+  public CamundaTaskListClientBuilder camundaClient(CamundaClient camundaClient) {
+    useCamundaUserTasks();
+    this.camundaClient = camundaClient;
     return this;
   }
 
@@ -38,12 +63,18 @@ public class CamundaTaskListClientBuilder {
    * @return the builder
    */
   public CamundaTaskListClientBuilder shouldReturnVariables() {
-    properties.setDefaultShouldReturnVariables(true);
+    this.defaultProperties =
+        new DefaultProperties(
+            true,
+            defaultProperties.loadTruncatedVariables(),
+            defaultProperties.useCamundaUserTasks());
     return this;
   }
 
   public CamundaTaskListClientBuilder shouldLoadTruncatedVariables() {
-    properties.setDefaultShouldLoadTruncatedVariables(true);
+    this.defaultProperties =
+        new DefaultProperties(
+            defaultProperties.returnVariables(), true, defaultProperties.useCamundaUserTasks());
     return this;
   }
 
@@ -64,13 +95,34 @@ public class CamundaTaskListClientBuilder {
    * Enable when using zeebe user tasks (only relevant for >8.5). Will require presence of a zeebe
    * client
    */
+  @Deprecated(forRemoval = true)
   public CamundaTaskListClientBuilder useZeebeUserTasks() {
-    properties.setUseZeebeUserTasks(true);
+    return useCamundaUserTasks();
+  }
+
+  /**
+   * Enable when using zeebe user tasks (only relevant for >8.5). Will require presence of a zeebe
+   * client
+   */
+  public CamundaTaskListClientBuilder useCamundaUserTasks() {
+    this.defaultProperties =
+        new DefaultProperties(
+            defaultProperties.returnVariables(), defaultProperties.loadTruncatedVariables(), true);
+    return this;
+  }
+
+  public CamundaTaskListClientBuilder apiVersion(ApiVersion apiVersion) {
+    if (apiVersion != null) {
+      this.apiVersion = apiVersion;
+    }
     return this;
   }
 
   public CamundaTaskListClient build() throws TaskListException {
-    return new CamundaTaskListClient(properties, zeebeClient);
+    CamundaTasklistClientConfiguration configuration =
+        new CamundaTasklistClientConfiguration(
+            apiVersion, authentication, tasklistUrl, camundaClient, defaultProperties);
+    return new CamundaTaskListClient(configuration);
   }
 
   public CamundaTaskListClientBuilder selfManagedAuthentication(
@@ -86,11 +138,11 @@ public class CamundaTaskListClientBuilder {
   public CamundaTaskListClientBuilder selfManagedAuthentication(
       String clientId, String clientSecret, String audience, String scope, String authUrl) {
     try {
-      properties.setAuthentication(
+      authentication =
           new JwtAuthentication(
               new JwtCredential(
                   clientId, clientSecret, audience, URI.create(authUrl).toURL(), scope),
-              new TokenResponseHttpClientResponseHandler(new ObjectMapper())));
+              new TokenResponseHttpClientResponseHandler(new ObjectMapper()));
     } catch (MalformedURLException e) {
       throw new RuntimeException("Error while parsing keycloak url", e);
     }
@@ -99,7 +151,7 @@ public class CamundaTaskListClientBuilder {
 
   public CamundaTaskListClientBuilder saaSAuthentication(String clientId, String clientSecret) {
     try {
-      properties.setAuthentication(
+      authentication =
           new JwtAuthentication(
               new JwtCredential(
                   clientId,
@@ -107,7 +159,7 @@ public class CamundaTaskListClientBuilder {
                   "tasklist.camunda.io",
                   URI.create("https://login.cloud.camunda.io/oauth/token").toURL(),
                   null),
-              new TokenResponseHttpClientResponseHandler(new ObjectMapper())));
+              new TokenResponseHttpClientResponseHandler(new ObjectMapper()));
     } catch (MalformedURLException e) {
       throw new RuntimeException("Error while parsing token url", e);
     }

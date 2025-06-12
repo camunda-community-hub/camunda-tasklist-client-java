@@ -6,22 +6,21 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import io.camunda.tasklist.TasklistClient;
+import io.camunda.tasklist.TasklistClient.RequestVariable;
+import io.camunda.tasklist.TasklistClient.TaskFromSearch;
+import io.camunda.tasklist.TasklistClient.VariableFromSearch;
 import io.camunda.tasklist.dto.Form;
 import io.camunda.tasklist.dto.Task;
 import io.camunda.tasklist.dto.TaskSearch;
-import io.camunda.tasklist.dto.TaskState;
 import io.camunda.tasklist.dto.Variable;
 import io.camunda.tasklist.dto.VariableType;
 import io.camunda.tasklist.exception.TaskListException;
-import io.camunda.tasklist.generated.model.FormResponse;
 import io.camunda.tasklist.generated.model.TaskSearchRequest;
-import io.camunda.tasklist.generated.model.TaskSearchResponse;
-import io.camunda.tasklist.generated.model.VariableInputDTO;
-import io.camunda.tasklist.generated.model.VariableResponse;
-import io.camunda.tasklist.generated.model.VariableSearchResponse;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 public class ConverterUtils {
 
@@ -29,12 +28,8 @@ public class ConverterUtils {
 
   private ConverterUtils() {}
 
-  public static TaskSearchRequest.StateEnum toSearchState(TaskState value) {
-    return value == null ? null : TaskSearchRequest.StateEnum.fromValue(value.getRawValue());
-  }
-
-  public static Variable toVariable(VariableResponse var) throws JsonProcessingException {
-    return buildVariable(var.getId(), var.getName(), var.getValue());
+  public static Variable toVariable(TasklistClient.Variable var) throws JsonProcessingException {
+    return buildVariable(var.id(), var.name(), var.value());
   }
 
   private static Variable buildVariable(String id, String name, String value)
@@ -69,12 +64,11 @@ public class ConverterUtils {
     return result;
   }
 
-  public static Variable improveVariable(VariableSearchResponse var)
-      throws JsonProcessingException {
-    return buildVariable(var.getId(), var.getName(), var.getValue());
+  public static Variable improveVariable(VariableFromSearch var) throws JsonProcessingException {
+    return buildVariable(var.id(), var.name(), var.value());
   }
 
-  public static List<Variable> toVariables(List<VariableSearchResponse> variables)
+  public static List<Variable> toVariables(List<VariableFromSearch> variables)
       throws TaskListException {
     try {
       List<Variable> result = null;
@@ -82,7 +76,7 @@ public class ConverterUtils {
       if (variables != null) {
         result = new ArrayList<>();
 
-        for (VariableSearchResponse var : variables) {
+        for (VariableFromSearch var : variables) {
           result.add(improveVariable(var));
         }
       }
@@ -112,24 +106,23 @@ public class ConverterUtils {
     }
   }
 
-  public static List<Task> toTasks(List<TaskSearchResponse> tasks) throws TaskListException {
+  public static List<Task> toTasks(List<TaskFromSearch> tasks) throws TaskListException {
     List<Task> result = new ArrayList<>();
-    for (TaskSearchResponse task : tasks) {
+    for (TaskFromSearch task : tasks) {
       result.add(toTask(task, null));
     }
     return result;
   }
 
-  public static List<VariableInputDTO> toVariableInput(Map<String, Object> variablesMap)
+  public static List<RequestVariable> toVariableInput(Map<String, Object> variablesMap)
       throws TaskListException {
     try {
-      List<VariableInputDTO> variables = new ArrayList<>();
+      List<RequestVariable> variables = new ArrayList<>();
       for (Map.Entry<String, Object> entry : variablesMap.entrySet()) {
         if (entry.getValue() != null) {
           variables.add(
-              new VariableInputDTO()
-                  .name(entry.getKey())
-                  .value(getObjectMapper().writeValueAsString(entry.getValue())));
+              new RequestVariable(
+                  entry.getKey(), getObjectMapper().writeValueAsString(entry.getValue())));
         }
       }
       return variables;
@@ -138,10 +131,9 @@ public class ConverterUtils {
     }
   }
 
-  public static Form toForm(FormResponse apolloTask) throws TaskListException {
+  public static Form toForm(TasklistClient.Form form) throws TaskListException {
     try {
-      return getObjectMapper()
-          .readValue(getObjectMapper().writeValueAsString(apolloTask), Form.class);
+      return getObjectMapper().readValue(getObjectMapper().writeValueAsString(form), Form.class);
     } catch (JsonProcessingException e) {
       throw new TaskListException(e);
     }
@@ -164,5 +156,12 @@ public class ConverterUtils {
       objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
     return objectMapper;
+  }
+
+  public static <S, T> List<T> mapIfPresent(List<S> list, Function<S, T> mapper) {
+    if (list == null) {
+      return null;
+    }
+    return list.stream().map(mapper).toList();
   }
 }

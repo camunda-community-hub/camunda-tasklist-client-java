@@ -7,6 +7,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
+import io.camunda.tasklist.CamundaTasklistClientConfiguration.ApiVersion;
 import io.camunda.tasklist.CamundaTasklistClientConfiguration.DefaultProperties;
 import io.camunda.tasklist.auth.Authentication;
 import io.camunda.tasklist.auth.JwtAuthentication;
@@ -45,17 +46,26 @@ public class CamundaTasklistClientTest {
   public void shouldThrowIfZeebeClientNullAndUseZeebeUserTasks() {
     CamundaTasklistClientConfiguration configuration =
         new CamundaTasklistClientConfiguration(
-            new MockAuthentication(), baseUrl(), null, new DefaultProperties(false, false, true));
+            ApiVersion.v1,
+            new MockAuthentication(),
+            baseUrl(),
+            null,
+            new DefaultProperties(false, false, true));
     IllegalStateException assertionError =
         assertThrows(IllegalStateException.class, () -> new CamundaTaskListClient(configuration));
-    assertEquals("ZeebeClient is required when using ZeebeUserTasks", assertionError.getMessage());
+    assertEquals(
+        "CamundaClient is required when using Camunda user tasks", assertionError.getMessage());
   }
 
   @Test
   public void shouldNotThrowIfZeebeClientNullAndNotUseZeebeUserTasks() {
     CamundaTasklistClientConfiguration configuration =
         new CamundaTasklistClientConfiguration(
-            new MockAuthentication(), baseUrl(), null, new DefaultProperties(false, false, false));
+            ApiVersion.v1,
+            new MockAuthentication(),
+            baseUrl(),
+            null,
+            new DefaultProperties(false, false, false));
     CamundaTaskListClient client = new CamundaTaskListClient(configuration);
     assertNotNull(client);
   }
@@ -74,6 +84,7 @@ public class CamundaTasklistClientTest {
     stubFor(post("/v1/tasks/search").willReturn(ok().withBody("[]")));
     CamundaTasklistClientConfiguration configuration =
         new CamundaTasklistClientConfiguration(
+            ApiVersion.v1,
             new SimpleAuthentication(
                 new SimpleCredential(
                     "demo", "demo", URI.create(BASE_URL).toURL(), Duration.ofMinutes(10))),
@@ -107,6 +118,7 @@ public class CamundaTasklistClientTest {
             .willReturn(ok().withBody("[]")));
     CamundaTasklistClientConfiguration configuration =
         new CamundaTasklistClientConfiguration(
+            ApiVersion.v1,
             new JwtAuthentication(
                 new JwtCredential(
                     "abc", "abc", "tasklist-api", URI.create(BASE_URL + "/token").toURL(), null),
