@@ -156,7 +156,7 @@
           "Task"
         ],
         "summary": "Save draft variables",
-        "description": "This operation performs several actions: <br/><ol><li>Validates the task and draft variables.</li><li>Deletes existing draft variables for the task.</li><li>Checks for new draft variables. If a new variable's `name` matches an existing one but the `value` differs, it is saved. In case of duplicate draft variable names, the last variable's value is kept.</li></ol><b>NOTE:</b><ul><li>Invoking this method successively will overwrite all existing draft variables. Only draft variables submitted in the most recent request body will be persisted. Therefore, ensure you include all necessary variables in each request to maintain the intended variable set.</li><li>The UI does not currently display the values for draft variables that are created via this endpoint.</li></ul>",
+        "description": "This operation performs several actions: \u003Cbr/\u003E\u003Col\u003E\u003Cli\u003EValidates the task and draft variables.\u003C/li\u003E\u003Cli\u003EDeletes existing draft variables for the task.\u003C/li\u003E\u003Cli\u003EChecks for new draft variables. If a new variable's `name` matches an existing one but the `value` differs, it is saved. In case of duplicate draft variable names, the last variable's value is kept.\u003C/li\u003E\u003C/ol\u003E\u003Cb\u003ENOTE:\u003C/b\u003E\u003Cul\u003E\u003Cli\u003EInvoking this method successively will overwrite all existing draft variables. Only draft variables submitted in the most recent request body will be persisted. Therefore, ensure you include all necessary variables in each request to maintain the intended variable set.\u003C/li\u003E\u003Cli\u003EThe UI does not currently display the values for draft variables that are created via this endpoint.\u003C/li\u003E\u003C/ul\u003E",
         "operationId": "saveDraftTaskVariables",
         "parameters": [
           {
@@ -183,11 +183,12 @@
           "204": {
             "description": "On success returned.",
             "content": {
-              "*/*": {}
+              "*/*": {
+              }
             }
           },
           "400": {
-            "description": "An error is returned when the task is not active (not in the `CREATED` state).<br/>An error is returned if the task was not claimed (assigned) before, except the case when JWT authentication token used.<br/>An error is returned if the task is not assigned to the current user, except the case when JWT authentication token used.",
+            "description": "An error is returned when the task is not active (not in the `CREATED` state).\u003Cbr/\u003EAn error is returned if the task was not claimed (assigned) before, except the case when JWT authentication token used.\u003Cbr/\u003EAn error is returned if the task is not assigned to the current user, except the case when JWT authentication token used.",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -225,7 +226,7 @@
           "Task"
         ],
         "summary": "Search task variables",
-        "description": "This method returns a list of task variables for the specified `taskId` and `variableName`.<br>If the request body is not provided or if the `variableNames` parameter in the request is empty, all variables associated with the task will be returned.",
+        "description": "This method returns a list of task variables for the specified `taskId` and `variableName`.\u003Cbr\u003EIf the request body is not provided or if the `variableNames` parameter in the request is empty, all variables associated with the task will be returned.",
         "operationId": "searchTaskVariables",
         "parameters": [
           {
@@ -280,7 +281,7 @@
           "Task"
         ],
         "summary": "Search tasks",
-        "description": "Returns the list of tasks that satisfy search request params.<br><ul><li>If an empty body is provided, all tasks are returned.</li><li>Only one of `[searchAfter, searchAfterOrEqual, searchBefore, searchBeforeOrEqual]` search options must be present in request.</li></ul>",
+        "description": "Returns the list of tasks that satisfy search request params.\u003Cbr\u003E\u003Cul\u003E\u003Cli\u003EIf an empty body is provided, all tasks are returned.\u003C/li\u003E\u003Cli\u003EOnly one of `[searchAfter, searchAfterOrEqual, searchBefore, searchBeforeOrEqual]` search options must be present in request.\u003C/li\u003E\u003C/ul\u003E",
         "operationId": "searchTasks",
         "requestBody": {
           "content": {
@@ -404,7 +405,7 @@
             }
           },
           "400": {
-            "description": "An error is returned when the task is not active (not in the CREATED state).<br>An error is returned if the task was not claimed (assigned) before.",
+            "description": "An error is returned when the task is not active (not in the CREATED state).\u003Cbr\u003EAn error is returned if the task was not claimed (assigned) before.",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -466,7 +467,7 @@
             }
           },
           "400": {
-            "description": "An error is returned when the task is not active (not in the CREATED state).<br>An error is returned if the task was not claimed (assigned) before.<br>An error is returned if the task is not assigned to the current user.",
+            "description": "An error is returned when the task is not active (not in the CREATED state).\u003Cbr\u003EAn error is returned if the task was not claimed (assigned) before.\u003Cbr\u003EAn error is returned if the task is not assigned to the current user.",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -539,7 +540,7 @@
             }
           },
           "400": {
-            "description": "An error is returned when the task is not active (not in the CREATED state).<br>An error is returned when task was already assigned, except the case when JWT authentication token used and `allowOverrideAssignment = true`.",
+            "description": "An error is returned when the task is not active (not in the CREATED state).\u003Cbr\u003EAn error is returned when task was already assigned, except the case when JWT authentication token used and `allowOverrideAssignment = true`.",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -819,7 +820,6 @@
           "variables": {
             "type": "object",
             "additionalProperties": {
-              "type": "object"
             },
             "description": "The variables to complete the user task with."
           },
@@ -897,7 +897,7 @@
           },
           "alwaysReturnFullValue": {
             "type": "boolean",
-            "default": "false",
+            "default": false,
             "description": "Always return the full value of the variable?"
           }
         }
@@ -985,23 +985,18 @@
         "type": "object",
         "properties": {
           "eq": {
-            "type": "object",
             "description": "Value equals to."
           },
           "gt": {
-            "type": "object",
             "description": "Value greater than."
           },
           "gte": {
-            "type": "object",
             "description": "Value greater than or equals to."
           },
           "lt": {
-            "type": "object",
             "description": "Value less than."
           },
           "lte": {
-            "type": "object",
             "description": "Value less than or equals to."
           }
         }
@@ -1020,7 +1015,7 @@
           },
           "operator": {
             "type": "string",
-            "description": "The comparison operator to use for the variable.<br>* `eq`: Equals",
+            "description": "The comparison operator to use for the variable.\u003Cbr\u003E* `eq`: Equals",
             "enum": [
               "eq"
             ]
@@ -1043,7 +1038,7 @@
           },
           "order": {
             "type": "string",
-            "description": "* `ASC`: Ascending<br>* `DESC`: Descending",
+            "description": "* `ASC`: Ascending\u003Cbr\u003E* `DESC`: Descending",
             "enum": [
               "ASC",
               "DESC"
@@ -1491,7 +1486,7 @@
           },
           "allowOverrideAssignment": {
             "type": "boolean",
-            "default": "true",
+            "default": true,
             "description": "When `true` the task that is already assigned may be assigned again. Otherwise the task\nmust be first unassigned and only then assigned again."
           }
         }
