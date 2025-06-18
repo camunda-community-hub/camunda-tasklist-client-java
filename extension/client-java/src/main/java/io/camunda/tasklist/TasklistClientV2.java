@@ -128,6 +128,15 @@ public class TasklistClientV2 implements TasklistClient {
         userTask.getPriority());
   }
 
+  private static Variable toVariable(io.camunda.client.api.search.response.Variable variable) {
+    return new Variable(
+        String.valueOf(variable.getVariableKey()),
+        variable.getName(),
+        variable.getValue(),
+        null,
+        variable.getTenantId());
+  }
+
   private static TasklistClient.TaskState toTaskState(UserTaskState state) {
     if (state == null) {
       return null;
@@ -399,6 +408,8 @@ public class TasklistClientV2 implements TasklistClient {
 
   @Override
   public Variable getVariable(String variableId) {
-    return null;
+    io.camunda.client.api.search.response.Variable variable =
+        camundaClient.newVariableGetRequest(Long.parseLong(variableId)).send().join();
+    return toVariable(variable);
   }
 }
