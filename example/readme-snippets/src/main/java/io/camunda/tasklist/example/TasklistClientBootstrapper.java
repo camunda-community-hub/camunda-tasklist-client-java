@@ -35,7 +35,7 @@ public interface TasklistClientBootstrapper {
       boolean returnVariables = false;
       boolean loadTruncatedVariables = false;
       boolean useZeebeUserTasks = true;
-      // if you are using zeebe user tasks, you require a zeebe client as well
+      // if you are using camunda user tasks, you require a camunda client as well
       CamundaClient camundaClient = camundaClient();
       // bootstrapping
       SimpleCredential credentials =
@@ -70,7 +70,7 @@ public interface TasklistClientBootstrapper {
       boolean returnVariables = false;
       boolean loadTruncatedVariables = false;
       boolean useZeebeUserTasks = true;
-      // if you are using zeebe user tasks, you require a zeebe client as well
+      // if you are using camunda user tasks, you require a camunda client as well
       CamundaClient camundaClient = camundaClient();
       // bootstrapping
       JwtCredential credentials =
@@ -103,7 +103,7 @@ public interface TasklistClientBootstrapper {
       boolean returnVariables = false;
       boolean loadTruncatedVariables = false;
       boolean useZeebeUserTasks = true;
-      // if you are using zeebe user tasks, you require a zeebe client as well
+      // if you are using camunda user tasks, you require a camunda client as well
       CamundaClient camundaClient = camundaClient();
       // bootstrapping
       URL tasklistUrl =
