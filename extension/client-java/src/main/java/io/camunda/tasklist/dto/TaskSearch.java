@@ -1,6 +1,7 @@
 package io.camunda.tasklist.dto;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.camunda.tasklist.dto.Task.Implementation;
 import io.camunda.tasklist.exception.TaskListException;
 import io.camunda.tasklist.generated.model.IncludeVariable;
 import io.camunda.tasklist.generated.model.TaskByVariables;
@@ -14,6 +15,7 @@ public class TaskSearch implements Cloneable {
   private String candidateGroup;
   private List<String> candidateGroups;
   private String assignee;
+  private List<String> assignees;
   private String candidateUser;
   private List<String> candidateUsers;
   private Boolean assigned;
@@ -28,6 +30,32 @@ public class TaskSearch implements Cloneable {
   private DateFilter dueDate;
   private List<IncludeVariable> includeVariables;
   private Pagination pagination;
+  private Implementation implementation;
+  private Priority priority;
+
+  public List<String> getAssignees() {
+    return assignees;
+  }
+
+  public void setAssignees(List<String> assignees) {
+    this.assignees = assignees;
+  }
+
+  public Priority getPriority() {
+    return priority;
+  }
+
+  public void setPriority(Priority priority) {
+    this.priority = priority;
+  }
+
+  public Implementation getImplementation() {
+    return implementation;
+  }
+
+  public void setImplementation(Implementation implementation) {
+    this.implementation = implementation;
+  }
 
   public List<String> getCandidateGroups() {
     return candidateGroups;
@@ -231,6 +259,8 @@ public class TaskSearch implements Cloneable {
     this.pagination = pagination;
     return this;
   }
+
+  public record Priority(Integer eq, Integer gte, Integer gt, Integer lt, Integer lte) {}
 
   @Override
   public TaskSearch clone() {

@@ -1,9 +1,22 @@
 package io.camunda.tasklist;
 
 import static io.camunda.tasklist.util.ConverterUtils.*;
+import static java.util.Optional.*;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import io.camunda.client.CamundaClient;
+import io.camunda.tasklist.CamundaTasklistClientConfiguration.ApiVersion;
 import io.camunda.tasklist.CamundaTasklistClientConfiguration.DefaultProperties;
+import io.camunda.tasklist.TasklistClient.RequestVariable;
+import io.camunda.tasklist.TasklistClient.TaskAssignment;
+import io.camunda.tasklist.TasklistClient.TaskSearch.DateRange;
+import io.camunda.tasklist.TasklistClient.TaskSearch.Priority;
+import io.camunda.tasklist.TasklistClient.TaskSearch.Sort;
+import io.camunda.tasklist.TasklistClient.TaskSearch.Sort.Field;
+import io.camunda.tasklist.TasklistClient.TaskSearch.Sort.Order;
+import io.camunda.tasklist.TasklistClient.TaskSearch.TaskVariable;
+import io.camunda.tasklist.TasklistClient.TaskSearch.TaskVariable.Operator;
+import io.camunda.tasklist.TasklistClient.VariableSearch;
 import io.camunda.tasklist.auth.Authentication;
 import io.camunda.tasklist.dto.DateFilter;
 import io.camunda.tasklist.dto.Form;
@@ -16,28 +29,17 @@ import io.camunda.tasklist.dto.TaskSearch;
 import io.camunda.tasklist.dto.TaskState;
 import io.camunda.tasklist.dto.Variable;
 import io.camunda.tasklist.exception.TaskListException;
-import io.camunda.tasklist.generated.api.FormApi;
-import io.camunda.tasklist.generated.api.TaskApi;
-import io.camunda.tasklist.generated.api.VariablesApi;
 import io.camunda.tasklist.generated.invoker.ApiClient;
-import io.camunda.tasklist.generated.invoker.ApiException;
 import io.camunda.tasklist.generated.model.IncludeVariable;
-import io.camunda.tasklist.generated.model.SaveVariablesRequest;
-import io.camunda.tasklist.generated.model.TaskAssignRequest;
 import io.camunda.tasklist.generated.model.TaskByVariables;
-import io.camunda.tasklist.generated.model.TaskCompleteRequest;
-import io.camunda.tasklist.generated.model.TaskSearchRequest;
-import io.camunda.tasklist.generated.model.VariableInputDTO;
-import io.camunda.tasklist.generated.model.VariablesSearchRequest;
+import io.camunda.tasklist.generated.model.TaskByVariables.OperatorEnum;
+import io.camunda.tasklist.generated.model.TaskOrderBy;
+import io.camunda.tasklist.generated.model.TaskOrderBy.FieldEnum;
+import io.camunda.tasklist.generated.model.TaskOrderBy.OrderEnum;
 import io.camunda.tasklist.util.ConverterUtils;
-import io.camunda.zeebe.client.ZeebeClient;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -47,47 +49,34 @@ import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 
 public class CamundaTaskListClient {
-  private final ZeebeClient zeebeClient;
+  private final CamundaClient camundaClient;
   private final DefaultProperties defaultProperties;
-  private final TaskApi taskApi;
-  private final FormApi formApi;
-  private final VariablesApi variablesApi;
-
-  @Deprecated
-  public CamundaTaskListClient(
-      CamundaTaskListClientProperties properties, ZeebeClient zeebeClient) {
-    this(
-        new CamundaTasklistClientConfiguration(
-            Objects.requireNonNull(properties.getAuthentication(), "No authentication provided"),
-            toUrl(properties.getTaskListUrl()),
-            zeebeClient,
-            new DefaultProperties(
-                properties.isDefaultShouldReturnVariables(),
-                properties.isDefaultShouldLoadTruncatedVariables(),
-                properties.isUseZeebeUserTasks())));
-  }
+  private final TasklistClient tasklistClient;
+  private final ApiVersion apiVersion;
 
   public CamundaTaskListClient(CamundaTasklistClientConfiguration configuration) {
-    if (configuration.defaultProperties().useZeebeUserTasks()
-        && configuration.zeebeClient() == null) {
-      throw new IllegalStateException("ZeebeClient is required when using ZeebeUserTasks");
+    if (configuration.defaultProperties().useCamundaUserTasks()
+        && configuration.camundaClient() == null) {
+      throw new IllegalStateException("CamundaClient is required when using Camunda user tasks");
     }
-    this.zeebeClient = configuration.zeebeClient();
+    this.camundaClient = configuration.camundaClient();
     this.defaultProperties = configuration.defaultProperties();
+    this.tasklistClient = buildClient(configuration);
+    this.apiVersion = configuration.apiVersion();
+  }
+
+  private static TasklistClient buildClient(CamundaTasklistClientConfiguration configuration) {
+    return switch (configuration.apiVersion()) {
+      case v1 -> new TasklistClientV1(buildApiClient(configuration));
+      case v2 -> new TasklistClientV2(configuration.camundaClient());
+    };
+  }
+
+  private static ApiClient buildApiClient(CamundaTasklistClientConfiguration configuration) {
     CloseableHttpClient httpClient = buildTasklistHttpClient(configuration.authentication());
     ApiClient apiClient = new ApiClient(httpClient);
     apiClient.setBasePath(configuration.baseUrl().toExternalForm());
-    this.taskApi = new TaskApi(apiClient);
-    this.formApi = new FormApi(apiClient);
-    this.variablesApi = new VariablesApi(apiClient);
-  }
-
-  private static URL toUrl(String url) {
-    try {
-      return URI.create(url).toURL();
-    } catch (MalformedURLException e) {
-      throw new RuntimeException("Error while creating tasklist url", e);
-    }
+    return apiClient;
   }
 
   private static CloseableHttpClient buildTasklistHttpClient(Authentication authentication) {
@@ -104,19 +93,144 @@ public class CamundaTaskListClient {
     return new CamundaTaskListClientBuilder();
   }
 
+  private static TasklistClient.TaskSearch toTaskSearch(TaskSearch search) {
+    return new TasklistClient.TaskSearch(
+        toState(search.getState()),
+        search.getAssigned(),
+        search.getAssignee(),
+        search.getAssignees(),
+        search.getTaskDefinitionId(),
+        search.getCandidateGroup(),
+        search.getCandidateGroups(),
+        search.getCandidateUser(),
+        search.getCandidateUsers(),
+        search.getProcessDefinitionKey(),
+        search.getProcessInstanceKey(),
+        ofNullable(search.getPagination()).map(Pagination::getPageSize).orElse(null),
+        toDateRange(search.getFollowUpDate()),
+        toDateRange(search.getDueDate()),
+        mapIfPresent(search.getTaskVariables(), CamundaTaskListClient::toTaskVariables),
+        search.getTenantIds(),
+        mapIfPresent(
+            ofNullable(search.getPagination()).map(Pagination::getSort).orElse(null),
+            CamundaTaskListClient::toSort),
+        toSearch(SearchType.AFTER, search.getPagination()),
+        toSearch(SearchType.AFTER_OR_EQUAL, search.getPagination()),
+        toSearch(SearchType.BEFORE, search.getPagination()),
+        toSearch(SearchType.BEFORE_OR_EQUAL, search.getPagination()),
+        mapIfPresent(search.getIncludeVariables(), CamundaTaskListClient::toIncludeVariable),
+        toImplementation(search.getImplementation()),
+        toPriority(search.getPriority()));
+  }
+
+  private static List<String> toSearch(SearchType expected, Pagination pagination) {
+    if (pagination == null) {
+      return null;
+    }
+    if (pagination.getSearchType() == expected) {
+      return pagination.getSearch();
+    }
+    return null;
+  }
+
+  private static TasklistClient.IncludeVariable toIncludeVariable(IncludeVariable includeVariable) {
+    return new TasklistClient.IncludeVariable(
+        includeVariable.getName(), includeVariable.getAlwaysReturnFullValue());
+  }
+
+  private static TasklistClient.TaskSearch.Priority toPriority(TaskSearch.Priority priority) {
+    if (priority == null) {
+      return null;
+    }
+    return new Priority(
+        priority.eq(), priority.gte(), priority.gt(), priority.lt(), priority.lte());
+  }
+
+  private static TasklistClient.Implementation toImplementation(Implementation implementation) {
+    if (implementation == null) {
+      return null;
+    }
+    return switch (implementation) {
+      case JOB_WORKER -> TasklistClient.Implementation.JOB_WORKER;
+      case ZEEBE_USER_TASK -> TasklistClient.Implementation.ZEEBE_USER_TASK;
+    };
+  }
+
+  private static Sort toSort(TaskOrderBy taskOrderBy) {
+    return new Sort(toField(taskOrderBy.getField()), toOrder(taskOrderBy.getOrder()));
+  }
+
+  private static Order toOrder(OrderEnum order) {
+    if (order == null) {
+      return null;
+    }
+    return switch (order) {
+      case ASC -> Order.ASC;
+      case DESC -> Order.DESC;
+    };
+  }
+
+  private static Field toField(FieldEnum field) {
+    if (field == null) {
+      return null;
+    }
+    return switch (field) {
+      case DUE_DATE -> Field.dueDate;
+      case PRIORITY -> Field.priority;
+      case CREATION_TIME -> Field.creationTime;
+      case FOLLOW_UP_DATE -> Field.followUpDate;
+      case COMPLETION_TIME -> Field.completionTime;
+    };
+  }
+
+  private static TaskVariable toTaskVariables(TaskByVariables taskByVariables) {
+    return new TaskVariable(
+        taskByVariables.getName(),
+        taskByVariables.getValue(),
+        toOperator(taskByVariables.getOperator()));
+  }
+
+  private static Operator toOperator(OperatorEnum operator) {
+    if (operator == null) {
+      return null;
+    }
+    return switch (operator) {
+      case EQ -> Operator.eq;
+    };
+  }
+
+  private static DateRange toDateRange(DateFilter followUpDate) {
+    if (followUpDate == null) {
+      return null;
+    }
+    return new DateRange(followUpDate.getFrom(), followUpDate.getTo());
+  }
+
+  private static TasklistClient.TaskState toState(TaskState state) {
+    if (state == null) {
+      return null;
+    }
+    return switch (state) {
+      case FAILED -> TasklistClient.TaskState.FAILED;
+      case COMPLETED -> TasklistClient.TaskState.COMPLETED;
+      case CREATED -> TasklistClient.TaskState.CREATED;
+      case CANCELED -> TasklistClient.TaskState.CANCELED;
+    };
+  }
+
   public Task unclaim(String taskId) throws TaskListException {
     Task task = getTask(taskId);
     return executeForImplementation(
         task,
         () -> {
           try {
-            return ConverterUtils.toTask(taskApi.unassignTask(taskId), null);
-          } catch (TaskListException | ApiException e) {
+            return ConverterUtils.toTask(tasklistClient.unassignTask(taskId), null);
+          } catch (TaskListException e) {
             throw new RuntimeException("Error unclaiming task " + taskId, e);
           }
         },
         () -> {
-          zeebeClient.newUserTaskUnassignCommand(Long.parseLong(taskId)).send().join();
+          camundaClient.newUserTaskUnassignCommand(Long.parseLong(taskId)).send().join();
           task.setAssignee(null);
           return task;
         });
@@ -134,18 +248,15 @@ public class CamundaTaskListClient {
         () -> {
           try {
             return ConverterUtils.toTask(
-                taskApi.assignTask(
-                    taskId,
-                    new TaskAssignRequest()
-                        .assignee(assignee)
-                        .allowOverrideAssignment(allowOverrideAssignment)),
+                tasklistClient.assignTask(
+                    taskId, new TaskAssignment(assignee, allowOverrideAssignment)),
                 null);
-          } catch (TaskListException | ApiException e) {
+          } catch (TaskListException e) {
             throw new RuntimeException("Error while assigning task via tasklist api", e);
           }
         },
         () -> {
-          zeebeClient
+          camundaClient
               .newUserTaskAssignCommand(Long.parseLong(taskId))
               .allowOverride(allowOverrideAssignment)
               .assignee(assignee)
@@ -162,15 +273,14 @@ public class CamundaTaskListClient {
         getTask(taskId),
         () -> {
           try {
-            return taskApi.completeTask(
-                taskId,
-                new TaskCompleteRequest().variables(ConverterUtils.toVariableInput(variablesMap)));
-          } catch (ApiException | TaskListException e) {
+            return tasklistClient.completeTask(
+                taskId, ConverterUtils.toVariableInput(variablesMap));
+          } catch (TaskListException e) {
             throw new RuntimeException("Error while completing task via tasklist api", e);
           }
         },
         () ->
-            zeebeClient
+            camundaClient
                 .newUserTaskCompleteCommand(Long.parseLong(taskId))
                 .variables(variablesMap)
                 .send()
@@ -183,9 +293,9 @@ public class CamundaTaskListClient {
         || task.getImplementation().equals(Implementation.JOB_WORKER)) {
       return jobWorkerAction.get();
     } else if (task.getImplementation().equals(Implementation.ZEEBE_USER_TASK)) {
-      if (zeebeClient == null) {
+      if (camundaClient == null) {
         throw new IllegalStateException(
-            "zeebeClient must not be null, please set useZeebeUserTasks to assert this on startup");
+            "camundaClient must not be null, please set useCamundaUserTasks to assert this on startup");
       }
       return zeebeUserTaskAction.get();
     } else {
@@ -336,8 +446,8 @@ public class CamundaTaskListClient {
         variables = getVariables(taskId);
       }
 
-      return ConverterUtils.toTask(taskApi.getTaskById(taskId), variables);
-    } catch (TaskListException | ApiException e) {
+      return ConverterUtils.toTask(tasklistClient.getTask(taskId), variables);
+    } catch (TaskListException e) {
       throw new TaskListException("Error reading task " + taskId, e);
     }
   }
@@ -349,12 +459,12 @@ public class CamundaTaskListClient {
   public List<Variable> getVariables(String taskId, boolean loadTruncated)
       throws TaskListException {
     try {
-      return taskApi.searchTaskVariables(taskId, new VariablesSearchRequest()).stream()
+      return tasklistClient.searchTaskVariables(taskId, new VariableSearch(null, null)).stream()
           .map(
               vsr -> {
-                if (loadTruncated && Boolean.TRUE.equals(vsr.getIsValueTruncated())) {
+                if (loadTruncated && Boolean.TRUE.equals(vsr.isValueTruncated())) {
                   try {
-                    return getVariable(vsr.getId());
+                    return getVariable(vsr.id());
                   } catch (TaskListException e) {
                     throw new RuntimeException("Error while loading full value of variable", e);
                   }
@@ -367,15 +477,15 @@ public class CamundaTaskListClient {
                 }
               })
           .collect(Collectors.toList());
-    } catch (ApiException | RuntimeException e) {
+    } catch (RuntimeException e) {
       throw new TaskListException("Error reading task " + taskId, e);
     }
   }
 
   public Variable getVariable(String variableId) throws TaskListException {
     try {
-      return toVariable(variablesApi.getVariableById(variableId));
-    } catch (ApiException | JsonProcessingException e) {
+      return toVariable(tasklistClient.getVariable(variableId));
+    } catch (JsonProcessingException e) {
       throw new TaskListException("Error while loading variable " + variableId, e);
     }
   }
@@ -386,14 +496,10 @@ public class CamundaTaskListClient {
 
   public Form getForm(String formId, String processDefinitionId, Long version)
       throws TaskListException {
-    try {
-      if (formId.startsWith(CamundaTasklistConstants.CAMUNDA_FORMS_PREFIX)) {
-        formId = formId.substring(CamundaTasklistConstants.CAMUNDA_FORMS_PREFIX.length());
-      }
-      return ConverterUtils.toForm(formApi.getForm(formId, processDefinitionId, version));
-    } catch (ApiException e) {
-      throw new TaskListException("Error reading form " + formId, e);
+    if (formId.startsWith(CamundaTasklistConstants.CAMUNDA_FORMS_PREFIX)) {
+      formId = formId.substring(CamundaTasklistConstants.CAMUNDA_FORMS_PREFIX.length());
     }
+    return ConverterUtils.toForm(tasklistClient.getForm(formId, processDefinitionId, version));
   }
 
   public TaskList before(TaskList taskList) throws TaskListException {
@@ -445,7 +551,7 @@ public class CamundaTaskListClient {
               .pageSize(taskList.getSearch().getPagination().getPageSize())
               .after(taskList.last().getSortValues())
               .build();
-      default ->
+      case AFTER_OR_EQUAL ->
           new Pagination.Builder()
               .pageSize(taskList.getSearch().getPagination().getPageSize())
               .afterOrEqual(taskList.last().getSortValues())
@@ -457,26 +563,9 @@ public class CamundaTaskListClient {
     if (search.getWithVariables() == null) {
       search.setWithVariables(defaultProperties.returnVariables());
     }
-    Pagination pagination = search.getPagination();
-    TaskSearchRequest request = ConverterUtils.toTaskSearchRequest(search);
-    if (pagination != null) {
-      if (pagination.getSearchType() != null
-          && pagination.getSearch() != null
-          && !pagination.getSearch().isEmpty()) {
-        if (pagination.getSearchType().equals(SearchType.BEFORE)) {
-          request.searchBefore(pagination.getSearch());
-        } else if (pagination.getSearchType().equals(SearchType.BEFORE_OR_EQUAL)) {
-          request.searchBeforeOrEqual(pagination.getSearch());
-        } else if (pagination.getSearchType().equals(SearchType.AFTER)) {
-          request.searchAfter(pagination.getSearch());
-        } else if (pagination.getSearchType().equals(SearchType.AFTER_OR_EQUAL)) {
-          request.searchAfterOrEqual(pagination.getSearch());
-        }
-      }
-      request.pageSize(pagination.getPageSize());
-      request.sort(pagination.getSort());
-    }
-    return new TaskList().setItems(getTasks(request, search.getWithVariables())).setSearch(search);
+    return new TaskList()
+        .setItems(getTasks(toTaskSearch(search), search.getWithVariables()))
+        .setSearch(search);
   }
 
   public TaskList getTasks(
@@ -537,19 +626,15 @@ public class CamundaTaskListClient {
             .setPagination(pagination));
   }
 
-  public List<Task> getTasks(TaskSearchRequest search, boolean withVariables)
+  public List<Task> getTasks(TasklistClient.TaskSearch search, boolean withVariables)
       throws TaskListException {
-    try {
 
-      List<Task> tasks = ConverterUtils.toTasks(taskApi.searchTasks(search));
-      if (withVariables
-          && (search.getIncludeVariables() == null || search.getIncludeVariables().isEmpty())) {
-        loadVariables(tasks);
-      }
-      return tasks;
-    } catch (ApiException e) {
-      throw new TaskListException("Error searching tasks", e);
+    List<Task> tasks = ConverterUtils.toTasks(tasklistClient.searchTasks(search));
+    if (withVariables
+        && (search.includeVariables() == null || search.includeVariables().isEmpty())) {
+      loadVariables(tasks);
     }
+    return tasks;
   }
 
   public void loadVariables(List<Task> tasks) throws TaskListException {
@@ -585,13 +670,7 @@ public class CamundaTaskListClient {
 
   public void saveDraftVariables(String taskId, Map<String, Object> variables)
       throws TaskListException {
-    try {
-      List<VariableInputDTO> convertedVariables = ConverterUtils.toVariableInput(variables);
-      SaveVariablesRequest variablesInput = new SaveVariablesRequest();
-      variablesInput.setVariables(convertedVariables);
-      taskApi.saveDraftTaskVariables(taskId, variablesInput);
-    } catch (ApiException e) {
-      throw new TaskListException("Error saving draft variables for task " + taskId, e);
-    }
+    List<RequestVariable> convertedVariables = ConverterUtils.toVariableInput(variables);
+    tasklistClient.saveDraftVariables(taskId, convertedVariables);
   }
 }
