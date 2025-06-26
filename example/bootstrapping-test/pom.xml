@@ -6,8 +6,8 @@
     <artifactId>tasklist-client-example-parent</artifactId>
     <version>8.7.3-SNAPSHOT</version>
   </parent>
-
   <artifactId>bootstrapping-test</artifactId>
+<<<<<<< HEAD
 
  <dependencies>
    <dependency>
@@ -26,3 +26,22 @@
  </dependencies>
 
 </project>
+=======
+  <name>Camunda Tasklist Client Bootstrapping Test</name>
+  <dependencies>
+    <dependency>
+      <groupId>io.camunda</groupId>
+      <artifactId>camunda-tasklist-client-java</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.camunda</groupId>
+      <artifactId>camunda-client-java</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>
+>>>>>>> d939956 (added names to pom (#361))

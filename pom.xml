@@ -1,6 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
   <parent>
     <groupId>org.camunda.community</groupId>
     <artifactId>community-hub-release-parent</artifactId>
@@ -10,20 +10,38 @@
   <artifactId>tasklist-client-root</artifactId>
   <version>8.7.3-SNAPSHOT</version>
   <packaging>pom</packaging>
-
+  <name>Camunda Tasklist Client Root</name>
+  <licenses>
+    <license>
+      <name>Apache License</name>
+    </license>
+  </licenses>
+  <modules>
+    <module>extension</module>
+    <module>example</module>
+  </modules>
+  <scm>
+    <connection>scm:git:git@github.com:camunda-community-hub/camunda-tasklist-client-java.git</connection>
+    <developerConnection>scm:git:git@github.com:camunda-community-hub/camunda-tasklist-client-java.git</developerConnection>
+    <tag>HEAD</tag>
+    <url>https://github.com/camunda-community-hub/camunda-tasklist-client-java</url>
+  </scm>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.build.resourceEncoding>${project.build.sourceEncoding}</project.build.resourceEncoding>
     <version.java>17</version.java>
     <java.version>${version.java}</java.version>
     <maven.compiler.release>${java.version}</maven.compiler.release>
+<<<<<<< HEAD
 
     <spring-boot.version>3.4.5</spring-boot.version>
+=======
+    <spring-boot.version>3.5.3</spring-boot.version>
+>>>>>>> d939956 (added names to pom (#361))
     <commons-beanutils.version>1.9.4</commons-beanutils.version>
     <resilience4j.version>2.2.0</resilience4j.version>
     <jackson.version>2.18.3</jackson.version>
     <commons-lang.version>3.15.0</commons-lang.version>
-
     <plugin.version.maven-enforcer-plugin>3.5.0</plugin.version.maven-enforcer-plugin>
     <plugin.version.function-maven-plugin>0.11.1</plugin.version.function-maven-plugin>
     <plugin.version.maven-install-plugin>3.1.4</plugin.version.maven-install-plugin>
@@ -40,27 +58,26 @@
     <plugin.version.frontend-maven-plugin>1.15.1</plugin.version.frontend-maven-plugin>
     <plugin.version.maven-source-plugin>3.3.1</plugin.version.maven-source-plugin>
   </properties>
-
-  <modules>
-    <module>extension</module>
-    <module>example</module>
-  </modules>
-
   <dependencyManagement>
     <dependencies>
       <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-dependencies</artifactId>
         <version>${spring-boot.version}</version>
-        <scope>import</scope>
         <type>pom</type>
+        <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>zeebe-bom</artifactId>
+<<<<<<< HEAD
         <version>8.7.6</version>
         <scope>import</scope>
+=======
+        <version>8.8.0-alpha5</version>
+>>>>>>> d939956 (added names to pom (#361))
         <type>pom</type>
+        <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>io.camunda</groupId>
@@ -131,7 +148,6 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
-
   <build>
     <pluginManagement>
       <plugins>
@@ -246,24 +262,22 @@
           <artifactId>spotless-maven-plugin</artifactId>
           <version>${plugin.version.spotless-maven-plugin}</version>
           <configuration>
-            <formats>
-              <format>
-                <includes>
-                  <include>*.md</include>
-                  <include>.gitignore</include>
-                </includes>
-                <trimTrailingWhitespace />
-                <endWithNewline />
-                <indent>
-                  <spaces>true</spaces>
-                  <spacesPerTab>2</spacesPerTab>
-                </indent>
-              </format>
-            </formats>
             <java>
               <googleJavaFormat />
             </java>
-            <pom />
+            <pom>
+              <sortPom>
+                <nrOfIndentSpace>2</nrOfIndentSpace>
+                <expandEmptyElements>false</expandEmptyElements>
+                <spaceBeforeCloseEmptyElement>true</spaceBeforeCloseEmptyElement>
+                <keepBlankLines>false</keepBlankLines>
+              </sortPom>
+            </pom>
+            <markdown>
+              <includes>
+                <include>**/*.md</include>
+              </includes>
+            </markdown>
           </configuration>
         </plugin>
         <plugin>
@@ -326,7 +340,6 @@
       </plugin>
     </plugins>
   </build>
-
   <profiles>
     <!-- profile to auto format -->
     <profile>
@@ -352,7 +365,6 @@
         </plugins>
       </build>
     </profile>
-
     <!-- profile to perform strict validation checks -->
     <profile>
       <id>checkFormat</id>
@@ -375,17 +387,4 @@
       </build>
     </profile>
   </profiles>
-
-  <licenses>
-    <license>
-      <name>Apache License</name>
-    </license>
-  </licenses>
-
-  <scm>
-    <url>https://github.com/camunda-community-hub/camunda-tasklist-client-java</url>
-    <connection>scm:git:git@github.com:camunda-community-hub/camunda-tasklist-client-java.git</connection>
-    <developerConnection>scm:git:git@github.com:camunda-community-hub/camunda-tasklist-client-java.git</developerConnection>
-    <tag>HEAD</tag>
-  </scm>
 </project>
