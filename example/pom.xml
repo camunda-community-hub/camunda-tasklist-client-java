@@ -6,13 +6,11 @@
     <artifactId>tasklist-client-root</artifactId>
     <version>8.6.12-SNAPSHOT</version>
   </parent>
-
   <artifactId>tasklist-client-example-parent</artifactId>
   <packaging>pom</packaging>
+  <name>Camunda Tasklist Client Example Parent</name>
   <modules>
     <module>bootstrapping-test</module>
     <module>readme-snippets</module>
   </modules>
-
-
 </project>

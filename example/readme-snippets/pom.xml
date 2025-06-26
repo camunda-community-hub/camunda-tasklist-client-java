@@ -6,9 +6,8 @@
     <artifactId>tasklist-client-example-parent</artifactId>
     <version>8.6.12-SNAPSHOT</version>
   </parent>
-
   <artifactId>readme-snippets</artifactId>
-
+  <name>Camunda Tasklist Client Readme Snippets</name>
   <dependencies>
     <dependency>
       <groupId>io.camunda</groupId>
@@ -23,5 +22,4 @@
       <artifactId>zeebe-client-java</artifactId>
     </dependency>
   </dependencies>
-
 </project>
