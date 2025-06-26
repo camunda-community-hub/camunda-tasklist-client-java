@@ -6,8 +6,8 @@
     <artifactId>tasklist-client-parent</artifactId>
     <version>8.7.3-SNAPSHOT</version>
   </parent>
-
   <artifactId>camunda-tasklist-client-generated</artifactId>
+  <name>Camunda Tasklist Client Generated</name>
   <dependencies>
     <!-- HTTP client: apache client -->
     <dependency>
@@ -19,7 +19,6 @@
       <artifactId>httpcore5</artifactId>
       <scope>provided</scope>
     </dependency>
-
     <!-- JSON processing: jackson -->
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
@@ -61,8 +60,7 @@
           <artifactId>maven-dependency-plugin</artifactId>
           <configuration>
             <ignoredUnusedDeclaredDependencies>
-              <ignoredUnusedDeclaredDependency>org.junit.jupiter:junit-jupiter-api
-              </ignoredUnusedDeclaredDependency>
+              <ignoredUnusedDeclaredDependency>org.junit.jupiter:junit-jupiter-api</ignoredUnusedDeclaredDependency>
             </ignoredUnusedDeclaredDependencies>
           </configuration>
         </plugin>
@@ -99,5 +97,4 @@
       </plugin>
     </plugins>
   </build>
-
 </project>
