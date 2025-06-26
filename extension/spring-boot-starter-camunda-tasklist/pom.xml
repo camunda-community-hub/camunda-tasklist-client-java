@@ -6,9 +6,8 @@
     <artifactId>tasklist-client-parent</artifactId>
     <version>8.5.15-SNAPSHOT</version>
   </parent>
-
   <artifactId>spring-boot-starter-camunda-tasklist</artifactId>
-
+  <name>Spring Boot Starter Camunda Tasklist Client</name>
   <dependencies>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -87,10 +86,8 @@
           <artifactId>maven-dependency-plugin</artifactId>
           <configuration>
             <ignoredUnusedDeclaredDependencies>
-              <ignoredUnusedDeclaredDependency>org.springframework.boot:spring-boot-starter
-              </ignoredUnusedDeclaredDependency>
-              <ignoredUnusedDeclaredDependency>org.springframework.boot:spring-boot-starter-test
-              </ignoredUnusedDeclaredDependency>
+              <ignoredUnusedDeclaredDependency>org.springframework.boot:spring-boot-starter</ignoredUnusedDeclaredDependency>
+              <ignoredUnusedDeclaredDependency>org.springframework.boot:spring-boot-starter-test</ignoredUnusedDeclaredDependency>
               <ignoredUnusedDeclaredDependency>org.springframework.boot:spring-boot-configuration-processor</ignoredUnusedDeclaredDependency>
             </ignoredUnusedDeclaredDependencies>
           </configuration>
@@ -98,5 +95,4 @@
       </plugins>
     </pluginManagement>
   </build>
-
 </project>

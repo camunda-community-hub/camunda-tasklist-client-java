@@ -6,8 +6,8 @@
     <artifactId>tasklist-client-parent</artifactId>
     <version>8.5.15-SNAPSHOT</version>
   </parent>
-
   <artifactId>camunda-tasklist-client-java</artifactId>
+  <name>Camunda Tasklist Client Java</name>
   <dependencies>
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -72,7 +72,5 @@
       <artifactId>assertj-core</artifactId>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
-
 </project>
