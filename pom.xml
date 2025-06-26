@@ -32,12 +32,7 @@
     <version.java>17</version.java>
     <java.version>${version.java}</java.version>
     <maven.compiler.release>${java.version}</maven.compiler.release>
-<<<<<<< HEAD
-
-    <spring-boot.version>3.3.11</spring-boot.version>
-=======
     <spring-boot.version>3.5.3</spring-boot.version>
->>>>>>> d939956 (added names to pom (#361))
     <commons-beanutils.version>1.9.4</commons-beanutils.version>
     <resilience4j.version>2.2.0</resilience4j.version>
     <jackson.version>2.17.2</jackson.version>
@@ -70,12 +65,7 @@
       <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>zeebe-bom</artifactId>
-<<<<<<< HEAD
-        <version>8.5.7</version>
-        <scope>import</scope>
-=======
-        <version>8.8.0-alpha5</version>
->>>>>>> d939956 (added names to pom (#361))
+        <version>8.5.19</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
