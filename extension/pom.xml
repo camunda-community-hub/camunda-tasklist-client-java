@@ -8,10 +8,10 @@
   </parent>
   <artifactId>tasklist-client-parent</artifactId>
   <packaging>pom</packaging>
+  <name>Camunda Tasklist Client Parent</name>
   <modules>
     <module>generated</module>
     <module>client-java</module>
     <module>spring-boot-starter-camunda-tasklist</module>
   </modules>
-
 </project>
