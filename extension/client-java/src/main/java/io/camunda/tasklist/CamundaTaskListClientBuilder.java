@@ -1,5 +1,7 @@
 package io.camunda.tasklist;
 
+import static io.camunda.tasklist.CamundaTasklistClientConfiguration.*;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.tasklist.auth.Authentication;
 import io.camunda.tasklist.auth.JwtAuthentication;
@@ -43,6 +45,7 @@ public class CamundaTaskListClientBuilder {
   }
 
   public CamundaTaskListClientBuilder shouldLoadTruncatedVariables() {
+
     properties.setDefaultShouldLoadTruncatedVariables(true);
     return this;
   }

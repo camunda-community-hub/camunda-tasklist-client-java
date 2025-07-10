@@ -1,6 +1,10 @@
 package io.camunda.tasklist;
 
+import static io.camunda.tasklist.CamundaTasklistClientConfiguration.DefaultProperties.*;
+
 import io.camunda.tasklist.auth.Authentication;
+import java.util.ArrayList;
+import java.util.List;
 
 @Deprecated
 public class CamundaTaskListClientProperties {
@@ -10,6 +14,7 @@ public class CamundaTaskListClientProperties {
   private boolean defaultShouldReturnVariables;
   private boolean defaultShouldLoadTruncatedVariables;
   private boolean useZeebeUserTasks;
+  private List<String> tenantIds = new ArrayList<>(DEFAULT_TENANT_IDS);
 
   public CamundaTaskListClientProperties() {}
 
@@ -24,6 +29,14 @@ public class CamundaTaskListClientProperties {
     this.defaultShouldReturnVariables = defaultShouldReturnVariables;
     this.defaultShouldLoadTruncatedVariables = defaultShouldLoadTruncatedVariables;
     this.useZeebeUserTasks = useZeebeUserTasks;
+  }
+
+  public List<String> getTenantIds() {
+    return tenantIds;
+  }
+
+  public void setTenantIds(List<String> tenantIds) {
+    this.tenantIds = tenantIds;
   }
 
   public Authentication getAuthentication() {
