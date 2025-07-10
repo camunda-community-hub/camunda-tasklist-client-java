@@ -1,6 +1,7 @@
 package io.camunda.tasklist;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static io.camunda.tasklist.CamundaTasklistClientConfiguration.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.auth0.jwt.JWT;
@@ -50,7 +51,7 @@ public class CamundaTasklistClientTest {
             new MockAuthentication(),
             baseUrl(),
             null,
-            new DefaultProperties(false, false, true));
+            new DefaultProperties(false, false, true, DEFAULT_TENANT_IDS));
     IllegalStateException assertionError =
         assertThrows(IllegalStateException.class, () -> new CamundaTaskListClient(configuration));
     assertEquals(
@@ -65,7 +66,7 @@ public class CamundaTasklistClientTest {
             new MockAuthentication(),
             baseUrl(),
             null,
-            new DefaultProperties(false, false, false));
+            new DefaultProperties(false, false, false, DEFAULT_TENANT_IDS));
     CamundaTaskListClient client = new CamundaTaskListClient(configuration);
     assertNotNull(client);
   }
@@ -90,7 +91,7 @@ public class CamundaTasklistClientTest {
                     "demo", "demo", URI.create(BASE_URL).toURL(), Duration.ofMinutes(10))),
             baseUrl(),
             null,
-            new DefaultProperties(false, false, false));
+            new DefaultProperties(false, false, false, DEFAULT_TENANT_IDS));
     CamundaTaskListClient client = new CamundaTaskListClient(configuration);
     assertNotNull(client);
     TaskList tasks = client.getTasks(new TaskSearch());
@@ -125,7 +126,7 @@ public class CamundaTasklistClientTest {
                 new TokenResponseHttpClientResponseHandler(new ObjectMapper())),
             baseUrl(),
             null,
-            new DefaultProperties(false, false, false));
+            new DefaultProperties(false, false, false, DEFAULT_TENANT_IDS));
     CamundaTaskListClient client = new CamundaTaskListClient(configuration);
     assertNotNull(client);
     TaskList tasks = client.getTasks(new TaskSearch());

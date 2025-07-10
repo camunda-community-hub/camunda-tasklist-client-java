@@ -3,6 +3,7 @@ package io.camunda.tasklist.spring;
 import io.camunda.tasklist.CamundaTasklistClientConfiguration.ApiVersion;
 import java.net.URL;
 import java.time.Duration;
+import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 
@@ -36,5 +37,6 @@ public record TasklistClientConfigurationProperties(
   public record ClientDefaults(
       @DefaultValue("true") boolean returnVariables,
       @DefaultValue("true") boolean loadTruncatedVariables,
-      @DefaultValue("true") boolean useZeebeUserTasks) {}
+      @DefaultValue("true") boolean useZeebeUserTasks,
+      @DefaultValue("<default>") List<String> tenantIds) {}
 }

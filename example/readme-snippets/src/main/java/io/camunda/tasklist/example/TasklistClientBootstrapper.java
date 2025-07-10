@@ -15,6 +15,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.time.Duration;
+import java.util.List;
 
 public interface TasklistClientBootstrapper {
   static CamundaClient camundaClient() {
@@ -35,6 +36,7 @@ public interface TasklistClientBootstrapper {
       boolean returnVariables = false;
       boolean loadTruncatedVariables = false;
       boolean useZeebeUserTasks = true;
+      List<String> tenantIds = List.of("<default>");
       // if you are using camunda user tasks, you require a camunda client as well
       CamundaClient camundaClient = camundaClient();
       // bootstrapping
@@ -47,7 +49,8 @@ public interface TasklistClientBootstrapper {
               authentication,
               tasklistUrl,
               camundaClient,
-              new DefaultProperties(returnVariables, loadTruncatedVariables, useZeebeUserTasks));
+              new DefaultProperties(
+                  returnVariables, loadTruncatedVariables, useZeebeUserTasks, tenantIds));
       CamundaTaskListClient client = new CamundaTaskListClient(configuration);
       return client;
     }
@@ -70,6 +73,7 @@ public interface TasklistClientBootstrapper {
       boolean returnVariables = false;
       boolean loadTruncatedVariables = false;
       boolean useZeebeUserTasks = true;
+      List<String> tenantIds = List.of("<default>");
       // if you are using camunda user tasks, you require a camunda client as well
       CamundaClient camundaClient = camundaClient();
       // bootstrapping
@@ -85,7 +89,8 @@ public interface TasklistClientBootstrapper {
               authentication,
               tasklistUrl,
               camundaClient,
-              new DefaultProperties(returnVariables, loadTruncatedVariables, useZeebeUserTasks));
+              new DefaultProperties(
+                  returnVariables, loadTruncatedVariables, useZeebeUserTasks, tenantIds));
       CamundaTaskListClient client = new CamundaTaskListClient(configuration);
       return client;
     }
@@ -103,6 +108,7 @@ public interface TasklistClientBootstrapper {
       boolean returnVariables = false;
       boolean loadTruncatedVariables = false;
       boolean useZeebeUserTasks = true;
+      List<String> tenantIds = List.of("<default>");
       // if you are using camunda user tasks, you require a camunda client as well
       CamundaClient camundaClient = camundaClient();
       // bootstrapping
@@ -121,7 +127,8 @@ public interface TasklistClientBootstrapper {
               authentication,
               tasklistUrl,
               camundaClient,
-              new DefaultProperties(returnVariables, loadTruncatedVariables, useZeebeUserTasks));
+              new DefaultProperties(
+                  returnVariables, loadTruncatedVariables, useZeebeUserTasks, tenantIds));
       CamundaTaskListClient client = new CamundaTaskListClient(configuration);
       return client;
     }

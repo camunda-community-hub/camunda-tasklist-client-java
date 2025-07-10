@@ -106,7 +106,7 @@ tasklist:
     client-secret:
 ```
 
-Configure defaults that influence the client behaviour:
+Configure defaults that influence the client behavior:
 
 ```yaml
 tasklist:
@@ -115,6 +115,8 @@ tasklist:
       load-truncated-variables: true
       return-variables: true
       use-zeebe-user-tasks: true
+      tenant-ids:
+      - <default>
 ```
 
 ### Plain Java
@@ -132,7 +134,7 @@ Add the dependency to your project:
 Build a Camunda Tasklist client with simple authentication:
 
 ```java
-      // properties you need to provide
+// properties you need to provide
 ApiVersion apiVersion = ApiVersion.v1;
 String username = "demo";
 String password = "demo";
@@ -140,6 +142,7 @@ URL tasklistUrl = URI.create("http://localhost:8082").toURL();
 boolean returnVariables = false;
 boolean loadTruncatedVariables = false;
 boolean useZeebeUserTasks = true;
+List<String> tenantIds = List.of("<default>");
 // if you are using camunda user tasks, you require a camunda client as well
 CamundaClient camundaClient = camundaClient();
 // bootstrapping
@@ -152,14 +155,15 @@ CamundaTasklistClientConfiguration configuration =
         authentication,
         tasklistUrl,
         camundaClient,
-        new DefaultProperties(returnVariables, loadTruncatedVariables, useZeebeUserTasks));
+        new DefaultProperties(
+            returnVariables, loadTruncatedVariables, useZeebeUserTasks, tenantIds));
 CamundaTaskListClient client = new CamundaTaskListClient(configuration);
 ```
 
 Build a Camunda Tasklist client with identity authentication:
 
 ```java
-      // properties you need to provide
+// properties you need to provide
 ApiVersion apiVersion = ApiVersion.v1;
 String clientId = "";
 String clientSecret = "";
@@ -173,6 +177,7 @@ URL authUrl =
 boolean returnVariables = false;
 boolean loadTruncatedVariables = false;
 boolean useZeebeUserTasks = true;
+List<String> tenantIds = List.of("<default>");
 // if you are using camunda user tasks, you require a camunda client as well
 CamundaClient camundaClient = camundaClient();
 // bootstrapping
@@ -188,14 +193,15 @@ CamundaTasklistClientConfiguration configuration =
         authentication,
         tasklistUrl,
         camundaClient,
-        new DefaultProperties(returnVariables, loadTruncatedVariables, useZeebeUserTasks));
+        new DefaultProperties(
+            returnVariables, loadTruncatedVariables, useZeebeUserTasks, tenantIds));
 CamundaTaskListClient client = new CamundaTaskListClient(configuration);
 ```
 
 Build a Camunda Tasklist client for Saas:
 
 ```java
-      // properties you need to provide
+// properties you need to provide
 ApiVersion apiVersion = ApiVersion.v1;
 String region = "";
 String clusterId = "";
@@ -204,6 +210,7 @@ String clientSecret = "";
 boolean returnVariables = false;
 boolean loadTruncatedVariables = false;
 boolean useZeebeUserTasks = true;
+List<String> tenantIds = List.of("<default>");
 // if you are using camunda user tasks, you require a camunda client as well
 CamundaClient camundaClient = camundaClient();
 // bootstrapping
@@ -222,7 +229,8 @@ CamundaTasklistClientConfiguration configuration =
         authentication,
         tasklistUrl,
         camundaClient,
-        new DefaultProperties(returnVariables, loadTruncatedVariables, useZeebeUserTasks));
+        new DefaultProperties(
+            returnVariables, loadTruncatedVariables, useZeebeUserTasks, tenantIds));
 CamundaTaskListClient client = new CamundaTaskListClient(configuration);
 ```
 

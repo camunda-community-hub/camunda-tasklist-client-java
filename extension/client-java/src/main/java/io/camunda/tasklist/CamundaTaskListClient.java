@@ -563,6 +563,9 @@ public class CamundaTaskListClient {
     if (search.getWithVariables() == null) {
       search.setWithVariables(defaultProperties.returnVariables());
     }
+    if (search.getTenantIds() == null || search.getTenantIds().isEmpty()) {
+      search.setTenantIds(defaultProperties.tenantIds());
+    }
     return new TaskList()
         .setItems(getTasks(toTaskSearch(search), search.getWithVariables()))
         .setSearch(search);

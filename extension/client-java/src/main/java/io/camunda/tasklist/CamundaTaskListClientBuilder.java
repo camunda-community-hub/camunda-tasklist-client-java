@@ -1,5 +1,7 @@
 package io.camunda.tasklist;
 
+import static io.camunda.tasklist.CamundaTasklistClientConfiguration.*;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.client.CamundaClient;
 import io.camunda.tasklist.CamundaTasklistClientConfiguration.ApiVersion;
@@ -20,7 +22,8 @@ public class CamundaTaskListClientBuilder {
   private URL tasklistUrl;
   private CamundaClient camundaClient;
   private ApiVersion apiVersion = ApiVersion.v2;
-  private DefaultProperties defaultProperties = new DefaultProperties(false, false, false);
+  private DefaultProperties defaultProperties =
+      new DefaultProperties(false, false, false, DEFAULT_TENANT_IDS);
 
   public CamundaTaskListClientBuilder authentication(Authentication authentication) {
     if (authentication != null) {
@@ -67,14 +70,18 @@ public class CamundaTaskListClientBuilder {
         new DefaultProperties(
             true,
             defaultProperties.loadTruncatedVariables(),
-            defaultProperties.useCamundaUserTasks());
+            defaultProperties.useCamundaUserTasks(),
+            defaultProperties.tenantIds());
     return this;
   }
 
   public CamundaTaskListClientBuilder shouldLoadTruncatedVariables() {
     this.defaultProperties =
         new DefaultProperties(
-            defaultProperties.returnVariables(), true, defaultProperties.useCamundaUserTasks());
+            defaultProperties.returnVariables(),
+            true,
+            defaultProperties.useCamundaUserTasks(),
+            defaultProperties.tenantIds());
     return this;
   }
 
@@ -107,7 +114,10 @@ public class CamundaTaskListClientBuilder {
   public CamundaTaskListClientBuilder useCamundaUserTasks() {
     this.defaultProperties =
         new DefaultProperties(
-            defaultProperties.returnVariables(), defaultProperties.loadTruncatedVariables(), true);
+            defaultProperties.returnVariables(),
+            defaultProperties.loadTruncatedVariables(),
+            true,
+            defaultProperties.tenantIds());
     return this;
   }
 
