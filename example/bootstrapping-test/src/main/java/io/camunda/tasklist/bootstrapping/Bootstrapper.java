@@ -1,5 +1,7 @@
 package io.camunda.tasklist.bootstrapping;
 
+import static io.camunda.tasklist.CamundaTasklistClientConfiguration.DefaultProperties.*;
+
 import io.camunda.tasklist.CamundaTaskListClient;
 import io.camunda.tasklist.CamundaTasklistClientConfiguration;
 import io.camunda.tasklist.CamundaTasklistClientConfiguration.DefaultProperties;
@@ -22,7 +24,7 @@ public class Bootstrapper {
                       Duration.ofMinutes(10))),
               URI.create("http://localhost:8082").toURL(),
               null,
-              new DefaultProperties(true, true, false)));
+              new DefaultProperties(true, true, false, DEFAULT_TENANT_IDS)));
     } catch (MalformedURLException e) {
       throw new RuntimeException("Error while bootstrapping tasklist client", e);
     }

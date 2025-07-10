@@ -64,7 +64,8 @@ public class CamundaTaskListClient {
             new DefaultProperties(
                 properties.isDefaultShouldReturnVariables(),
                 properties.isDefaultShouldLoadTruncatedVariables(),
-                properties.isUseZeebeUserTasks())));
+                properties.isUseZeebeUserTasks(),
+                properties.getTenantIds())));
   }
 
   public CamundaTaskListClient(CamundaTasklistClientConfiguration configuration) {
@@ -456,6 +457,9 @@ public class CamundaTaskListClient {
   public TaskList getTasks(TaskSearch search) throws TaskListException {
     if (search.getWithVariables() == null) {
       search.setWithVariables(defaultProperties.returnVariables());
+    }
+    if (search.getTenantIds() == null || search.getTenantIds().isEmpty()) {
+      search.setTenantIds(defaultProperties.tenantIds());
     }
     Pagination pagination = search.getPagination();
     TaskSearchRequest request = ConverterUtils.toTaskSearchRequest(search);

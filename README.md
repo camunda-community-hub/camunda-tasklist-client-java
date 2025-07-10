@@ -98,7 +98,7 @@ tasklist:
     client-secret:
 ```
 
-Configure defaults that influence the client behaviour:
+Configure defaults that influence the client behavior:
 
 ```yaml
 tasklist:
@@ -107,6 +107,8 @@ tasklist:
       load-truncated-variables: true
       return-variables: true
       use-zeebe-user-tasks: true
+      tenant-ids:
+      - <default>
 ```
 
 ### Plain Java
@@ -127,11 +129,11 @@ Build a Camunda Tasklist client with simple authentication:
 // properties you need to provide
 String username = "demo";
 String password = "demo";
-URL tasklistUrl = URI
-    .create("http://localhost:8082").toURL();
+URL tasklistUrl = URI.create("http://localhost:8082").toURL();
 boolean returnVariables = false;
 boolean loadTruncatedVariables = false;
 boolean useZeebeUserTasks = true;
+List<String> tenantIds = List.of("<default>");
 // if you are using zeebe user tasks, you require a zeebe client as well
 ZeebeClient zeebeClient = zeebeClient();
 // bootstrapping
@@ -140,7 +142,11 @@ SimpleCredential credentials =
 SimpleAuthentication authentication = new SimpleAuthentication(credentials);
 CamundaTasklistClientConfiguration configuration =
     new CamundaTasklistClientConfiguration(
-        authentication, tasklistUrl, zeebeClient, new DefaultProperties(returnVariables,loadTruncatedVariables,useZeebeUserTasks));
+        authentication,
+        tasklistUrl,
+        zeebeClient,
+        new DefaultProperties(
+            returnVariables, loadTruncatedVariables, useZeebeUserTasks, tenantIds));
 CamundaTaskListClient client = new CamundaTaskListClient(configuration);
 ```
 
@@ -160,16 +166,24 @@ URL authUrl =
 boolean returnVariables = false;
 boolean loadTruncatedVariables = false;
 boolean useZeebeUserTasks = true;
+List<String> tenantIds = List.of("<default>");
 // if you are using zeebe user tasks, you require a zeebe client as well
 ZeebeClient zeebeClient = zeebeClient();
 // bootstrapping
-JwtCredential credentials = new JwtCredential(clientId, clientSecret, audience, authUrl, scope);
+JwtCredential credentials =
+    new JwtCredential(clientId, clientSecret, audience, authUrl, scope);
 ObjectMapper objectMapper = new ObjectMapper();
-TokenResponseMapper tokenResponseMapper = new JacksonTokenResponseMapper(objectMapper);
-JwtAuthentication authentication = new JwtAuthentication(credentials, tokenResponseMapper);
+TokenResponseHttpClientResponseHandler clientResponseHandler =
+    new TokenResponseHttpClientResponseHandler(objectMapper);
+JwtAuthentication authentication = new JwtAuthentication(credentials, clientResponseHandler);
 CamundaTasklistClientConfiguration configuration =
     new CamundaTasklistClientConfiguration(
-        authentication, tasklistUrl, zeebeClient, new DefaultProperties(returnVariables,loadTruncatedVariables,useZeebeUserTasks));
+        authentication,
+        tasklistUrl,
+        zeebeClient,
+        new DefaultProperties(
+            returnVariables, loadTruncatedVariables, useZeebeUserTasks, tenantIds));
+
 CamundaTaskListClient client = new CamundaTaskListClient(configuration);
 ```
 
@@ -184,19 +198,27 @@ String clientSecret = "";
 boolean returnVariables = false;
 boolean loadTruncatedVariables = false;
 boolean useZeebeUserTasks = true;
+List<String> tenantIds = List.of("<default>");
 // if you are using zeebe user tasks, you require a zeebe client as well
 ZeebeClient zeebeClient = zeebeClient();
 // bootstrapping
-URL tasklistUrl = URI.create("https://" + region + ".tasklist.camunda.io/" + clusterId).toURL();
+URL tasklistUrl =
+    URI.create("https://" + region + ".tasklist.camunda.io/" + clusterId).toURL();
 URL authUrl = URI.create("https://login.cloud.camunda.io/oauth/token").toURL();
 JwtCredential credentials =
     new JwtCredential(clientId, clientSecret, "tasklist.camunda.io", authUrl, null);
 ObjectMapper objectMapper = new ObjectMapper();
-TokenResponseMapper tokenResponseMapper = new JacksonTokenResponseMapper(objectMapper);
-JwtAuthentication authentication = new JwtAuthentication(credentials, tokenResponseMapper);
+TokenResponseHttpClientResponseHandler clientResponseHandler =
+    new TokenResponseHttpClientResponseHandler(objectMapper);
+JwtAuthentication authentication = new JwtAuthentication(credentials, clientResponseHandler);
 CamundaTasklistClientConfiguration configuration =
     new CamundaTasklistClientConfiguration(
-        authentication, tasklistUrl, zeebeClient, new DefaultProperties(returnVariables,loadTruncatedVariables,useZeebeUserTasks));
+        authentication,
+        tasklistUrl,
+        zeebeClient,
+        new DefaultProperties(
+            returnVariables, loadTruncatedVariables, useZeebeUserTasks, tenantIds));
+
 CamundaTaskListClient client = new CamundaTaskListClient(configuration);
 ```
 
