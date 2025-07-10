@@ -51,7 +51,8 @@ public class TasklistClientConfiguration {
         new DefaultProperties(
             properties.defaults().returnVariables(),
             properties.defaults().loadTruncatedVariables(),
-            properties.defaults().useZeebeUserTasks()));
+            properties.defaults().useZeebeUserTasks(),
+            properties.defaults().tenantIds()));
   }
 
   @Bean
