@@ -1,13 +1,13 @@
 package io.camunda.tasklist;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static io.camunda.tasklist.CamundaTasklistClientConfiguration.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
-import io.camunda.tasklist.CamundaTasklistClientConfiguration.DefaultProperties;
 import io.camunda.tasklist.auth.Authentication;
 import io.camunda.tasklist.auth.JwtAuthentication;
 import io.camunda.tasklist.auth.JwtCredential;
@@ -45,7 +45,10 @@ public class CamundaTasklistClientTest {
   public void shouldThrowIfZeebeClientNullAndUseZeebeUserTasks() {
     CamundaTasklistClientConfiguration configuration =
         new CamundaTasklistClientConfiguration(
-            new MockAuthentication(), baseUrl(), null, new DefaultProperties(false, false, true));
+            new MockAuthentication(),
+            baseUrl(),
+            null,
+            new DefaultProperties(false, false, true, DEFAULT_TENANT_IDS));
     IllegalStateException assertionError =
         assertThrows(IllegalStateException.class, () -> new CamundaTaskListClient(configuration));
     assertEquals("ZeebeClient is required when using ZeebeUserTasks", assertionError.getMessage());
@@ -55,7 +58,10 @@ public class CamundaTasklistClientTest {
   public void shouldNotThrowIfZeebeClientNullAndNotUseZeebeUserTasks() {
     CamundaTasklistClientConfiguration configuration =
         new CamundaTasklistClientConfiguration(
-            new MockAuthentication(), baseUrl(), null, new DefaultProperties(false, false, false));
+            new MockAuthentication(),
+            baseUrl(),
+            null,
+            new DefaultProperties(false, false, false, DEFAULT_TENANT_IDS));
     CamundaTaskListClient client = new CamundaTaskListClient(configuration);
     assertNotNull(client);
   }
@@ -79,7 +85,7 @@ public class CamundaTasklistClientTest {
                     "demo", "demo", URI.create(BASE_URL).toURL(), Duration.ofMinutes(10))),
             baseUrl(),
             null,
-            new DefaultProperties(false, false, false));
+            new DefaultProperties(false, false, false, DEFAULT_TENANT_IDS));
     CamundaTaskListClient client = new CamundaTaskListClient(configuration);
     assertNotNull(client);
     TaskList tasks = client.getTasks(new TaskSearch());
@@ -113,7 +119,7 @@ public class CamundaTasklistClientTest {
                 new TokenResponseHttpClientResponseHandler(new ObjectMapper())),
             baseUrl(),
             null,
-            new DefaultProperties(false, false, false));
+            new DefaultProperties(false, false, false, DEFAULT_TENANT_IDS));
     CamundaTaskListClient client = new CamundaTaskListClient(configuration);
     assertNotNull(client);
     TaskList tasks = client.getTasks(new TaskSearch());

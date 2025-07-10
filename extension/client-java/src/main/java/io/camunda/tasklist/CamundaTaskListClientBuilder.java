@@ -1,5 +1,7 @@
 package io.camunda.tasklist;
 
+import static io.camunda.tasklist.CamundaTasklistClientConfiguration.*;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.tasklist.auth.Authentication;
 import io.camunda.tasklist.auth.JwtAuthentication;
@@ -13,6 +15,7 @@ import java.time.Duration;
 
 @Deprecated
 public class CamundaTaskListClientBuilder {
+
   private CamundaTaskListClientProperties properties = new CamundaTaskListClientProperties();
   private ZeebeClient zeebeClient;
 
@@ -38,12 +41,16 @@ public class CamundaTaskListClientBuilder {
    * @return the builder
    */
   public CamundaTaskListClientBuilder shouldReturnVariables() {
+
     properties.setDefaultShouldReturnVariables(true);
+
     return this;
   }
 
   public CamundaTaskListClientBuilder shouldLoadTruncatedVariables() {
+
     properties.setDefaultShouldLoadTruncatedVariables(true);
+
     return this;
   }
 
