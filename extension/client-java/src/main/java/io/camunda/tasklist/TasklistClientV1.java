@@ -230,6 +230,7 @@ public class TasklistClientV1 implements TasklistClient {
       case creationTime -> FieldEnum.CREATION_TIME;
       case followUpDate -> FieldEnum.FOLLOW_UP_DATE;
       case completionTime -> FieldEnum.COMPLETION_TIME;
+      case name -> null;
     };
   }
 
@@ -269,7 +270,8 @@ public class TasklistClientV1 implements TasklistClient {
       case FAILED -> StateEnum.FAILED;
       case CANCELED -> StateEnum.CANCELED;
       case COMPLETED -> StateEnum.COMPLETED;
-      case UNKNOWN_ENUM_VALUE -> null;
+      case ASSIGNING, UPDATING, COMPLETING, CANCELING, UNKNOWN_ENUM_VALUE ->
+          throw new IllegalArgumentException("Task state '" + state + "' does not exist in V1 API");
     };
   }
 
@@ -283,7 +285,6 @@ public class TasklistClientV1 implements TasklistClient {
         taskSearchResponse.getCompletionDate(),
         taskSearchResponse.getAssignee(),
         toTaskState(taskSearchResponse.getTaskState()),
-        taskSearchResponse.getSortValues(),
         taskSearchResponse.getIsFirst(),
         taskSearchResponse.getFormKey(),
         taskSearchResponse.getFormId(),

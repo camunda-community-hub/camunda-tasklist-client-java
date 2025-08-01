@@ -48,6 +48,10 @@ public interface TasklistClient {
     COMPLETED,
     CANCELED,
     FAILED,
+    ASSIGNING,
+    UPDATING,
+    COMPLETING,
+    CANCELING,
     UNKNOWN_ENUM_VALUE
   }
 
@@ -94,7 +98,6 @@ public interface TasklistClient {
       String completionDate,
       String assignee,
       TaskState taskState,
-      List<String> sortValues,
       Boolean isFirst,
       String formKey,
       String formId,
@@ -154,6 +157,8 @@ public interface TasklistClient {
       List<String> searchAfterOrEqual,
       List<String> searchBefore,
       List<String> searchBeforeOrEqual,
+      String after,
+      String before,
       List<IncludeVariable> includeVariables,
       Implementation implementation,
       Priority priority) {
@@ -172,7 +177,8 @@ public interface TasklistClient {
         creationTime,
         followUpDate,
         dueDate,
-        priority
+        priority,
+        name
       }
 
       public enum Order {

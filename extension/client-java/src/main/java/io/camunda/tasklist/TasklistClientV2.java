@@ -6,14 +6,15 @@ import io.camunda.client.api.search.enums.UserTaskState;
 import io.camunda.client.api.search.filter.UserTaskFilter;
 import io.camunda.client.api.search.filter.UserTaskVariableFilter;
 import io.camunda.client.api.search.request.SearchRequestPage;
+import io.camunda.client.api.search.response.Form;
 import io.camunda.client.api.search.response.SearchResponse;
 import io.camunda.client.api.search.response.UserTask;
+import io.camunda.client.api.search.response.Variable;
 import io.camunda.client.api.search.sort.UserTaskSort;
 import io.camunda.tasklist.TasklistClient.TaskSearch.Sort;
 import io.camunda.tasklist.TasklistClient.TaskSearch.TaskVariable;
 import io.camunda.tasklist.exception.CompatibilityException;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,9 +69,8 @@ public class TasklistClientV2 implements TasklistClient {
     };
   }
 
-  private static TaskFromSearch toTaskFromSearch(UserTask userTask, List<Object> sort) {
+  private static TaskFromSearch toTaskFromSearch(UserTask userTask) {
     String processName = null; // can be found in process definition
-    List<String> sortValues = sort != null ? sort.stream().map(Object::toString).toList() : null;
     Boolean isFirst = null;
     Boolean isFormEmbedded = null;
     List<VariableFromSearch> variables = null;
@@ -84,7 +84,6 @@ public class TasklistClientV2 implements TasklistClient {
         userTask.getCompletionDate(),
         userTask.getAssignee(),
         toTaskState(userTask.getState()),
-        sortValues,
         isFirst,
         String.valueOf(userTask.getFormKey()),
         userTask.getExternalFormReference(),
@@ -137,20 +136,25 @@ public class TasklistClientV2 implements TasklistClient {
         variable.getTenantId());
   }
 
-  private static TasklistClient.TaskState toTaskState(UserTaskState state) {
+  private static TaskState toTaskState(UserTaskState state) {
     if (state == null) {
       return null;
     }
     return switch (state) {
-      case COMPLETED -> TasklistClient.TaskState.COMPLETED;
-      case FAILED -> TasklistClient.TaskState.FAILED;
-      case CREATED -> TasklistClient.TaskState.CREATED;
-      case CANCELED -> TasklistClient.TaskState.CANCELED;
-      case UNKNOWN_ENUM_VALUE -> TasklistClient.TaskState.UNKNOWN_ENUM_VALUE;
+      case COMPLETED -> TaskState.COMPLETED;
+      case FAILED -> TaskState.FAILED;
+      case CREATING -> null;
+      case CREATED -> TaskState.CREATED;
+      case CANCELED -> TaskState.CANCELED;
+      case UNKNOWN_ENUM_VALUE -> TaskState.UNKNOWN_ENUM_VALUE;
+      case ASSIGNING -> TaskState.ASSIGNING;
+      case UPDATING -> TaskState.UPDATING;
+      case COMPLETING -> TaskState.COMPLETING;
+      case CANCELING -> TaskState.CANCELING;
     };
   }
 
-  private static UserTaskState toTaskState(TasklistClient.TaskState state) {
+  private static UserTaskState toTaskState(TaskState state) {
     if (state == null) {
       return null;
     }
@@ -159,6 +163,10 @@ public class TasklistClientV2 implements TasklistClient {
       case FAILED -> UserTaskState.FAILED;
       case CREATED -> UserTaskState.CREATED;
       case CANCELED -> UserTaskState.CANCELED;
+      case ASSIGNING -> UserTaskState.ASSIGNING;
+      case UPDATING -> UserTaskState.UPDATING;
+      case COMPLETING -> UserTaskState.COMPLETING;
+      case CANCELING -> UserTaskState.CANCELING;
       case UNKNOWN_ENUM_VALUE -> UserTaskState.UNKNOWN_ENUM_VALUE;
     };
   }
@@ -278,16 +286,22 @@ public class TasklistClientV2 implements TasklistClient {
         page.limit(taskSearch.pageSize());
       }
       if (taskSearch.searchAfter() != null) {
-        page.searchAfter(taskSearch.searchAfter().stream().map(Object.class::cast).toList());
+        LOG.warn("searchAfter is not supported, please use after");
       }
       if (taskSearch.searchBefore() != null) {
-        page.searchBefore(taskSearch.searchBefore().stream().map(Object.class::cast).toList());
+        LOG.warn("searchBefore is not supported, please use before");
       }
       if (taskSearch.searchAfterOrEqual() != null) {
-        LOG.warn("searchAfterOrEqual is not supported, please use searchAfter");
+        LOG.warn("searchAfterOrEqual is not supported, please use after");
       }
       if (taskSearch.searchBeforeOrEqual() != null) {
-        LOG.warn("searchBeforeOrEqual is not supported, please use searchBefore");
+        LOG.warn("searchBeforeOrEqual is not supported, please use before");
+      }
+      if (taskSearch.before() != null) {
+        page.before(taskSearch.before());
+      }
+      if (taskSearch.after() != null) {
+        page.after(taskSearch.after());
       }
     };
   }
@@ -359,18 +373,7 @@ public class TasklistClientV2 implements TasklistClient {
                     taskSearch, camundaClient.getConfiguration().getJsonMapper()))
             .send()
             .join();
-    List<UserTask> items = searchResponse.items();
-    List<TaskFromSearch> result = new ArrayList<>();
-    for (UserTask item : items) {
-      if (isFirst(item, items)) {
-        result.add(toTaskFromSearch(item, searchResponse.page().firstSortValues()));
-      } else if (isLast(item, items)) {
-        result.add(toTaskFromSearch(item, searchResponse.page().lastSortValues()));
-      } else {
-        result.add(toTaskFromSearch(item, null));
-      }
-    }
-    return result;
+    return searchResponse.items().stream().map(TasklistClientV2::toTaskFromSearch).toList();
   }
 
   @Override
