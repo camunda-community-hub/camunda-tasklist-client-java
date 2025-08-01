@@ -118,6 +118,8 @@ public class CamundaTaskListClient {
         toSearch(SearchType.AFTER_OR_EQUAL, search.getPagination()),
         toSearch(SearchType.BEFORE, search.getPagination()),
         toSearch(SearchType.BEFORE_OR_EQUAL, search.getPagination()),
+        search.getAfter(),
+        search.getBefore(),
         mapIfPresent(search.getIncludeVariables(), CamundaTaskListClient::toIncludeVariable),
         toImplementation(search.getImplementation()),
         toPriority(search.getPriority()));
