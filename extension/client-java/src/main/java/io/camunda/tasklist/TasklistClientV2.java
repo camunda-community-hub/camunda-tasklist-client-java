@@ -378,14 +378,14 @@ public class TasklistClientV2 implements TasklistClient {
 
   @Override
   public Optional<Task> unassignTask(String taskId) {
-    camundaClient.newUserTaskUnassignCommand(Long.parseLong(taskId)).send().join();
+    camundaClient.newUnassignUserTaskCommand(Long.parseLong(taskId)).send().join();
     return Optional.empty();
   }
 
   @Override
   public Optional<Task> completeTask(String taskId, List<RequestVariable> variables) {
     camundaClient
-        .newUserTaskCompleteCommand(Long.parseLong(taskId))
+        .newCompleteUserTaskCommand(Long.parseLong(taskId))
         .variables(toMap(variables, camundaClient.getConfiguration().getJsonMapper()))
         .send()
         .join();
@@ -395,7 +395,7 @@ public class TasklistClientV2 implements TasklistClient {
   @Override
   public Optional<Task> assignTask(String taskId, TaskAssignment taskAssignment) {
     camundaClient
-        .newUserTaskAssignCommand(Long.parseLong(taskId))
+        .newAssignUserTaskCommand(Long.parseLong(taskId))
         .assignee(taskAssignment.assignee())
         .allowOverride(taskAssignment.allowOverrideAssignment())
         .send()
