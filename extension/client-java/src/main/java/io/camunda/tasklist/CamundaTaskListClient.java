@@ -232,7 +232,7 @@ public class CamundaTaskListClient {
           }
         },
         () -> {
-          camundaClient.newUserTaskUnassignCommand(Long.parseLong(taskId)).send().join();
+          camundaClient.newUnassignUserTaskCommand(Long.parseLong(taskId)).send().join();
           task.setAssignee(null);
           return task;
         });
@@ -259,7 +259,7 @@ public class CamundaTaskListClient {
         },
         () -> {
           camundaClient
-              .newUserTaskAssignCommand(Long.parseLong(taskId))
+              .newAssignUserTaskCommand(Long.parseLong(taskId))
               .allowOverride(allowOverrideAssignment)
               .assignee(assignee)
               .send()
@@ -283,7 +283,7 @@ public class CamundaTaskListClient {
         },
         () ->
             camundaClient
-                .newUserTaskCompleteCommand(Long.parseLong(taskId))
+                .newCompleteUserTaskCommand(Long.parseLong(taskId))
                 .variables(variablesMap)
                 .send()
                 .join());
