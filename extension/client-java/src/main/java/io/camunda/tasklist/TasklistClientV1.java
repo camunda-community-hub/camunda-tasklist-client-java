@@ -40,6 +40,7 @@ import io.camunda.tasklist.generated.model.VariableInputDTO;
 import io.camunda.tasklist.generated.model.VariableResponse;
 import io.camunda.tasklist.generated.model.VariableSearchResponse;
 import io.camunda.tasklist.generated.model.VariablesSearchRequest;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -281,8 +282,12 @@ public class TasklistClientV1 implements TasklistClient {
         taskSearchResponse.getName(),
         taskSearchResponse.getTaskDefinitionId(),
         taskSearchResponse.getProcessName(),
-        taskSearchResponse.getCreationDate(),
-        taskSearchResponse.getCompletionDate(),
+        Optional.ofNullable(taskSearchResponse.getCreationDate())
+            .map(OffsetDateTime::parse)
+            .orElse(null),
+        Optional.ofNullable(taskSearchResponse.getCompletionDate())
+            .map(OffsetDateTime::parse)
+            .orElse(null),
         taskSearchResponse.getAssignee(),
         toTaskState(taskSearchResponse.getTaskState()),
         taskSearchResponse.getIsFirst(),
@@ -330,8 +335,12 @@ public class TasklistClientV1 implements TasklistClient {
         taskSearchResponse.getName(),
         taskSearchResponse.getTaskDefinitionId(),
         taskSearchResponse.getProcessName(),
-        taskSearchResponse.getCreationDate(),
-        taskSearchResponse.getCompletionDate(),
+        Optional.ofNullable(taskSearchResponse.getCreationDate())
+            .map(OffsetDateTime::parse)
+            .orElse(null),
+        Optional.ofNullable(taskSearchResponse.getCompletionDate())
+            .map(OffsetDateTime::parse)
+            .orElse(null),
         taskSearchResponse.getAssignee(),
         toTaskState(taskSearchResponse.getTaskState()),
         taskSearchResponse.getFormKey(),
