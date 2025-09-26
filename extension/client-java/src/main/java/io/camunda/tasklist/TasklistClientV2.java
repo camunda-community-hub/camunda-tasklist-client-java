@@ -14,7 +14,6 @@ import io.camunda.client.api.search.sort.UserTaskSort;
 import io.camunda.tasklist.TasklistClient.TaskSearch.Sort;
 import io.camunda.tasklist.TasklistClient.TaskSearch.TaskVariable;
 import io.camunda.tasklist.exception.CompatibilityException;
-import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -91,8 +90,8 @@ public class TasklistClientV2 implements TasklistClient {
         String.valueOf(userTask.getProcessDefinitionKey()),
         String.valueOf(userTask.getProcessInstanceKey()),
         userTask.getTenantId(),
-        OffsetDateTime.parse(userTask.getDueDate()),
-        OffsetDateTime.parse(userTask.getFollowUpDate()),
+        (userTask.getDueDate()),
+        (userTask.getFollowUpDate()),
         userTask.getCandidateGroups(),
         userTask.getCandidateUsers(),
         variables,
@@ -119,8 +118,8 @@ public class TasklistClientV2 implements TasklistClient {
         String.valueOf(userTask.getProcessDefinitionKey()),
         String.valueOf(userTask.getProcessInstanceKey()),
         userTask.getTenantId(),
-        OffsetDateTime.parse(userTask.getDueDate()),
-        OffsetDateTime.parse(userTask.getFollowUpDate()),
+        userTask.getDueDate(),
+        userTask.getFollowUpDate(),
         userTask.getCandidateGroups(),
         userTask.getCandidateUsers(),
         implementation,
