@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.client.CamundaClient;
 import io.camunda.tasklist.CamundaTaskListClient;
 import io.camunda.tasklist.CamundaTasklistClientConfiguration;
+import io.camunda.tasklist.CamundaTasklistClientConfiguration.ApiVersion;
 import io.camunda.tasklist.CamundaTasklistClientConfiguration.DefaultProperties;
 import io.camunda.tasklist.auth.Authentication;
 import io.camunda.tasklist.auth.JwtAuthentication;
@@ -11,6 +12,7 @@ import io.camunda.tasklist.auth.JwtCredential;
 import io.camunda.tasklist.auth.SimpleAuthentication;
 import io.camunda.tasklist.auth.SimpleCredential;
 import io.camunda.tasklist.auth.TokenResponseHttpClientResponseHandler;
+import io.camunda.tasklist.spring.TasklistClientConfigurationProperties.Profile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -44,7 +46,7 @@ public class TasklistClientConfiguration {
   public CamundaTasklistClientConfiguration tasklistClientConfiguration(
       Authentication authentication, @Autowired(required = false) CamundaClient camundaClient) {
     return new CamundaTasklistClientConfiguration(
-        properties.apiVersion(),
+        properties.profile() == Profile.v2 ? ApiVersion.v2 : ApiVersion.v1,
         authentication,
         properties.baseUrl(),
         camundaClient,

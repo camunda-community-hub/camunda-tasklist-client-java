@@ -1,6 +1,5 @@
 package io.camunda.tasklist.spring;
 
-import io.camunda.tasklist.CamundaTasklistClientConfiguration.ApiVersion;
 import java.net.URL;
 import java.time.Duration;
 import java.util.List;
@@ -10,7 +9,6 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
 @ConfigurationProperties("tasklist.client")
 public record TasklistClientConfigurationProperties(
     // generic properties
-    @DefaultValue("v1") ApiVersion apiVersion,
     Profile profile,
     Boolean enabled,
     URL baseUrl,
@@ -31,7 +29,8 @@ public record TasklistClientConfigurationProperties(
   public enum Profile {
     simple,
     oidc,
-    saas
+    saas,
+    v2
   }
 
   public record ClientDefaults(
