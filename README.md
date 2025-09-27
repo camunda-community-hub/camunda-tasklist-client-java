@@ -29,7 +29,7 @@ This client is compatible with the Camunda v2 API. To use it, please configure:
 ```yaml
 tasklist:
   client:
-    api-version: v2
+    profile: v2
 ```
 
 Configure a Camunda Tasklist client with simple authentication:
