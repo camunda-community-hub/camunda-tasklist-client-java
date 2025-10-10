@@ -8,7 +8,7 @@
   </parent>
   <groupId>io.camunda</groupId>
   <artifactId>tasklist-client-root</artifactId>
-  <version>8.8.0</version>
+  <version>8.8.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Camunda Tasklist Client Root</name>
   <licenses>
