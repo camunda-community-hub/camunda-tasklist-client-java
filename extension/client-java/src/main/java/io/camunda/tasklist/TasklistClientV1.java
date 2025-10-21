@@ -75,13 +75,17 @@ public class TasklistClientV1 implements TasklistClient {
 
   private static SaveVariablesRequest fromVariablesToSave(List<RequestVariable> variables) {
     SaveVariablesRequest request = new SaveVariablesRequest();
-    request.setVariables(variables.stream().map(TasklistClientV1::fromVariable).toList());
+    if (variables != null) {
+      request.setVariables(variables.stream().map(TasklistClientV1::fromVariable).toList());
+    }
     return request;
   }
 
   private static TaskCompleteRequest fromVariablesToComplete(List<RequestVariable> variables) {
     TaskCompleteRequest request = new TaskCompleteRequest();
-    request.setVariables(variables.stream().map(TasklistClientV1::fromVariable).toList());
+    if (variables != null) {
+      request.setVariables(variables.stream().map(TasklistClientV1::fromVariable).toList());
+    }
     return request;
   }
 
@@ -94,10 +98,12 @@ public class TasklistClientV1 implements TasklistClient {
 
   private static VariablesSearchRequest fromVariableSearch(VariableSearch variableSearch) {
     VariablesSearchRequest request = new VariablesSearchRequest();
-    request.setIncludeVariables(
-        variableSearch.includeVariables().stream()
-            .map(TasklistClientV1::fromIncludeVariable)
-            .toList());
+    if (variableSearch.includeVariables() != null) {
+      request.setIncludeVariables(
+          variableSearch.includeVariables().stream()
+              .map(TasklistClientV1::fromIncludeVariable)
+              .toList());
+    }
     request.setVariableNames(variableSearch.variableNames());
     return request;
   }

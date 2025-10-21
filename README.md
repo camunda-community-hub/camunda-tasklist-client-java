@@ -4,7 +4,7 @@
 
 # Camunda TaskList Client
 
-This project was intially designed to simplify communication between a java backend and the Camunda 8 task list GraphQL APIs. Since GraphQL APIs are now deprecared, this client is now targetting REST endpoints. Contributions through PR are welcome!
+This project was intially designed to simplify communication between a java backend and the Camunda 8 task list GraphQL APIs. Since GraphQL APIs are now deprecated, this client is now targeting REST endpoints. Contributions through PR are welcome!
 
 :information_source: 8.3+ Relesases of this client are generated against Rest endpoints.
 
