@@ -1,37 +1,46 @@
 {
   "extends": [
-    "config:base",
+    "config:recommended",
     "schedule:automergeNonOfficeHours"
   ],
-  "labels": ["dependencies"],
+  "labels": [
+    "dependencies"
+  ],
   "packageRules": [
     {
-      "matchPackagePrefixes": ["io.camunda:tasklist*"],
+      "description": "Never update Tasklist dependencies",
+      "enabled": false,
+      "matchPackageNames": [
+        "io.camunda:tasklist*{/,}**"
+      ]
+    },
+    {
+      "description": "Never update camunda dependencies minor and major after a release",
+      "matchPackageNames": [
+        "io.camunda:*{/,}**"
+      ],
+      "matchBaseBranches": [
+        "/^release/.*/"
+      ],
+      "matchUpdateTypes": [
+        "major",
+        "minor"
+      ],
       "enabled": false
-    },
-    {
-      "matchBaseBranches": ["main"],
-      "matchUpdateTypes": ["minor"],
-      "automerge": true
-    },
-    {
-      "matchManagers": ["maven"],
-      "matchBaseBranches": ["/^release/.*/"],
-      "matchUpdateTypes": ["major", "minor"],
-      "enabled": false
-    },
-    {
-      "matchUpdateTypes": ["patch", "pin", "digest"],
-      "automerge": true
     },
     {
       "matchManagers": [
         "maven"
       ],
-      "description" : "Exclude SNAPSHOT versions, renovate may suggest them for pre-release values.",
-      "matchPackagePatterns": [".*"],
-      "allowedVersions": "!/-SNAPSHOT$/"
+      "description": "Exclude SNAPSHOT versions, renovate may suggest them for pre-release values.",
+      "allowedVersions": "!/-SNAPSHOT$/",
+      "matchPackageNames": [
+        "/.*/"
+      ]
     }
   ],
-  "baseBranches": ["main", "/^release/.*/"]
+  "baseBranches": [
+    "main",
+    "/^release/.*/"
+  ]
 }
