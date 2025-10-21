@@ -39,7 +39,7 @@
       ]
     }
   ],
-  "baseBranches": [
+  "baseBranchPatterns": [
     "main",
     "/^release/.*/"
   ]
