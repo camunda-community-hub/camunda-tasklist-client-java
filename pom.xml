@@ -35,7 +35,7 @@
     <spring-boot.version>3.5.6</spring-boot.version>
     <commons-beanutils.version>1.9.4</commons-beanutils.version>
     <resilience4j.version>2.2.0</resilience4j.version>
-    <jackson.version>2.18.3</jackson.version>
+    <jackson.version>2.20.0</jackson.version>
     <commons-lang.version>3.15.0</commons-lang.version>
     <plugin.version.maven-enforcer-plugin>3.6.2</plugin.version.maven-enforcer-plugin>
     <plugin.version.function-maven-plugin>0.11.2</plugin.version.function-maven-plugin>
@@ -70,6 +70,13 @@
         <scope>import</scope>
       </dependency>
       <dependency>
+        <groupId>com.fasterxml.jackson</groupId>
+        <artifactId>jackson-bom</artifactId>
+        <version>${jackson.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>camunda-tasklist-client-java</artifactId>
         <version>${project.version}</version>
@@ -78,21 +85,6 @@
         <groupId>io.camunda.spring</groupId>
         <artifactId>spring-boot-starter-camunda-tasklist</artifactId>
         <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-core</artifactId>
-        <version>${jackson.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-databind</artifactId>
-        <version>${jackson.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-annotations</artifactId>
-        <version>${jackson.version}</version>
       </dependency>
       <dependency>
         <groupId>com.google.code.findbugs</groupId>
