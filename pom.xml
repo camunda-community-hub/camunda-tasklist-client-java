@@ -49,7 +49,7 @@
     <plugin.version.maven-depdendency-plugin>3.9.0</plugin.version.maven-depdendency-plugin>
     <plugin.version.maven-site-plugin>3.21.0</plugin.version.maven-site-plugin>
     <plugin.version.maven-assembly-plugin>3.8.0</plugin.version.maven-assembly-plugin>
-    <plugin.version.maven-release-plugin>3.2.0</plugin.version.maven-release-plugin>
+    <plugin.version.maven-release-plugin>3.3.0</plugin.version.maven-release-plugin>
     <plugin.version.frontend-maven-plugin>1.15.4</plugin.version.frontend-maven-plugin>
     <plugin.version.maven-source-plugin>3.4.0</plugin.version.maven-source-plugin>
   </properties>
