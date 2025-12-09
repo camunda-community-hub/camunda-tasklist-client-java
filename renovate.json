@@ -1,7 +1,8 @@
 {
   "extends": [
     "config:recommended",
-    "schedule:automergeNonOfficeHours"
+    "schedule:automergeNonOfficeHours",
+    ":automergeAll"
   ],
   "labels": [
     "dependencies"
