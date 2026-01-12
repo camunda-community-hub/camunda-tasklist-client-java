@@ -41,11 +41,16 @@ import io.camunda.tasklist.generated.model.VariableResponse;
 import io.camunda.tasklist.generated.model.VariableSearchResponse;
 import io.camunda.tasklist.generated.model.VariablesSearchRequest;
 import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
 @Deprecated
 public class TasklistClientV1 implements TasklistClient {
+  private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZZ";
+  private static final DateTimeFormatter DATE_TIME_FORMATTER =
+      DateTimeFormatter.ofPattern(DATE_FORMAT);
+
   private final FormApi formApi;
   private final TaskApi taskApi;
   private final VariablesApi variablesApi;
@@ -289,10 +294,10 @@ public class TasklistClientV1 implements TasklistClient {
         taskSearchResponse.getTaskDefinitionId(),
         taskSearchResponse.getProcessName(),
         Optional.ofNullable(taskSearchResponse.getCreationDate())
-            .map(OffsetDateTime::parse)
+            .map(creationDate -> OffsetDateTime.parse(creationDate, DATE_TIME_FORMATTER))
             .orElse(null),
         Optional.ofNullable(taskSearchResponse.getCompletionDate())
-            .map(OffsetDateTime::parse)
+            .map(completionDate -> OffsetDateTime.parse(completionDate, DATE_TIME_FORMATTER))
             .orElse(null),
         taskSearchResponse.getAssignee(),
         toTaskState(taskSearchResponse.getTaskState()),
@@ -342,10 +347,10 @@ public class TasklistClientV1 implements TasklistClient {
         taskSearchResponse.getTaskDefinitionId(),
         taskSearchResponse.getProcessName(),
         Optional.ofNullable(taskSearchResponse.getCreationDate())
-            .map(OffsetDateTime::parse)
+            .map(creationDate -> OffsetDateTime.parse(creationDate, DATE_TIME_FORMATTER))
             .orElse(null),
         Optional.ofNullable(taskSearchResponse.getCompletionDate())
-            .map(OffsetDateTime::parse)
+            .map(completionDate -> OffsetDateTime.parse(completionDate, DATE_TIME_FORMATTER))
             .orElse(null),
         taskSearchResponse.getAssignee(),
         toTaskState(taskSearchResponse.getTaskState()),
