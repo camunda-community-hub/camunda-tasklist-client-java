@@ -12,5 +12,6 @@
   <modules>
     <module>bootstrapping-test</module>
     <module>readme-snippets</module>
+    <module>bootstrapping-spring-boot-test</module>
   </modules>
 </project>

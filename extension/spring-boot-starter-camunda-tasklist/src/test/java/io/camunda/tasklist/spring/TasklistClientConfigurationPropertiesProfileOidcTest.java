@@ -23,7 +23,7 @@ public class TasklistClientConfigurationPropertiesProfileOidcTest {
     assertThat(properties.profile()).isEqualTo(oidc);
     assertThat(properties.clientId()).isEqualTo("def");
     assertThat(properties.clientSecret()).isEqualTo("ghi");
-    assertThat(properties.baseUrl()).isEqualTo(URI.create("http://localhost:8082").toURL());
+    assertThat(properties.baseUrl()).isEqualTo(URI.create("http://localhost:8088").toURL());
     assertThat(properties.enabled()).isEqualTo(true);
     assertThat(properties.authUrl())
         .isEqualTo(
