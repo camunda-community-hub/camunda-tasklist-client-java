@@ -4,7 +4,7 @@
   <parent>
     <groupId>io.camunda</groupId>
     <artifactId>tasklist-client-example-parent</artifactId>
-    <version>8.8.3</version>
+    <version>8.8.4-SNAPSHOT</version>
   </parent>
   <artifactId>bootstrapping-spring-boot-test</artifactId>
   <name>Camunda Tasklist Client Bootstrapping Spring Boot Test</name>
