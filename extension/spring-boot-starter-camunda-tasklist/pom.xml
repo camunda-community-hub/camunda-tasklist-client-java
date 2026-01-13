@@ -4,7 +4,11 @@
   <parent>
     <groupId>io.camunda</groupId>
     <artifactId>tasklist-client-parent</artifactId>
+<<<<<<< HEAD
     <version>8.8.3-SNAPSHOT</version>
+=======
+    <version>8.9.0-SNAPSHOT</version>
+>>>>>>> 7555aae (Fix/simple login (#619))
   </parent>
   <artifactId>spring-boot-starter-camunda-tasklist</artifactId>
   <name>Spring Boot Starter Camunda Tasklist Client</name>

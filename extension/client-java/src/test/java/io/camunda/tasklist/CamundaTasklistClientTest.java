@@ -74,7 +74,7 @@ public class CamundaTasklistClientTest {
   @Test
   void shouldAuthenticateUsingSimpleAuth() throws MalformedURLException, TaskListException {
     stubFor(
-        post("/api/login")
+        post("/login")
             .withFormParam("username", equalTo("demo"))
             .withFormParam("password", equalTo("demo"))
             .willReturn(
