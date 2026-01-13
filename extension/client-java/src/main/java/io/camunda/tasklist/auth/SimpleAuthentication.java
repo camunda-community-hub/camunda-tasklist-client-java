@@ -21,7 +21,7 @@ public class SimpleAuthentication implements Authentication {
   private static final Set<String> CSRF_HEADER_CANDIDATES =
       Set.of("X-CSRF-TOKEN", "TASKLIST-X-CSRF-TOKEN", "OPERATE-X-CSRF-TOKEN");
   private static final Set<String> SESSION_COOKIE_CANDIDATES =
-      Set.of("TASKLIST-SESSION", "OPERATE-SESSION");
+      Set.of("TASKLIST-SESSION", "OPERATE-SESSION", "camunda-session");
   private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private final SimpleCredential simpleCredential;
