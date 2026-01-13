@@ -1,7 +1,6 @@
 package io.camunda.tasklist.bootstrapping;
 
 import io.camunda.tasklist.CamundaTaskListClient;
-import io.camunda.tasklist.TasklistClient;
 import io.camunda.tasklist.dto.TaskSearch;
 import io.camunda.tasklist.exception.TaskListException;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -13,7 +12,9 @@ import org.springframework.stereotype.Component;
 public class TaskFetcher {
   private final CamundaTaskListClient tasklistClient;
 
-  public TaskFetcher(CamundaTaskListClient tasklistClient) {this.tasklistClient = tasklistClient;}
+  public TaskFetcher(CamundaTaskListClient tasklistClient) {
+    this.tasklistClient = tasklistClient;
+  }
 
   @Scheduled(fixedDelay = 10000L)
   public void run() {
