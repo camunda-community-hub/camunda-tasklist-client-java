@@ -21,7 +21,7 @@ public class SimpleAuthentication implements Authentication {
   private static final Set<String> CSRF_HEADER_CANDIDATES =
       Set.of("X-CSRF-TOKEN", "TASKLIST-X-CSRF-TOKEN", "OPERATE-X-CSRF-TOKEN");
   private static final Set<String> SESSION_COOKIE_CANDIDATES =
-      Set.of("TASKLIST-SESSION", "OPERATE-SESSION");
+      Set.of("TASKLIST-SESSION", "OPERATE-SESSION", "camunda-session");
   private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private final SimpleCredential simpleCredential;
@@ -100,7 +100,7 @@ public class SimpleAuthentication implements Authentication {
   }
 
   private HttpPost buildRequest(SimpleCredential simpleCredential) {
-    HttpPost httpPost = new HttpPost(simpleCredential.baseUrl().toString() + "/api/login");
+    HttpPost httpPost = new HttpPost(simpleCredential.baseUrl().toString() + "/login");
     List<NameValuePair> params = new ArrayList<>();
     params.add(new BasicNameValuePair("username", simpleCredential.username()));
     params.add(new BasicNameValuePair("password", simpleCredential.password()));

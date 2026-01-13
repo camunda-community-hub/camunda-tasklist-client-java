@@ -4,7 +4,7 @@
   <parent>
     <groupId>io.camunda</groupId>
     <artifactId>tasklist-client-root</artifactId>
-    <version>8.8.0-SNAPSHOT</version>
+    <version>8.9.0-SNAPSHOT</version>
   </parent>
   <artifactId>tasklist-client-example-parent</artifactId>
   <packaging>pom</packaging>
@@ -12,5 +12,6 @@
   <modules>
     <module>bootstrapping-test</module>
     <module>readme-snippets</module>
+    <module>bootstrapping-spring-boot-test</module>
   </modules>
 </project>
