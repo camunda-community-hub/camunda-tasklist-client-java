@@ -100,7 +100,7 @@ public class SimpleAuthentication implements Authentication {
   }
 
   private HttpPost buildRequest(SimpleCredential simpleCredential) {
-    HttpPost httpPost = new HttpPost(simpleCredential.baseUrl().toString() + "/api/login");
+    HttpPost httpPost = new HttpPost(simpleCredential.baseUrl().toString() + "/login");
     List<NameValuePair> params = new ArrayList<>();
     params.add(new BasicNameValuePair("username", simpleCredential.username()));
     params.add(new BasicNameValuePair("password", simpleCredential.password()));
