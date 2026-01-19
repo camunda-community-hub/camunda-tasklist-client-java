@@ -35,7 +35,7 @@
     <spring-boot.version>4.0.1</spring-boot.version>
     <commons-beanutils.version>1.9.4</commons-beanutils.version>
     <resilience4j.version>2.2.0</resilience4j.version>
-    <jackson.version>2.20.1</jackson.version>
+    <jackson.version>2.21.0</jackson.version>
     <commons-lang.version>3.15.0</commons-lang.version>
     <plugin.version.maven-enforcer-plugin>3.6.2</plugin.version.maven-enforcer-plugin>
     <plugin.version.function-maven-plugin>1.0.0</plugin.version.function-maven-plugin>
