@@ -1,7 +1,7 @@
 package io.camunda.tasklist.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.camunda.tasklist.exception.TaskListException;
-import java.util.Collections;
 import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -35,16 +34,21 @@ public class ConverterUtilsTest {
   }
 
   @Test
-  void setObjectMapperAllowsCustomConfiguration() throws TaskListException {
-    ObjectMapper custom =
+  void setObjectMapperAllowsCustomConfiguration() {
+    // FAIL_ON_UNKNOWN_PROPERTIES=true differs from the default (false).
+    // WithOptional serialises to {"value":"hello"}; Task has no "value" field,
+    // so a strict mapper must reject it — proving the custom mapper is actually used.
+    ObjectMapper strict =
         new ObjectMapper()
             .registerModule(new JavaTimeModule())
             .registerModule(new Jdk8Module())
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    ConverterUtils.setObjectMapper(custom);
-    // After setting a custom mapper the utility should use it without errors.
-    assertThatCode(() -> ConverterUtils.toTasks(Collections.emptyList()))
-        .doesNotThrowAnyException();
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
+    ConverterUtils.setObjectMapper(strict);
+
+    WithOptional source = new WithOptional();
+    source.setValue(Optional.of("hello"));
+    assertThatThrownBy(() -> ConverterUtils.toTask(source, null))
+        .isInstanceOf(TaskListException.class);
   }
 
   // ---------- helper DTO ----------
