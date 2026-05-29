@@ -5,7 +5,7 @@ import io.camunda.client.api.JsonMapper;
 import io.camunda.client.api.search.enums.UserTaskState;
 import io.camunda.client.api.search.filter.UserTaskFilter;
 import io.camunda.client.api.search.filter.UserTaskVariableFilter;
-import io.camunda.client.api.search.request.SearchRequestPage;
+import io.camunda.client.api.search.page.AnyPage;
 import io.camunda.client.api.search.response.Form;
 import io.camunda.client.api.search.response.SearchResponse;
 import io.camunda.client.api.search.response.UserTask;
@@ -279,7 +279,7 @@ public class TasklistClientV2 implements TasklistClient {
     };
   }
 
-  private static Consumer<SearchRequestPage> fromTaskSearchToPage(TaskSearch taskSearch) {
+  private static Consumer<AnyPage> fromTaskSearchToPage(TaskSearch taskSearch) {
     return page -> {
       if (taskSearch.pageSize() != null) {
         page.limit(taskSearch.pageSize());
