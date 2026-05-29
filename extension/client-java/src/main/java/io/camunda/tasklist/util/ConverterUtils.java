@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.camunda.tasklist.TasklistClient;
 import io.camunda.tasklist.TasklistClient.RequestVariable;
@@ -24,7 +25,7 @@ import java.util.function.Function;
 
 public class ConverterUtils {
 
-  private static ObjectMapper objectMapper = null;
+  private static volatile ObjectMapper objectMapper = null;
 
   private ConverterUtils() {}
 
@@ -151,11 +152,23 @@ public class ConverterUtils {
 
   private static ObjectMapper getObjectMapper() {
     if (objectMapper == null) {
-      objectMapper = new ObjectMapper();
-      objectMapper.registerModule(new JavaTimeModule());
-      objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+      synchronized (ConverterUtils.class) {
+        if (objectMapper == null) {
+          ObjectMapper mapper = new ObjectMapper();
+          mapper.registerModule(new JavaTimeModule());
+          mapper.registerModule(new Jdk8Module());
+          mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+          objectMapper = mapper;
+        }
+      }
     }
     return objectMapper;
+  }
+
+  public static void setObjectMapper(ObjectMapper mapper) {
+    synchronized (ConverterUtils.class) {
+      objectMapper = mapper;
+    }
   }
 
   public static <S, T> List<T> mapIfPresent(List<S> list, Function<S, T> mapper) {
