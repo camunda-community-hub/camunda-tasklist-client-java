@@ -64,8 +64,8 @@
       </dependency>
       <dependency>
         <groupId>io.camunda</groupId>
-        <artifactId>zeebe-bom</artifactId>
-        <version>8.9.0-alpha4</version>
+        <artifactId>camunda-bom</artifactId>
+        <version>8.9.6</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
